@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.detekt) apply false
     alias(libs.plugins.kover) apply false
     alias(libs.plugins.dependency.check) apply false
+    alias(libs.plugins.roborazzi) apply false
     // Root only downloads the vulnerability database; modules scan themselves.
     alias(libs.plugins.giveaway.dependency.check)
 }

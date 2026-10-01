@@ -21,6 +21,7 @@ dependencies {
     compileOnly(libs.compose.gradlePlugin)
     compileOnly(libs.detekt.gradlePlugin)
     compileOnly(libs.dependencyCheck.gradlePlugin)
+    compileOnly(libs.roborazzi.gradlePlugin)
 }
 
 gradlePlugin {
@@ -48,6 +49,10 @@ gradlePlugin {
         register("dependencyCheck") {
             id = "giveaway.dependency.check"
             implementationClass = "DependencyCheckConventionPlugin"
+        }
+        register("androidScreenshot") {
+            id = "giveaway.android.screenshot"
+            implementationClass = "AndroidScreenshotTestConventionPlugin"
         }
         register("jvmLibrary") {
             id = "giveaway.jvm.library"
