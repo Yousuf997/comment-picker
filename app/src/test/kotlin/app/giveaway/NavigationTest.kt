@@ -27,7 +27,6 @@ import app.giveaway.feature.create.SetRulesRoute
 import app.giveaway.feature.draw.CertificateRoute
 import app.giveaway.feature.draw.DrawRoute
 import app.giveaway.feature.draw.DrawingRoute
-import app.giveaway.feature.draw.SaveVideoRoute
 import app.giveaway.feature.draw.WinnersRoute
 import app.giveaway.feature.home.HomeRoute
 import app.giveaway.feature.onboarding.AppLockSetupRoute
@@ -99,7 +98,6 @@ class NavigationTest {
             DrawRoute(giveawayId = 1) to "S11",
             DrawingRoute(giveawayId = 1) to "S12",
             WinnersRoute(giveawayId = 1) to "S14",
-            SaveVideoRoute(giveawayId = 1) to "S13",
             CertificateRoute(giveawayId = 1) to "S15",
         )
         routes.forEach { (route, id) ->
@@ -150,14 +148,11 @@ class NavigationTest {
     }
 
     @Test
-    fun drawFlowShowsTheSaveSheetOverWinnersAndCannotReturnToTheDraw() {
+    fun drawFlowEndsOnTheWinnersAndCannotReturnToTheDraw() {
         launch { GiveawayNavHost(navController, startDestination = HomeRoute) }
         compose.runOnUiThread { navController.navigate(DrawingRoute(giveawayId = 7)) }
         assertScreen("S12")
         tap(DrawR.string.drawing_finish)
-        assertScreen("S13")
-        tap(DrawR.string.save_video_save)
-        compose.onNodeWithTag("screen:S13").assertDoesNotExist()
         assertScreen("S14")
         assertFalse(
             "The finished draw must not be on the back stack",

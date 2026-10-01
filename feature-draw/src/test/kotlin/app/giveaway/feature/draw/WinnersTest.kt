@@ -1,6 +1,7 @@
 package app.giveaway.feature.draw
 
 import android.app.Application
+import android.net.Uri
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
@@ -26,10 +27,13 @@ import app.giveaway.core.data.draw.WinnerRepository
 import app.giveaway.core.data.giveaway.DefaultGiveawayRepository
 import app.giveaway.core.data.giveaway.SeedVault
 import app.giveaway.core.data.importing.EntryBuilder
+import app.giveaway.core.data.media.MediaRepository
 import app.giveaway.core.data.settings.DefaultSettingsRepository
 import app.giveaway.core.designsystem.GiveawayTheme
 import app.giveaway.core.instagram.api.IgMedia
 import app.giveaway.core.instagram.api.MediaKind
+import app.giveaway.core.media.VideoGallery
+import app.giveaway.core.media.VideoInfo
 import app.giveaway.draw.Commit
 import app.giveaway.draw.Rules
 import com.github.takahirom.roborazzi.captureRoboImage
@@ -50,6 +54,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import java.io.File
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneOffset
@@ -80,6 +85,12 @@ class WinnersTest {
         override fun seal(giveawayId: Long, seed: ByteArray) = seed.reversedArray()
 
         override fun open(giveawayId: Long, sealed: ByteArray) = sealed.reversedArray()
+    }
+    /** No recording in these tests, so the gallery is never used. */
+    private val noGallery = object : VideoGallery {
+        override suspend fun save(source: File, album: String, displayName: String): Uri = error("unused")
+
+        override suspend fun describe(file: File): VideoInfo? = null
     }
     private val signer = object : RecordSigner {
         override fun sign(record: ByteArray) = RecordSigner.Signature(byteArrayOf(1), byteArrayOf(2), "fp")
@@ -120,7 +131,12 @@ class WinnersTest {
     }
 
     private fun show() {
-        vm = WinnersViewModel(SavedStateHandle(route = WinnersRoute(id)), repository)
+        vm = WinnersViewModel(
+            SavedStateHandle(route = WinnersRoute(id)),
+            repository,
+            MediaRepository(app, db, clock),
+            noGallery,
+        )
         compose.setContent {
             GiveawayTheme { WinnersScreen(onCreateCertificate = { certificates++ }, viewModel = vm) }
         }

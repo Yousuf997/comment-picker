@@ -17,12 +17,10 @@ import app.giveaway.feature.create.setRulesScreen
 import app.giveaway.feature.draw.CertificateRoute
 import app.giveaway.feature.draw.DrawRoute
 import app.giveaway.feature.draw.DrawingRoute
-import app.giveaway.feature.draw.SaveVideoRoute
 import app.giveaway.feature.draw.WinnersRoute
 import app.giveaway.feature.draw.certificateScreen
 import app.giveaway.feature.draw.drawScreen
 import app.giveaway.feature.draw.drawingScreen
-import app.giveaway.feature.draw.saveVideoSheet
 import app.giveaway.feature.draw.winnersScreen
 import app.giveaway.feature.home.GiveawayDestination
 import app.giveaway.feature.home.HomeActions
@@ -116,7 +114,7 @@ private fun NavGraphBuilder.creationWizard(navController: NavHostController) {
 
 /** S11 to S15. */
 private fun NavGraphBuilder.draw(navController: NavHostController) {
-    // Draw. Once the real draw ran, the result is fixed: S12 leaves the back stack and S13 opens over S14.
+    // Draw. Once the real draw ran, the result is fixed: S12 leaves the back stack; S14 shows S13 over itself.
     drawScreen(
         onBack = { navController.popBackStack() },
         // The result is already saved and signed; S12 plays it back and records it if the switch was on.
@@ -125,9 +123,7 @@ private fun NavGraphBuilder.draw(navController: NavHostController) {
     )
     drawingScreen(onDrawFinished = { id ->
         navController.navigate(WinnersRoute(id)) { popUpTo<DrawingRoute> { inclusive = true } }
-        navController.navigate(SaveVideoRoute(id))
     })
-    saveVideoSheet(onChoiceMade = { navController.popBackStack() })
     winnersScreen(onCreateCertificate = { id -> navController.navigate(CertificateRoute(id)) })
     certificateScreen(onDone = { navController.backToHome() })
 }

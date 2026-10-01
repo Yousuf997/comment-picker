@@ -4,6 +4,10 @@
 
     <!-- The deadline reminder (S8). Android 13+ asks the user when they lock in a draw. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Saving the draw video to the gallery needs this only on Android 8 and 9 (MediaStore covers 10+). -->
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
     <!-- The comment import runs as a foreground worker with a progress notification (spec: Battery). -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />

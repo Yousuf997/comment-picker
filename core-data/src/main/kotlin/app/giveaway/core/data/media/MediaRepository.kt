@@ -5,6 +5,7 @@ import app.giveaway.core.data.db.GiveawayDatabase
 import app.giveaway.core.data.db.MediaFileEntity
 import app.giveaway.core.data.db.MediaKind
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.Flow
 import java.io.File
 import java.time.Clock
 import javax.inject.Inject
@@ -38,6 +39,21 @@ class MediaRepository @Inject constructor(
 
     suspend fun videos(giveawayId: Long): List<MediaFileEntity> =
         files.forGiveaway(giveawayId).filter { it.kind == MediaKind.VIDEO }
+
+    /** The recording still waiting for the S13 choice, if any; S14 shows the sheet until it is made. */
+    fun observePendingVideo(giveawayId: Long): Flow<MediaFileEntity?> = files.observePendingVideo(giveawayId)
+
+    /** "Save to gallery": the private copy is removed once the gallery has it (spec: requirement 7). */
+    suspend fun savedToGallery(video: MediaFileEntity, galleryUri: String) {
+        File(video.uri).delete()
+        files.update(video.copy(uri = galleryUri, savedToGallery = true, pendingDecision = false))
+    }
+
+    /** "Don't save": the private file is deleted at once (spec: requirement 8). */
+    suspend fun discard(video: MediaFileEntity) {
+        File(video.uri).delete()
+        files.delete(video)
+    }
 
     private companion object {
         const val VIDEOS = "videos"
