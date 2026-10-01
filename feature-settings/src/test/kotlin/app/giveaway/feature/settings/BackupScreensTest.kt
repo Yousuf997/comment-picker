@@ -56,6 +56,7 @@ import java.security.MessageDigest
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneOffset
+import java.util.TimeZone
 
 /** M-13 acceptance: backup needs a matching, strong enough password; restore checks the file, then confirms. */
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -63,6 +64,8 @@ import java.time.ZoneOffset
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(qualifiers = "w390dp-h1100dp-xhdpi")
 class BackupScreensTest {
+
+    private val systemZone: TimeZone = TimeZone.getDefault()
 
     @get:Rule
     val compose = createComposeRule()
@@ -85,6 +88,8 @@ class BackupScreensTest {
 
     @Before
     fun setUp() {
+        // Dates on screen follow the phone's zone; pin it so screenshots match on every machine.
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
         Dispatchers.setMain(UnconfinedTestDispatcher())
         db = Room.inMemoryDatabaseBuilder(app, GiveawayDatabase::class.java).allowMainThreadQueries().build()
         backups = BackupManager(db, cipher, vault, clock, MediaRepository(app, db, clock)) { _, _ -> }
@@ -97,6 +102,7 @@ class BackupScreensTest {
 
     @After
     fun tearDown() {
+        TimeZone.setDefault(systemZone)
         db.close()
         file.delete()
         Dispatchers.resetMain()
