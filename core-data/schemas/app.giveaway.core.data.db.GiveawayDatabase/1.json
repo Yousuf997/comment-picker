@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "11843c307a5b611967a2d4b788d3c0ef",
+    "identityHash": "a8913557203139fe87f19cae62dac315",
     "entities": [
       {
         "tableName": "account",
@@ -852,7 +852,7 @@
       },
       {
         "tableName": "settings",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `appLockEnabled` INTEGER NOT NULL, `lockAfterSeconds` INTEGER NOT NULL, `blockScreenshots` INTEGER NOT NULL, `autoDeleteDays` INTEGER NOT NULL, `recordDrawsByDefault` INTEGER NOT NULL, `language` TEXT, `lastBackupAt` INTEGER, `onboardingComplete` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `appLockEnabled` INTEGER NOT NULL, `appLockMethod` TEXT, `lockAfterSeconds` INTEGER NOT NULL, `blockScreenshots` INTEGER NOT NULL, `autoDeleteDays` INTEGER NOT NULL, `recordDrawsByDefault` INTEGER NOT NULL, `language` TEXT, `lastBackupAt` INTEGER, `onboardingComplete` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -865,6 +865,11 @@
             "columnName": "appLockEnabled",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "appLockMethod",
+            "columnName": "appLockMethod",
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "lockAfterSeconds",
@@ -917,7 +922,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '11843c307a5b611967a2d4b788d3c0ef')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a8913557203139fe87f19cae62dac315')"
     ]
   }
 }

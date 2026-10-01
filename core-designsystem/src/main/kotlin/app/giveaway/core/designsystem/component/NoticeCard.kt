@@ -26,7 +26,7 @@ enum class NoticeTone { Info, Warning, Success }
 @Composable
 fun NoticeCard(
     title: String,
-    body: String,
+    body: String?,
     tone: NoticeTone,
     modifier: Modifier = Modifier,
     actionLabel: String? = null,
@@ -49,7 +49,7 @@ fun NoticeCard(
         Icon(painterResource(icon), contentDescription = null, tint = content)
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(title, style = GiveawayTheme.typography.bodyStrong, color = content)
-            Text(body, style = GiveawayTheme.typography.body, color = content)
+            if (body != null) Text(body, style = GiveawayTheme.typography.body, color = content)
             if (actionLabel != null && onAction != null) {
                 TextButton(onClick = onAction) {
                     Text(actionLabel, style = GiveawayTheme.typography.bodyStrong, color = content)

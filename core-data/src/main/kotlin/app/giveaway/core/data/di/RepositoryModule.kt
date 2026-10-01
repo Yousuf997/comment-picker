@@ -2,6 +2,8 @@ package app.giveaway.core.data.di
 
 import app.giveaway.core.data.account.AccountRepository
 import app.giveaway.core.data.account.DefaultAccountRepository
+import app.giveaway.core.data.settings.DefaultSettingsRepository
+import app.giveaway.core.data.settings.SettingsRepository
 import app.giveaway.core.instagram.api.TokenProvider
 import dagger.Binds
 import dagger.Module
@@ -16,4 +18,7 @@ internal abstract class RepositoryModule {
 
     @Binds
     abstract fun tokenProvider(impl: DefaultAccountRepository): TokenProvider
+
+    @Binds
+    abstract fun settingsRepository(impl: DefaultSettingsRepository): SettingsRepository
 }

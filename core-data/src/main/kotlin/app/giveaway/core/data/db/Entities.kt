@@ -213,6 +213,8 @@ data class MediaFileEntity(
 data class SettingsEntity(
     @PrimaryKey val id: Int = SINGLE_ROW_ID,
     val appLockEnabled: Boolean = false,
+    /** Added: the unlock method; null when app lock is off. */
+    val appLockMethod: AppLockMethod? = null,
     val lockAfterSeconds: Int = 60,
     val blockScreenshots: Boolean = false,
     val autoDeleteDays: Int = 90,

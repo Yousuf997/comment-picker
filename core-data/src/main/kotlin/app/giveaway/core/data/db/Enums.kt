@@ -11,3 +11,6 @@ enum class ConfirmationStatus { PENDING, CONFIRMED, REPLACED }
 
 /** Files the app writes for a giveaway. */
 enum class MediaKind { VIDEO, CERTIFICATE_PDF, CERTIFICATE_IMAGE }
+
+/** How the app unlocks when app lock is on (spec: S3, S5). */
+enum class AppLockMethod { BIOMETRIC, PIN }
