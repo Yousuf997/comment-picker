@@ -1,0 +1,137 @@
+package app.giveaway.feature.settings
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.dp
+import app.giveaway.core.data.db.SettingsEntity
+import app.giveaway.core.designsystem.GiveawayTheme
+
+/** The S5 dialogs: confirmations for turning off app lock and disconnecting, and the option pickers. */
+@Composable
+internal fun SettingsDialog(dialog: Dialog, prefs: SettingsEntity, handlers: SettingsHandlers, onDismiss: () -> Unit) {
+    when (dialog) {
+        Dialog.LOCK_OFF -> Confirm(
+            title = R.string.settings_lock_off_title,
+            body = R.string.settings_lock_off_body,
+            confirm = R.string.settings_turn_off,
+            onConfirm = handlers.onTurnOffAppLock,
+            onDismiss = onDismiss,
+        )
+        Dialog.DISCONNECT -> Confirm(
+            title = R.string.settings_disconnect_title,
+            body = R.string.settings_disconnect_body,
+            confirm = R.string.settings_disconnect,
+            onConfirm = handlers.onDisconnect,
+            onDismiss = onDismiss,
+        )
+        Dialog.LOCK_AFTER -> Choice(
+            title = R.string.settings_lock_after,
+            options = SettingsViewModel.LOCK_AFTER_OPTIONS,
+            selected = prefs.lockAfterSeconds,
+            label = ::lockAfterLabel,
+            onSelect = handlers.onLockAfter,
+            onDismiss = onDismiss,
+        )
+        Dialog.AUTO_DELETE -> Choice(
+            title = R.string.settings_auto_delete,
+            options = SettingsViewModel.AUTO_DELETE_OPTIONS,
+            selected = prefs.autoDeleteDays,
+            label = ::autoDeleteLabel,
+            onSelect = handlers.onAutoDelete,
+            onDismiss = onDismiss,
+        )
+        Dialog.LANGUAGE -> Choice(
+            title = R.string.settings_language,
+            options = SettingsViewModel.LANGUAGE_OPTIONS,
+            selected = prefs.language,
+            label = ::languageLabel,
+            onSelect = handlers.onLanguage,
+            onDismiss = onDismiss,
+        )
+    }
+}
+
+@Composable
+private fun Confirm(title: Int, body: Int, confirm: Int, onConfirm: () -> Unit, onDismiss: () -> Unit) = AlertDialog(
+    onDismissRequest = onDismiss,
+    title = { Text(stringResource(title)) },
+    text = { Text(stringResource(body)) },
+    confirmButton = {
+        TextButton(onClick = { onConfirm(); onDismiss() }) {
+            Text(stringResource(confirm), color = GiveawayTheme.colors.danger)
+        }
+    },
+    dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.settings_cancel)) } },
+)
+
+@Composable
+private fun <T> Choice(
+    title: Int,
+    options: List<T>,
+    selected: T,
+    label: (T) -> Int,
+    onSelect: (T) -> Unit,
+    onDismiss: () -> Unit,
+) = AlertDialog(
+    onDismissRequest = onDismiss,
+    title = { Text(stringResource(title)) },
+    text = {
+        Column {
+            options.forEach { option ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .selectable(selected = option == selected, role = Role.RadioButton) {
+                            onSelect(option)
+                            onDismiss()
+                        }
+                        .padding(vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    RadioButton(selected = option == selected, onClick = null)
+                    Text(stringResource(label(option)), modifier = Modifier.padding(start = 8.dp))
+                }
+            }
+        }
+    },
+    confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.settings_cancel)) } },
+)
+
+internal fun lockAfterLabel(seconds: Int): Int = when {
+    seconds <= SECONDS_30 -> R.string.settings_after_30s
+    seconds <= SECONDS_60 -> R.string.settings_after_1m
+    seconds <= SECONDS_300 -> R.string.settings_after_5m
+    else -> R.string.settings_after_15m
+}
+
+internal fun autoDeleteLabel(days: Int): Int = when {
+    days <= DAYS_30 -> R.string.settings_days_30
+    days <= DAYS_90 -> R.string.settings_days_90
+    days <= DAYS_180 -> R.string.settings_days_180
+    else -> R.string.settings_days_365
+}
+
+internal fun languageLabel(tag: String?): Int = when (tag) {
+    "en" -> R.string.settings_language_en
+    "ar" -> R.string.settings_language_ar
+    else -> R.string.settings_language_system
+}
+
+private const val SECONDS_30 = 30
+private const val SECONDS_60 = 60
+private const val SECONDS_300 = 300
+private const val DAYS_30 = 30
+private const val DAYS_90 = 90
+private const val DAYS_180 = 180
