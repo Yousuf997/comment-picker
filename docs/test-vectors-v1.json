@@ -1,0 +1,449 @@
+{
+    "algorithm": "v1",
+    "specification": "docs/draw-spec-v1.md",
+    "vectors": [
+        {
+            "name": "basic",
+            "seed": "ae4e1594a7d1c6b862b806f4ca24c4bf890bb81d452e92d785a4d045710b76c7",
+            "commitHash": "7da727d7b9b72bbd14c05f99ea02e34a0cb1ca0ac27d9fb1a717893930628339",
+            "entries": [
+                "ana",
+                "bilal",
+                "chen",
+                "dana",
+                "eve",
+                "farah",
+                "gus",
+                "hana",
+                "ivan",
+                "jo"
+            ],
+            "winners": 3,
+            "alternates": 2,
+            "entryListHash": "d097249218a80688841aa327624b75ef389ca5ecc69f761496450e0098e8e993",
+            "picks": [
+                {
+                    "position": 1,
+                    "username": "farah",
+                    "role": "WINNER"
+                },
+                {
+                    "position": 2,
+                    "username": "chen",
+                    "role": "WINNER"
+                },
+                {
+                    "position": 3,
+                    "username": "ivan",
+                    "role": "WINNER"
+                },
+                {
+                    "position": 4,
+                    "username": "gus",
+                    "role": "ALTERNATE"
+                },
+                {
+                    "position": 5,
+                    "username": "hana",
+                    "role": "ALTERNATE"
+                }
+            ]
+        },
+        {
+            "name": "single-entry",
+            "seed": "46aaa837e13da154c01333ece80f647717a6a240b18313abe9d28e16d828cd34",
+            "commitHash": "48c11844f8dee450f336fedd7b68820fc501e52abc5ab32d5a3af4d47f230054",
+            "entries": [
+                "solo"
+            ],
+            "winners": 1,
+            "alternates": 0,
+            "entryListHash": "5364f2f2fc4f54e9d47ad29cfb08ef430c8153394bf2a0dff5cbe77a0ffef861",
+            "picks": [
+                {
+                    "position": 1,
+                    "username": "solo",
+                    "role": "WINNER"
+                }
+            ]
+        },
+        {
+            "name": "single-entry-with-alternates",
+            "seed": "ccf3dda0b55b814c3c999ec805b7945eddd9386479c9b869008035fa997c08a2",
+            "commitHash": "5cc32cd560a7cf9af2198ba8a7426c446fd0c7819d2c34fbed5fc3414c6ce62a",
+            "entries": [
+                "solo"
+            ],
+            "winners": 3,
+            "alternates": 2,
+            "entryListHash": "5364f2f2fc4f54e9d47ad29cfb08ef430c8153394bf2a0dff5cbe77a0ffef861",
+            "picks": [
+                {
+                    "position": 1,
+                    "username": "solo",
+                    "role": "WINNER"
+                }
+            ]
+        },
+        {
+            "name": "empty",
+            "seed": "6ddb570bbc83587ee7311af3839ed4a69a337e5a980cecf126e2f4a98e900896",
+            "commitHash": "aca37e635dba7cd84e2d5119dfa2f1b775c1fd3521c3c1249907689fb6100efc",
+            "entries": [],
+            "winners": 1,
+            "alternates": 1,
+            "entryListHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "picks": []
+        },
+        {
+            "name": "more-winners-than-entries",
+            "seed": "d7d357e9296483226d8228c7420cdb85065cb044c135333bff37c90f819a3860",
+            "commitHash": "49031562592e91e4858f6b92077db0241a8470b1d7c6d6e34524b38f4d8db8a6",
+            "entries": [
+                "ali",
+                "bea",
+                "cyd"
+            ],
+            "winners": 5,
+            "alternates": 0,
+            "entryListHash": "d7bec732560208104a200bf0741e5df22d5a500489762a86039fed0428a5fff0",
+            "picks": [
+                {
+                    "position": 1,
+                    "username": "ali",
+                    "role": "WINNER"
+                },
+                {
+                    "position": 2,
+                    "username": "bea",
+                    "role": "WINNER"
+                },
+                {
+                    "position": 3,
+                    "username": "cyd",
+                    "role": "WINNER"
+                }
+            ]
+        },
+        {
+            "name": "zero-alternates",
+            "seed": "cd8f5aa19bf8abda8ebe86b9ab808ec8483764279bd2fb2dde949a61e422d049",
+            "commitHash": "ed560ebd0a54fc829aa7c4de8bcd300b4ceb1e98b1ee04f3d6413c2c3c11e907",
+            "generatedEntries": {
+                "prefix": "fan",
+                "count": 20
+            },
+            "winners": 5,
+            "alternates": 0,
+            "entryListHash": "c48ec28c85b2d292eff20c78777e1dbf0d9a841c926c1a988aafa5a81009fd22",
+            "picks": [
+                {
+                    "position": 1,
+                    "username": "fan16",
+                    "role": "WINNER"
+                },
+                {
+                    "position": 2,
+                    "username": "fan04",
+                    "role": "WINNER"
+                },
+                {
+                    "position": 3,
+                    "username": "fan15",
+                    "role": "WINNER"
+                },
+                {
+                    "position": 4,
+                    "username": "fan10",
+                    "role": "WINNER"
+                },
+                {
+                    "position": 5,
+                    "username": "fan07",
+                    "role": "WINNER"
+                }
+            ]
+        },
+        {
+            "name": "alternates-only",
+            "seed": "904fae364c42ee0e1cda6ea5c0d529f9b74cfa33de6ae88e552efee3d7586e56",
+            "commitHash": "68aa53b2b3abecbd63f06f0aad60e5a0b4b1bc6dcc1a9106603b84438575871d",
+            "entries": [
+                "kim",
+                "lee",
+                "max",
+                "nia"
+            ],
+            "winners": 0,
+            "alternates": 2,
+            "entryListHash": "3ab91c3f61f62c11ef12ff92c3845d8dace97a3497095eef7d8efcbc0ba4f842",
+            "picks": [
+                {
+                    "position": 1,
+                    "username": "lee",
+                    "role": "ALTERNATE"
+                },
+                {
+                    "position": 2,
+                    "username": "kim",
+                    "role": "ALTERNATE"
+                }
+            ]
+        },
+        {
+            "name": "mixed-case",
+            "seed": "58d3a4095eb9524825c8017e90eafa305e6cba830f0510f45882ac134397a092",
+            "commitHash": "b09327df9cd142e1e7e20c7de6c5140a9a9975471701103e911e247c74d62061",
+            "entries": [
+                "Zoe",
+                "adam",
+                "BOB",
+                "Carla_99",
+                "dan.k"
+            ],
+            "winners": 2,
+            "alternates": 1,
+            "entryListHash": "e50cb9af388ee3e3472e9c44496066951d2b8e1f041e423c52bcc7d82af7bfe6",
+            "picks": [
+                {
+                    "position": 1,
+                    "username": "carla_99",
+                    "role": "WINNER"
+                },
+                {
+                    "position": 2,
+                    "username": "adam",
+                    "role": "WINNER"
+                },
+                {
+                    "position": 3,
+                    "username": "dan.k",
+                    "role": "ALTERNATE"
+                }
+            ]
+        },
+        {
+            "name": "unicode-usernames",
+            "seed": "bf5c373fc6ad944456785d7083de1b163736ec76817cbbde6027d754dcf7e6a8",
+            "commitHash": "0ddbe48635ae261f1e6fc5e007e073b23a6a4323100b1dfd375810ec99fda898",
+            "entries": [
+                "josé",
+                "jöhn",
+                "محمد",
+                "李雷",
+                "ñandú",
+                "zoë",
+                "Émile"
+            ],
+            "winners": 3,
+            "alternates": 2,
+            "entryListHash": "63031da2ea1f759f8e2d4884937c2854f01a1c1e113b1fbf2f270a9d25f965c6",
+            "picks": [
+                {
+                    "position": 1,
+                    "username": "ñandú",
+                    "role": "WINNER"
+                },
+                {
+                    "position": 2,
+                    "username": "josé",
+                    "role": "WINNER"
+                },
+                {
+                    "position": 3,
+                    "username": "émile",
+                    "role": "WINNER"
+                },
+                {
+                    "position": 4,
+                    "username": "محمد",
+                    "role": "ALTERNATE"
+                },
+                {
+                    "position": 5,
+                    "username": "jöhn",
+                    "role": "ALTERNATE"
+                }
+            ]
+        },
+        {
+            "name": "code-point-order",
+            "seed": "43ac4f627ce685a9fa418bcbc8ac671fc356c44267be3923b977196c327b29f3",
+            "commitHash": "88d252c8dd8a804eecf5a4858f9b4fcdb9d0b90ac24e136d659f79714e2e4705",
+            "entries": [
+                "ｚeta",
+                "𝒜lpha",
+                "zed",
+                "Ａlpha"
+            ],
+            "winners": 2,
+            "alternates": 2,
+            "entryListHash": "9fa7be7d4405a41567f1588ad6be02e90f0e9ed83a00e635b79100642d5fd8e4",
+            "picks": [
+                {
+                    "position": 1,
+                    "username": "zed",
+                    "role": "WINNER"
+                },
+                {
+                    "position": 2,
+                    "username": "𝒜lpha",
+                    "role": "WINNER"
+                },
+                {
+                    "position": 3,
+                    "username": "ａlpha",
+                    "role": "ALTERNATE"
+                },
+                {
+                    "position": 4,
+                    "username": "ｚeta",
+                    "role": "ALTERNATE"
+                }
+            ]
+        },
+        {
+            "name": "duplicates-allowed",
+            "seed": "6715533ce45f90d09838e353cd2d8d8b59f7f68a088c0abeff22c10ead726efc",
+            "commitHash": "243202dad5c1d7bf2df012bc6bf7640511a6548f74ac69b0857a70479fb6f856",
+            "entries": [
+                "ana",
+                "ana",
+                "ana",
+                "bob",
+                "cid"
+            ],
+            "winners": 2,
+            "alternates": 1,
+            "entryListHash": "ace51e64df16869d83ac95ca712f0aa1c1798ed7d35e3f878c6340bc7c3ac58a",
+            "picks": [
+                {
+                    "position": 1,
+                    "username": "bob",
+                    "role": "WINNER"
+                },
+                {
+                    "position": 2,
+                    "username": "cid",
+                    "role": "WINNER"
+                },
+                {
+                    "position": 3,
+                    "username": "ana",
+                    "role": "ALTERNATE"
+                }
+            ]
+        },
+        {
+            "name": "all-same-person",
+            "seed": "5609c68cdeb6146be226a92e0d01242584786756f4c3f1e0384619f6ffcc00ad",
+            "commitHash": "caa9508d094e6ee091fb5467eebc82d029d3d76de6484e8e3c6d8766dadbf34d",
+            "entries": [
+                "ana",
+                "ANA",
+                "Ana",
+                "ana",
+                "ana"
+            ],
+            "winners": 2,
+            "alternates": 2,
+            "entryListHash": "4d572d68a8d7bbfbbbe7f558da501eba86c08b7a8829015b03b4525f0a5580f7",
+            "picks": [
+                {
+                    "position": 1,
+                    "username": "ana",
+                    "role": "WINNER"
+                }
+            ]
+        },
+        {
+            "name": "large-1000",
+            "seed": "64083cf722241b23e32958dec6d71702d50564e6ef8bf6c002ef8e95fb89e7c9",
+            "commitHash": "dd52ee3b2ee075920b023b5d37921353e3b694f21a7a5eb005ee45e6e0bfcff4",
+            "generatedEntries": {
+                "prefix": "user",
+                "count": 1000
+            },
+            "winners": 10,
+            "alternates": 5,
+            "entryListHash": "637a9f0551b5ba87d7cfff5ceae80f26ac58b4f6ceff4410173b2391774c6bde",
+            "picks": [
+                {
+                    "position": 1,
+                    "username": "user0037",
+                    "role": "WINNER"
+                },
+                {
+                    "position": 2,
+                    "username": "user0157",
+                    "role": "WINNER"
+                },
+                {
+                    "position": 3,
+                    "username": "user0230",
+                    "role": "WINNER"
+                },
+                {
+                    "position": 4,
+                    "username": "user0712",
+                    "role": "WINNER"
+                },
+                {
+                    "position": 5,
+                    "username": "user0440",
+                    "role": "WINNER"
+                },
+                {
+                    "position": 6,
+                    "username": "user0258",
+                    "role": "WINNER"
+                },
+                {
+                    "position": 7,
+                    "username": "user0987",
+                    "role": "WINNER"
+                },
+                {
+                    "position": 8,
+                    "username": "user0467",
+                    "role": "WINNER"
+                },
+                {
+                    "position": 9,
+                    "username": "user0460",
+                    "role": "WINNER"
+                },
+                {
+                    "position": 10,
+                    "username": "user0435",
+                    "role": "WINNER"
+                },
+                {
+                    "position": 11,
+                    "username": "user0855",
+                    "role": "ALTERNATE"
+                },
+                {
+                    "position": 12,
+                    "username": "user0053",
+                    "role": "ALTERNATE"
+                },
+                {
+                    "position": 13,
+                    "username": "user0043",
+                    "role": "ALTERNATE"
+                },
+                {
+                    "position": 14,
+                    "username": "user0602",
+                    "role": "ALTERNATE"
+                },
+                {
+                    "position": 15,
+                    "username": "user0746",
+                    "role": "ALTERNATE"
+                }
+            ]
+        }
+    ]
+}

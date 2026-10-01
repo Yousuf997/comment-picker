@@ -86,6 +86,17 @@ jobs:
             **/build/outputs/androidTest-results/
           retention-days: 14
 
+  draw-reference:
+    name: Draw reference implementation
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+
+      # The independent Python implementation must reproduce every published vector (docs/draw-spec-v1.md).
+      - name: Check test vectors
+        run: python3 tools/reference-impl/draw_v1.py docs/test-vectors-v1.json
+
   login-helper:
     name: Login helper tests
     runs-on: ubuntu-latest
