@@ -38,6 +38,12 @@
     <string name="settings_licenses">تراخيص المصادر المفتوحة</string>
     <string name="settings_version">الإصدار</string>
 
+    <string name="settings_delete_first_title">حذف كل شيء؟</string>
+    <string name="settings_delete_first_body">سيؤدي هذا إلى حذف كل المسابقات والمشاركات وعمليات السحب والشهادات على هذا الهاتف، وقفل التطبيق، وتسجيل دخولك إلى إنستغرام. تبقى الفيديوهات التي حفظتها في المعرض.</string>
+    <string name="settings_delete_continue">متابعة</string>
+    <string name="settings_delete_second_title">لا يمكن التراجع عن هذا</string>
+    <string name="settings_delete_second_body">بدون نسخة احتياطية لا يمكن استعادة أي شيء. سيبدأ التطبيق من جديد.</string>
+
     <string name="backup_title">نسخة احتياطية مشفّرة</string>
     <string name="backup_body">تحتوي النسخة الاحتياطية على كل المسابقات ومشاركاتها وعمليات السحب، مشفّرة بكلمة مرور تختارها. لا يشمل ذلك تسجيل دخولك إلى إنستغرام.</string>
     <string name="backup_keep_password_title">احتفظ بكلمة المرور في مكان آمن</string>

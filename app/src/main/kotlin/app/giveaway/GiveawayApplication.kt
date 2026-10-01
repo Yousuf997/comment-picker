@@ -7,6 +7,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.work.Configuration
 import androidx.work.WorkManager
+import app.giveaway.core.data.work.AutoDeleteWorker
 import app.giveaway.core.data.work.TokenRefreshWorker
 import app.giveaway.feature.onboarding.lock.AppLockController
 import dagger.hilt.android.HiltAndroidApp
@@ -28,6 +29,7 @@ class GiveawayApplication : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
         TokenRefreshWorker.schedule(WorkManager.getInstance(this))
+        AutoDeleteWorker.schedule(WorkManager.getInstance(this))
         // Idle lock (spec: App access): time in the background counts, not time on one screen.
         ProcessLifecycleOwner.get().lifecycle.addObserver(
             object : DefaultLifecycleObserver {

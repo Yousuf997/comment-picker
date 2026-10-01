@@ -20,7 +20,13 @@ import app.giveaway.core.designsystem.GiveawayTheme
 
 /** The S5 dialogs: confirmations for turning off app lock and disconnecting, and the option pickers. */
 @Composable
-internal fun SettingsDialog(dialog: Dialog, prefs: SettingsEntity, handlers: SettingsHandlers, onDismiss: () -> Unit) {
+internal fun SettingsDialog(
+    dialog: Dialog,
+    prefs: SettingsEntity,
+    handlers: SettingsHandlers,
+    onDismiss: () -> Unit,
+    onNext: (Dialog) -> Unit,
+) {
     when (dialog) {
         Dialog.LOCK_OFF -> Confirm(
             title = R.string.settings_lock_off_title,
@@ -34,6 +40,21 @@ internal fun SettingsDialog(dialog: Dialog, prefs: SettingsEntity, handlers: Set
             body = R.string.settings_disconnect_body,
             confirm = R.string.settings_disconnect,
             onConfirm = handlers.onDisconnect,
+            onDismiss = onDismiss,
+        )
+        // Two steps, so a slip can't wipe the phone (spec: S5, double confirm).
+        Dialog.DELETE_FIRST -> Confirm(
+            title = R.string.settings_delete_first_title,
+            body = R.string.settings_delete_first_body,
+            confirm = R.string.settings_delete_continue,
+            onConfirm = { onNext(Dialog.DELETE_SECOND) },
+            onDismiss = onDismiss,
+        )
+        Dialog.DELETE_SECOND -> Confirm(
+            title = R.string.settings_delete_second_title,
+            body = R.string.settings_delete_second_body,
+            confirm = R.string.settings_delete_everything,
+            onConfirm = handlers.onDeleteEverything,
             onDismiss = onDismiss,
         )
         Dialog.LOCK_AFTER -> Choice(
@@ -69,7 +90,8 @@ private fun Confirm(title: Int, body: Int, confirm: Int, onConfirm: () -> Unit, 
     title = { Text(stringResource(title)) },
     text = { Text(stringResource(body)) },
     confirmButton = {
-        TextButton(onClick = { onConfirm(); onDismiss() }) {
+        // Dismiss first, so a confirm that opens the next dialog (delete everything) keeps it open.
+        TextButton(onClick = { onDismiss(); onConfirm() }) {
             Text(stringResource(confirm), color = GiveawayTheme.colors.danger)
         }
     },

@@ -50,7 +50,8 @@ data class SettingsActions(
     val onDisconnected: () -> Unit,
     val onExportBackup: () -> Unit,
     val onRestoreBackup: () -> Unit,
-    val onDeleteEverything: () -> Unit,
+    /** Everything was wiped: restart the app at S1. */
+    val onEverythingDeleted: () -> Unit,
     val onOpenLicenses: () -> Unit,
 )
 
@@ -62,6 +63,7 @@ internal fun SettingsScreen(actions: SettingsActions, viewModel: SettingsViewMod
             when (event) {
                 SettingsEvent.SetUpAppLock -> actions.onSetUpAppLock()
                 SettingsEvent.Disconnected -> actions.onDisconnected()
+                SettingsEvent.EverythingDeleted -> actions.onEverythingDeleted()
             }
         }
     }
@@ -77,6 +79,7 @@ internal fun SettingsScreen(actions: SettingsActions, viewModel: SettingsViewMod
             onRecordDraws = viewModel::onRecordDraws,
             onLanguage = viewModel::onLanguage,
             onDisconnect = { viewModel.disconnect() },
+            onDeleteEverything = { viewModel.deleteEverything() },
             onOpenPrivacyPolicy = { uriHandler.openUri(BuildConfig.PRIVACY_POLICY_URL) },
         ),
         actions = actions,
@@ -92,10 +95,11 @@ internal data class SettingsHandlers(
     val onRecordDraws: (Boolean) -> Unit,
     val onLanguage: (String?) -> Unit,
     val onDisconnect: () -> Unit,
+    val onDeleteEverything: () -> Unit,
     val onOpenPrivacyPolicy: () -> Unit,
 )
 
-internal enum class Dialog { LOCK_OFF, LOCK_AFTER, AUTO_DELETE, LANGUAGE, DISCONNECT }
+internal enum class Dialog { LOCK_OFF, LOCK_AFTER, AUTO_DELETE, LANGUAGE, DISCONNECT, DELETE_FIRST, DELETE_SECOND }
 
 /** S5 Settings (spec). */
 @Composable
@@ -136,12 +140,14 @@ internal fun SettingsScreen(state: SettingsUiState, handlers: SettingsHandlers, 
             SettingsRow(
                 stringResource(R.string.settings_delete_everything),
                 destructive = true,
-                onClick = actions.onDeleteEverything,
+                onClick = { open(Dialog.DELETE_FIRST) },
             )
         }
         AboutGroup(state.settings, handlers, actions, open)
     }
-    dialog?.let { SettingsDialog(it, state.settings, handlers, onDismiss = { dialog = null }) }
+    dialog?.let { shown ->
+        SettingsDialog(shown, state.settings, handlers, onDismiss = { dialog = null }, onNext = { dialog = it })
+    }
 }
 
 @Composable

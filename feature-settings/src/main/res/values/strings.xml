@@ -40,6 +40,13 @@
     <string name="settings_licenses">Open-source licenses</string>
     <string name="settings_version">Version</string>
 
+    <!-- Delete everything: two confirmations -->
+    <string name="settings_delete_first_title">Delete everything?</string>
+    <string name="settings_delete_first_body">This deletes every giveaway, entry, draw and certificate on this phone, the app lock, and your Instagram sign-in. Videos you saved to the gallery stay.</string>
+    <string name="settings_delete_continue">Continue</string>
+    <string name="settings_delete_second_title">This can\'t be undone</string>
+    <string name="settings_delete_second_body">Without a backup, nothing can be brought back. The app will start again from the beginning.</string>
+
     <!-- Backup export -->
     <string name="backup_title">Encrypted backup</string>
     <string name="backup_body">The backup holds every giveaway, its entries and draws, encrypted with a password you choose. Your Instagram sign-in isn\'t included.</string>

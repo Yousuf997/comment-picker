@@ -5,6 +5,7 @@ import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.giveaway.core.data.account.AccountRepository
+import app.giveaway.core.data.cleanup.EverythingWiper
 import app.giveaway.core.data.db.SettingsEntity
 import app.giveaway.core.data.settings.SettingsRepository
 import app.giveaway.core.security.lock.PinStore
@@ -44,15 +45,19 @@ sealed interface SettingsEvent {
 
     /** Signed out of Instagram; go to S2. */
     data object Disconnected : SettingsEvent
+
+    /** Everything is wiped; the app restarts at S1. */
+    data object EverythingDeleted : SettingsEvent
 }
 
-/** S5 Settings (spec). Backup and restore have their own pages; "Delete everything" is wired in M-14. */
+/** S5 Settings (spec). Backup and restore have their own pages. */
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val settings: SettingsRepository,
     private val accounts: AccountRepository,
     private val pinStore: Lazy<PinStore>,
     private val language: AppLanguage,
+    private val wiper: Lazy<EverythingWiper>,
 ) : ViewModel() {
 
     val state: StateFlow<SettingsUiState> = combine(settings.observe(), accounts.observeUsername()) { prefs, user ->
@@ -88,6 +93,12 @@ class SettingsViewModel @Inject constructor(
     fun disconnect() = viewModelScope.launch {
         accounts.signOut()
         eventChannel.send(SettingsEvent.Disconnected)
+    }
+
+    /** After the second confirmation (spec: S5 "Delete everything", double confirm). */
+    fun deleteEverything() = viewModelScope.launch {
+        wiper.get().deleteEverything()
+        eventChannel.send(SettingsEvent.EverythingDeleted)
     }
 
     private fun update(transform: (SettingsEntity) -> SettingsEntity) {
