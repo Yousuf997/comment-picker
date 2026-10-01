@@ -6,6 +6,7 @@ import android.graphics.RectF
 import android.graphics.Typeface
 import android.text.TextPaint
 import android.text.TextUtils
+import androidx.core.graphics.withClip
 import app.giveaway.draw.Pick
 import kotlin.math.floor
 
@@ -85,16 +86,15 @@ class DrawSceneRenderer(
         val names = frame.current?.reel ?: return
         val base = floor(frame.reelPosition).toInt()
         val fraction = frame.reelPosition - base
-        canvas.save()
-        canvas.clipRect(0f, centreY - row * VISIBLE_HALF, w, centreY + row * VISIBLE_HALF)
-        for (offset in -VISIBLE_ROWS..VISIBLE_ROWS) {
-            val name = names.getOrNull(base + offset) ?: continue
-            val centred = offset == 0 && fraction < CENTRE_TOLERANCE
-            val y = centreY + (offset - fraction) * row
-            val color = if (centred) style.onAccent else style.muted
-            centred(canvas, "@$name", style.body, unit * NAME_SIZE, color, w / 2, y)
+        canvas.withClip(0f, centreY - row * VISIBLE_HALF, w, centreY + row * VISIBLE_HALF) {
+            for (offset in -VISIBLE_ROWS..VISIBLE_ROWS) {
+                val name = names.getOrNull(base + offset) ?: continue
+                val centred = offset == 0 && fraction < CENTRE_TOLERANCE
+                val y = centreY + (offset - fraction) * row
+                val color = if (centred) style.onAccent else style.muted
+                centred(this, "@$name", style.body, unit * NAME_SIZE, color, w / 2, y)
+            }
         }
-        canvas.restore()
     }
 
     private fun picked(canvas: Canvas, landed: List<Pick>, unit: Float, top: Float) {
