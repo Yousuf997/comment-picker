@@ -1,7 +1,9 @@
 package app.giveaway.core.instagram.auth
 
 import app.giveaway.core.instagram.network.InstagramProfileClient
+import app.giveaway.core.instagram.network.DrawIntegrityVerdict
 import app.giveaway.core.instagram.network.LoginHelperClient
+import app.giveaway.core.security.integrity.PlayIntegrity
 import kotlinx.coroutines.test.runTest
 import mockwebserver3.MockResponse
 import mockwebserver3.MockWebServer
@@ -30,11 +32,20 @@ class InstagramAuthenticatorTest {
         const val CALLBACK = "https://auth.example.test/ig/callback"
     }
 
+    private lateinit var config: AuthConfig
+    private val nonces = mutableListOf<String>()
+    private var integrityToken: String? = "itk"
+    private val integrity = object : PlayIntegrity {
+        override suspend fun classicToken(nonce: String): String? = integrityToken.also { nonces += nonce }
+
+        override suspend fun standardToken(requestHash: String): String? = null
+    }
+
     @Before
     fun setUp() {
         server.start()
         val base = server.url("/").toString()
-        val config = AuthConfig(
+        config = AuthConfig(
             appId = "1234",
             redirectUri = "https://auth.example.test/ig/callback",
             helperBaseUrl = base,
@@ -45,6 +56,7 @@ class InstagramAuthenticatorTest {
             config,
             LoginHelperClient(http, config, Clock.fixed(now, ZoneOffset.UTC)),
             InstagramProfileClient(http, config),
+            integrity,
         )
     }
 
@@ -135,7 +147,10 @@ class InstagramAuthenticatorTest {
         )
         val tokenCall = server.takeRequest()
         assertEquals("/v1/token", tokenCall.url.encodedPath)
-        assertEquals("""{"code":"AQB123","integrityToken":null}""", tokenCall.body?.utf8())
+        // The Play Integrity token travels with the code, bound to it by its nonce (plan A2).
+        assertEquals("""{"code":"AQB123","integrityToken":"itk"}""", tokenCall.body?.utf8())
+        assertEquals(listOf(DefaultInstagramAuthenticator.nonceFor("AQB123")), nonces)
+        assertEquals(43, nonces.single().length)
         val meCall = server.takeRequest()
         assertEquals("/v24.0/me", meCall.url.encodedPath)
         assertEquals("long", meCall.url.queryParameter("access_token"))
@@ -170,6 +185,26 @@ class InstagramAuthenticatorTest {
         assertEquals(AuthOutcome.Failed, auth.complete("c"))
         json("not json")
         assertEquals(AuthOutcome.Failed, auth.complete("c"))
+    }
+
+    @Test
+    fun withoutPlayServicesTheCodeGoesWithoutAToken() = runTest {
+        integrityToken = null
+        json("""{"error":"integrity_failed"}""", code = 403)
+        assertEquals(AuthOutcome.Failed, auth.complete("c"))
+        assertEquals("""{"code":"c","integrityToken":null}""", server.takeRequest().body?.utf8())
+    }
+
+    @Test
+    fun theDrawCheckReturnsTheHelpersBooleans() = runTest {
+        json("""{"appRecognized":true,"deviceIntegrity":false,"hashMatches":true}""")
+        val helper = LoginHelperClient(OkHttpClient(), config, Clock.fixed(now, ZoneOffset.UTC))
+        assertEquals(DrawIntegrityVerdict(true, false, true), helper.drawIntegrity("std", "hash"))
+        val call = server.takeRequest()
+        assertEquals("/v1/integrity", call.url.encodedPath)
+        assertEquals("""{"token":"std","requestHash":"hash"}""", call.body?.utf8())
+        json("""{"error":"integrity_unavailable"}""", code = 503)
+        assertEquals(null, helper.drawIntegrity("std", "hash"))
     }
 
     @Test

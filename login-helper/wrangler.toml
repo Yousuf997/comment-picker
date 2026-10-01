@@ -1,6 +1,8 @@
 # Login helper. Secrets are set per environment and never committed:
 #   npx wrangler secret put IG_APP_SECRET --env staging
 #   npx wrangler secret put IG_APP_SECRET --env production
+#   npx wrangler secret put GOOGLE_SA_JSON --env production   (service account key, Play Integrity role only;
+#                                                              link its Cloud project in Play Console)
 # Values marked REPLACE come from the F-01 setup (Meta app, domain, signing certificates).
 
 name = "giveaway-login-helper"
@@ -23,7 +25,7 @@ IG_APP_ID = "REPLACE_WITH_META_APP_ID"
 IG_REDIRECT_URI = "https://REPLACE_WITH_STAGING_HOST/ig/callback"
 ANDROID_PACKAGE = "app.giveaway"
 ANDROID_CERT_SHA256 = "REPLACE_WITH_DEBUG_CERT_SHA256"
-# Staging only: lets debug builds sign in before Play Integrity is wired up (M-15).
+# Staging only: debug builds aren't installed from Play, so they can't pass Play Integrity.
 INTEGRITY_ENFORCE = "false"
 
 [[env.staging.ratelimits]]

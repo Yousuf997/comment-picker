@@ -2,7 +2,12 @@
  * Login helper (spec: Architecture). It exists only because the Meta app secret must never ship in the APK.
  * It keeps no database, writes no logs, and returns nothing but the token. There is deliberately no console
  * output anywhere in this worker; a test enforces it.
+ *
+ * Before exchanging a code it checks with Play Integrity that the request comes from the genuine app (spec: Network),
+ * and it decodes the integrity check the app makes before a real draw (plan A6), returning only booleans.
  */
+
+import { appGenuine, decode, deviceGenuine, fresh, IntegrityRejected, sha256Base64Url } from "./integrity";
 
 export interface Env {
   IG_APP_ID: string;
@@ -10,13 +15,21 @@ export interface Env {
   ANDROID_PACKAGE: string;
   /** Comma-separated SHA-256 fingerprints of the app signing certificates (Play app signing and upload/debug). */
   ANDROID_CERT_SHA256: string;
-  /** "false" only in staging. Production fails closed until Play Integrity checks land (build plan task M-15). */
+  /** "false" only in staging, so debug builds can sign in without Play. */
   INTEGRITY_ENFORCE: string;
   IG_APP_SECRET: string;
+  /** Service account key for decoding Play Integrity tokens (wrangler secret; Play Integrity role only). */
+  GOOGLE_SA_JSON?: string;
   RATE_LIMITER: RateLimit;
 }
 
-const MAX_BODY_BYTES = 4096;
+/** Integrity tokens run to a few kilobytes. */
+const MAX_BODY_BYTES = 16384;
+const MAX_TOKEN_LENGTH = 12000;
+/** A login's integrity token must be this fresh (plan section 5). */
+const LOGIN_MAX_AGE_MS = 60_000;
+/** The pre-draw check runs moments before the draw. */
+const DRAW_MAX_AGE_MS = 120_000;
 const MAX_CODE_LENGTH = 2048;
 
 const SECURITY_HEADERS = {
@@ -36,6 +49,9 @@ export default {
       case "/v1/token":
         if (request.method !== "POST") return methodNotAllowed("POST");
         return (await isRateLimited(request, env)) ? error(429, "rate_limited") : exchange(request, env);
+      case "/v1/integrity":
+        if (request.method !== "POST") return methodNotAllowed("POST");
+        return (await isRateLimited(request, env)) ? error(429, "rate_limited") : drawIntegrity(request, env);
       default:
         return new Response(null, { status: 404, headers: SECURITY_HEADERS });
     }
@@ -90,8 +106,10 @@ async function exchange(request: Request, env: Env): Promise<Response> {
   if ("error" in parsed) return error(400, parsed.error);
 
   if (env.INTEGRITY_ENFORCE !== "false") {
-    // Fail closed: production must not exchange codes for unverified apps (spec: Network). Lands with M-15.
-    return error(503, "integrity_unavailable");
+    // Fail closed: production never exchanges a code for an app it can't verify (spec: Network).
+    const check = await genuineLogin(parsed, env);
+    if (check === "unavailable") return error(503, "integrity_unavailable");
+    if (check === "rejected") return error(403, "integrity_failed");
   }
 
   let shortLived: { accessToken: string; userId: string };
@@ -114,27 +132,78 @@ async function exchange(request: Request, env: Env): Promise<Response> {
   );
 }
 
+/**
+ * A classic integrity request bound to this login: its nonce is SHA-256 of the code, so a code intercepted by another
+ * app can't be exchanged (plan A2). The app must be the Play-installed build signed with our certificate.
+ */
+async function genuineLogin(request: TokenRequest, env: Env): Promise<"ok" | "rejected" | "unavailable"> {
+  if (!request.integrityToken) return "rejected";
+  try {
+    const verdict = await decode(request.integrityToken, env);
+    const nonce = await sha256Base64Url(request.code);
+    const ok = verdict.requestDetails?.nonce === nonce && appGenuine(verdict, env) &&
+      fresh(verdict, Date.now(), LOGIN_MAX_AGE_MS);
+    return ok ? "ok" : "rejected";
+  } catch (e) {
+    return e instanceof IntegrityRejected ? "rejected" : "unavailable";
+  }
+}
+
+/**
+ * The check before a real draw (plan A6): a Standard integrity token whose request hash binds it to that draw. The
+ * answer is three booleans; the certificate says "device integrity not verified" unless all are true.
+ */
+async function drawIntegrity(request: Request, env: Env): Promise<Response> {
+  const body = await jsonBody(request);
+  if (body === null) return error(400, "bad_request");
+  const { token, requestHash } = body;
+  if (typeof token !== "string" || token.length === 0 || token.length > MAX_TOKEN_LENGTH) return error(400, "bad_request");
+  if (typeof requestHash !== "string" || requestHash.length === 0 || requestHash.length > 500) {
+    return error(400, "bad_request");
+  }
+  try {
+    const verdict = await decode(token, env);
+    return Response.json(
+      {
+        appRecognized: appGenuine(verdict, env),
+        deviceIntegrity: deviceGenuine(verdict),
+        hashMatches: verdict.requestDetails?.requestHash === requestHash && fresh(verdict, Date.now(), DRAW_MAX_AGE_MS),
+      },
+      { headers: SECURITY_HEADERS },
+    );
+  } catch (e) {
+    return e instanceof IntegrityRejected ? error(400, "invalid_token") : error(503, "integrity_unavailable");
+  }
+}
+
 type TokenRequest = { code: string; integrityToken: string | null };
 
-async function parseTokenRequest(request: Request): Promise<TokenRequest | { error: string }> {
-  if (!(request.headers.get("Content-Type") ?? "").startsWith("application/json")) return { error: "bad_request" };
+/** A JSON object body within the size cap, or null. */
+async function jsonBody(request: Request): Promise<Record<string, unknown> | null> {
+  if (!(request.headers.get("Content-Type") ?? "").startsWith("application/json")) return null;
   const declared = Number(request.headers.get("Content-Length") ?? "0");
-  if (declared > MAX_BODY_BYTES) return { error: "bad_request" };
+  if (declared > MAX_BODY_BYTES) return null;
   const text = await request.text();
-  if (new TextEncoder().encode(text).length > MAX_BODY_BYTES) return { error: "bad_request" };
-
-  let body: unknown;
+  if (new TextEncoder().encode(text).length > MAX_BODY_BYTES) return null;
   try {
-    body = JSON.parse(text);
+    const body: unknown = JSON.parse(text);
+    return typeof body === "object" && body !== null && !Array.isArray(body) ? (body as Record<string, unknown>) : null;
   } catch {
-    return { error: "bad_request" };
+    return null;
   }
-  if (typeof body !== "object" || body === null) return { error: "bad_request" };
-  const { code, integrityToken } = body as Record<string, unknown>;
+}
+
+async function parseTokenRequest(request: Request): Promise<TokenRequest | { error: string }> {
+  const body = await jsonBody(request);
+  if (body === null) return { error: "bad_request" };
+  const { code, integrityToken } = body;
   if (typeof code !== "string" || code.length === 0 || code.length > MAX_CODE_LENGTH || /\s/.test(code)) {
     return { error: "invalid_code" };
   }
-  if (integrityToken !== undefined && typeof integrityToken !== "string") return { error: "bad_request" };
+  if (integrityToken !== undefined && integrityToken !== null && typeof integrityToken !== "string") {
+    return { error: "bad_request" };
+  }
+  if (typeof integrityToken === "string" && integrityToken.length > MAX_TOKEN_LENGTH) return { error: "bad_request" };
   // Instagram appends "#_" to the redirect; tolerate it if the app forwards it.
   return { code: code.replace(/#_$/, ""), integrityToken: integrityToken ?? null };
 }

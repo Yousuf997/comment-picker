@@ -4,6 +4,7 @@ import app.giveaway.core.instagram.network.InstagramProfileClient
 import app.giveaway.core.instagram.network.LoginHelperClient
 import app.giveaway.core.instagram.network.ProfileResult
 import app.giveaway.core.instagram.network.TokenResult
+import app.giveaway.core.security.integrity.PlayIntegrity
 import java.net.URI
 import java.net.URLDecoder
 import java.net.URLEncoder
@@ -28,6 +29,7 @@ class DefaultInstagramAuthenticator @Inject constructor(
     private val config: AuthConfig,
     private val helper: LoginHelperClient,
     private val profile: InstagramProfileClient,
+    private val integrity: PlayIntegrity,
 ) : InstagramAuthenticator {
 
     private val random = SecureRandom()
@@ -64,7 +66,9 @@ class DefaultInstagramAuthenticator @Inject constructor(
     }
 
     override suspend fun complete(code: String): AuthOutcome {
-        val token = when (val result = helper.exchange(code)) {
+        // Bound to this code, so the helper can tell the genuine app sent it (plan A2; spec: Network).
+        val integrityToken = integrity.classicToken(nonceFor(code))
+        val token = when (val result = helper.exchange(code, integrityToken)) {
             is TokenResult.Success -> result.token
             TokenResult.InvalidCode -> return AuthOutcome.InvalidCode
             TokenResult.Network -> return AuthOutcome.Network
@@ -79,10 +83,14 @@ class DefaultInstagramAuthenticator @Inject constructor(
         return AuthOutcome.Success(token, account)
     }
 
-    private companion object {
-        const val STATE_BYTES = 32
+    companion object {
+        /** The classic integrity nonce for a login code: SHA-256 as unpadded base64url, as the helper computes it. */
+        fun nonceFor(code: String): String = Base64.getUrlEncoder().withoutPadding()
+            .encodeToString(MessageDigest.getInstance("SHA-256").digest(code.toByteArray()))
+
+        private const val STATE_BYTES = 32
 
         // Charset overloads of URLEncoder/URLDecoder need API 33; minSdk is 26.
-        const val UTF_8 = "UTF-8"
+        private const val UTF_8 = "UTF-8"
     }
 }

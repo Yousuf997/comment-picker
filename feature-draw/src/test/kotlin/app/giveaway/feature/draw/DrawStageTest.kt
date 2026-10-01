@@ -7,6 +7,7 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.testing.invoke
@@ -124,6 +125,8 @@ class DrawStageTest {
     }
 
     private var freeBytes = Long.MAX_VALUE
+    private var genuine = true
+    private val integrityChecks = mutableListOf<Pair<String, String>>()
     private val drawn = mutableListOf<Boolean>()
     private var alreadyDrawn = 0
 
@@ -136,6 +139,10 @@ class DrawStageTest {
             DrawService(db, vault, signer, clock),
             DefaultSettingsRepository(db.settingsDao()),
             { freeBytes },
+            { listHash, commitHash ->
+                integrityChecks += listHash to commitHash
+                genuine
+            },
         )
         compose.setContent {
             GiveawayTheme {
@@ -222,7 +229,21 @@ class DrawStageTest {
         assertEquals(listOf(true), drawn)
         val draw = runBlocking { db.drawDao().realDraw(id) }!!
         assertEquals(CaptionCheck.FOUND, draw.captionCheck)
+        assertEquals("verified by Play Integrity", true, draw.integrityVerified)
+        // The check was bound to this draw's entry list and commitment (plan A6).
+        assertEquals(listOf(draw.entryListHash to Commit.commitHash(seed)), integrityChecks)
         assertEquals(GiveawayStatus.DRAWN, runBlocking { giveaways.get(id)?.status })
+    }
+
+    @Test
+    fun anUnverifiedPhoneIsToldAndTheCertificateSaysSo() {
+        reviewed(people = 8)
+        genuine = false
+        show()
+        awaitText(app.getString(R.string.draw_integrity_title))
+        text(R.string.draw_winners).performScrollTo().assertIsEnabled().performClick()
+        compose.waitUntil(WAIT_MS) { drawn.isNotEmpty() }
+        assertEquals(false, runBlocking { db.drawDao().realDraw(id) }!!.integrityVerified)
     }
 
     @Test

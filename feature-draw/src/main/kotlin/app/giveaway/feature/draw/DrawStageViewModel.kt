@@ -17,6 +17,7 @@ import app.giveaway.core.media.FreeSpace
 import app.giveaway.core.media.RecordingSpace
 import app.giveaway.draw.Commit
 import app.giveaway.draw.Pick
+import app.giveaway.core.instagram.integrity.DrawIntegrity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -44,8 +46,10 @@ data class DrawStageState(
     val drawing: Boolean = false,
     /** Not enough free space to record this draw (spec: warn before the draw on S11). */
     val lowStorage: Boolean = false,
+    /** The Play Integrity check; null while it runs (spec: S11 checks). */
+    val integrity: Boolean? = null,
 ) {
-    val checking: Boolean get() = caption == null
+    val checking: Boolean get() = caption == null || integrity == null
 
     /** Fewer people than winners plus alternates: everyone valid is picked (spec: Edge cases). */
     val fewerThanRequested: Boolean get() = people in 1 until winners + alternates
@@ -71,6 +75,7 @@ class DrawStageViewModel @Inject constructor(
     private val draws: DrawService,
     private val settings: SettingsRepository,
     private val freeSpace: FreeSpace,
+    private val drawIntegrity: DrawIntegrity,
 ) : ViewModel() {
 
     private val giveawayId = savedStateHandle.toRoute<DrawRoute>().giveawayId
@@ -104,7 +109,14 @@ class DrawStageViewModel @Inject constructor(
                 lowStorage = !RecordingSpace.enough(freeSpace, rules?.winnersCount ?: 0, rules?.alternatesCount ?: 0),
             )
         }
-        uiState.update { it.copy(caption = checkCaption(giveaway.igMediaId)) }
+        // Both checks run at once; neither blocks the draw, they only change what the certificate says.
+        coroutineScope {
+            launch { uiState.update { it.copy(caption = checkCaption(giveaway.igMediaId)) } }
+            launch {
+                val commitHash = giveaways.commitment(giveawayId)?.commitHash.orEmpty()
+                uiState.update { it.copy(integrity = drawIntegrity.verify(list.hashHex, commitHash)) }
+            }
+        }
     }
 
     /** Re-reads the caption now (spec: Commit step 4); offline or a deleted post means "not checked" (plan A7). */
@@ -135,7 +147,8 @@ class DrawStageViewModel @Inject constructor(
         if (!current.canDraw) return
         uiState.update { it.copy(drawing = true) }
         viewModelScope.launch {
-            val checks = DrawChecks(current.caption ?: CaptionCheck.NOT_CHECKED, integrityVerified = false)
+            val caption = current.caption ?: CaptionCheck.NOT_CHECKED
+            val checks = DrawChecks(caption, integrityVerified = current.integrity == true)
             draws.realDraw(giveawayId, checks)
             eventChannel.send(DrawStageEvent.Drawn(record = current.recordDraw))
         }
