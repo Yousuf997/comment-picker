@@ -5,6 +5,13 @@ plugins {
     alias(libs.plugins.giveaway.android.screenshot)
 }
 
+// Crash reporting (spec: Tech stack) needs the Firebase project from the F-01 setup. Until its google-services.json
+// is in this folder the plugins stay off; the SDK is present but never starts, so nothing is sent.
+if (file("google-services.json").exists()) {
+    apply(plugin = libs.plugins.google.services.get().pluginId)
+    apply(plugin = libs.plugins.firebase.crashlytics.get().pluginId)
+}
+
 android {
     namespace = "app.giveaway"
     defaultConfig {
@@ -14,6 +21,11 @@ android {
         versionName = "0.1.0"
         // Host of the login helper; the App Link below is verified against its assetlinks.json.
         manifestPlaceholders["authHost"] = providers.gradleProperty("giveaway.authHost").get()
+    }
+    buildTypes {
+        // Crash reports from release builds only (spec: Crashlytics disabled in debug).
+        getByName("debug") { manifestPlaceholders["crashReports"] = "false" }
+        getByName("release") { manifestPlaceholders["crashReports"] = "true" }
     }
 }
 
@@ -35,6 +47,8 @@ dependencies {
     implementation(libs.androidx.work.runtime)
     implementation(libs.androidx.hilt.work)
     implementation(libs.androidx.lifecycle.process)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.crashlytics)
 
     testImplementation(projects.coreSecurity)
     testImplementation(libs.hilt.android.testing)

@@ -13,3 +13,18 @@ style:
   ReturnCount:
     # Validation and parsing code reads best as a flat list of early returns (e.g. callback checks).
     active: false
+  ForbiddenImport:
+    # Nothing is logged (spec: no sensitive data in logs or crash reports; plan M-16).
+    active: true
+    forbiddenImports:
+      - value: 'android.util.Log'
+        reason: 'The app logs nothing; logs can leak usernames or tokens.'
+  ForbiddenMethodCall:
+    active: true
+    methods:
+      - value: 'kotlin.io.println'
+        reason: 'The app logs nothing.'
+      - value: 'kotlin.io.print'
+        reason: 'The app logs nothing.'
+      - value: 'kotlin.Throwable.printStackTrace'
+        reason: 'Stack traces can carry user data; let crashes reach the crash reporter instead.'

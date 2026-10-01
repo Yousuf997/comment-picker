@@ -2,6 +2,7 @@ package app.giveaway
 
 import android.app.Application
 import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import androidx.test.core.app.ApplicationProvider
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -43,6 +44,14 @@ class SecurityConfigTest {
         // Fails a month before the pins lapse, as a reminder to refresh them in the next release (plan R7).
         val expiration = LocalDate.parse(pinSet.attributes["expiration"])
         assertTrue("Pins expire $expiration: refresh them", expiration.isAfter(LocalDate.now().plusDays(30)))
+    }
+
+    @Test
+    fun crashReportsAreOffInDebugAndAnalyticsNeverRun() {
+        val meta = app.packageManager.getApplicationInfo(app.packageName, PackageManager.GET_META_DATA).metaData
+        assertEquals("false", meta.get("firebase_crashlytics_collection_enabled").toString())
+        assertEquals("true", meta.get("firebase_analytics_collection_deactivated").toString())
+        assertEquals("false", meta.get("google_analytics_adid_collection_enabled").toString())
     }
 
     @Test
