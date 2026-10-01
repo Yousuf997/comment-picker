@@ -99,4 +99,39 @@
     <string name="save_video_view">عرض</string>
     <string name="save_video_failed">تعذّر حفظ الفيديو. حاول مرة أخرى.</string>
     <string name="save_video_file_name">سحب - %1$s.mp4</string>
+
+    <string name="certificate_heading">شهادة سحب عشوائي</string>
+    <string name="certificate_section_giveaway">المسابقة</string>
+    <string name="certificate_account">الحساب</string>
+    <string name="certificate_post">المنشور</string>
+    <string name="certificate_entries_closed">إغلاق المشاركات</string>
+    <string name="certificate_valid_entries">المشاركات الصالحة</string>
+    <string name="certificate_section_result">النتيجة</string>
+    <string name="certificate_winner">الفائز %1$s</string>
+    <string name="certificate_alternate">البديل %1$s</string>
+    <string name="certificate_replaced">حلّ محله %1$s: %2$s</string>
+    <plurals name="certificate_more">
+        <item quantity="zero">و%s اختيار آخر</item>
+        <item quantity="one">واختيار آخر (%s)</item>
+        <item quantity="two">واختياران آخران (%s)</item>
+        <item quantity="few">و%s اختيارات أخرى</item>
+        <item quantity="many">و%s اختيارًا آخر</item>
+        <item quantity="other">و%s اختيار آخر</item>
+    </plurals>
+    <string name="certificate_section_proof">الإثبات</string>
+    <string name="certificate_code">رمز السحب في الوصف</string>
+    <string name="certificate_seed">البذرة المكشوفة</string>
+    <string name="certificate_list_hash">بصمة قائمة المشاركات</string>
+    <string name="certificate_algorithm">الخوارزمية</string>
+    <string name="certificate_drawn_at">وقت السحب</string>
+    <string name="certificate_signed">موقّعة على الجهاز</string>
+    <string name="certificate_signature">التوقيع</string>
+    <string name="certificate_public_key">المفتاح العام</string>
+    <string name="certificate_section_notes">ملاحظات</string>
+    <string name="certificate_code_not_found">لم يُعثر على رمز السحب في وصف المنشور عند إجراء السحب.</string>
+    <string name="certificate_code_not_checked">تعذّر التحقق من وصف المنشور عند إجراء السحب.</string>
+    <string name="certificate_partial">تعذّر استيراد كل التعليقات من إنستغرام. أُجري السحب على التعليقات التي تم استيرادها.</string>
+    <string name="certificate_integrity">لم يتم التحقق من سلامة الجهاز.</string>
+    <string name="certificate_manual">استبعده المنظّم: %1$s. السبب: %2$s</string>
+    <string name="certificate_rerun">يمكن لأي شخص إعادة هذا السحب من البذرة المكشوفة وقائمة المشاركات المصدّرة. تحقّق منه على %1$s</string>
 </resources>

@@ -48,11 +48,13 @@ val verifyReleaseConfig by tasks.registering {
     val authHost = providers.gradleProperty("giveaway.authHost")
     val pins = providers.gradleProperty("giveaway.authHostPins")
     val privacyPolicy = providers.gradleProperty("giveaway.privacyPolicyUrl")
+    val verifier = providers.gradleProperty("giveaway.verifierUrl")
     doLast {
         val problems = buildList {
             if (igAppId.get().startsWith("REPLACE")) add("giveaway.igAppId is a placeholder")
             if (authHost.get().endsWith(".invalid")) add("giveaway.authHost is a placeholder")
             if (privacyPolicy.get().contains(".invalid")) add("giveaway.privacyPolicyUrl is a placeholder")
+            if (verifier.get().contains(".invalid")) add("giveaway.verifierUrl is a placeholder")
             val pinCount = pins.get().split(",").count { it.isNotBlank() }
             if (pinCount < 2) add("giveaway.authHostPins needs a pin and a backup pin")
         }

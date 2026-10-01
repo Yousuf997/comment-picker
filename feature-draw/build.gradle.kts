@@ -3,6 +3,15 @@ plugins {
     alias(libs.plugins.giveaway.android.screenshot)
 }
 
+android {
+    buildFeatures {
+        buildConfig = true
+    }
+    defaultConfig {
+        buildConfigField("String", "VERIFIER_URL", "\"${providers.gradleProperty("giveaway.verifierUrl").get()}\"")
+    }
+}
+
 dependencies {
     implementation(projects.coreDraw)
     implementation(projects.coreData)
