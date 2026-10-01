@@ -57,6 +57,7 @@ import java.io.File
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneOffset
+import java.util.TimeZone
 import app.giveaway.core.designsystem.R as DesignR
 
 /** M-04/M-05 acceptance: S13 over S14 must be answered; Save copies to the gallery, Don't save deletes at once. */
@@ -65,6 +66,8 @@ import app.giveaway.core.designsystem.R as DesignR
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(qualifiers = "w390dp-h844dp-xhdpi")
 class SaveVideoTest {
+
+    private val systemZone: TimeZone = TimeZone.getDefault()
 
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
@@ -101,6 +104,8 @@ class SaveVideoTest {
 
     @Before
     fun setUp() {
+        // Dates on screen follow the phone's zone; pin it so screenshots match on every machine.
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
         Dispatchers.setMain(UnconfinedTestDispatcher())
         db = Room.inMemoryDatabaseBuilder(app, GiveawayDatabase::class.java).allowMainThreadQueries().build()
         media = MediaRepository(app, db, clock)
@@ -127,6 +132,7 @@ class SaveVideoTest {
 
     @After
     fun tearDown() {
+        TimeZone.setDefault(systemZone)
         if (::vm.isInitialized) vm.viewModelScope.cancel()
         db.close()
         Dispatchers.resetMain()
