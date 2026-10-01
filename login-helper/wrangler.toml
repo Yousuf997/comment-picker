@@ -1,0 +1,48 @@
+# Login helper. Secrets are set per environment and never committed:
+#   npx wrangler secret put IG_APP_SECRET --env staging
+#   npx wrangler secret put IG_APP_SECRET --env production
+# Values marked REPLACE come from the F-01 setup (Meta app, domain, signing certificates).
+
+name = "giveaway-login-helper"
+main = "src/index.ts"
+compatibility_date = "2026-09-01"
+workers_dev = false
+# No usage telemetry from the CLI either.
+send_metrics = false
+
+# No logs, traces or Logpush: the worker must not keep anything (spec: Architecture).
+[observability]
+enabled = false
+
+[env.staging]
+name = "giveaway-login-helper-staging"
+workers_dev = true
+
+[env.staging.vars]
+IG_APP_ID = "REPLACE_WITH_META_APP_ID"
+IG_REDIRECT_URI = "https://REPLACE_WITH_STAGING_HOST/ig/callback"
+ANDROID_PACKAGE = "app.giveaway"
+ANDROID_CERT_SHA256 = "REPLACE_WITH_DEBUG_CERT_SHA256"
+# Staging only: lets debug builds sign in before Play Integrity is wired up (M-15).
+INTEGRITY_ENFORCE = "false"
+
+[[env.staging.ratelimits]]
+name = "RATE_LIMITER"
+namespace_id = "1001"
+simple = { limit = 10, period = 60 }
+
+[env.production]
+name = "giveaway-login-helper"
+routes = [{ pattern = "REPLACE_WITH_AUTH_DOMAIN", custom_domain = true }]
+
+[env.production.vars]
+IG_APP_ID = "REPLACE_WITH_META_APP_ID"
+IG_REDIRECT_URI = "https://REPLACE_WITH_AUTH_DOMAIN/ig/callback"
+ANDROID_PACKAGE = "app.giveaway"
+ANDROID_CERT_SHA256 = "REPLACE_WITH_PLAY_SIGNING_SHA256,REPLACE_WITH_UPLOAD_SHA256"
+INTEGRITY_ENFORCE = "true"
+
+[[env.production.ratelimits]]
+name = "RATE_LIMITER"
+namespace_id = "1002"
+simple = { limit = 10, period = 60 }

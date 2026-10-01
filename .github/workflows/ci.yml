@@ -89,22 +89,23 @@ jobs:
     name: Login helper tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: login-helper
     steps:
       - uses: actions/checkout@v7
 
-      # The worker is added in F-07; until then this job has nothing to test.
-      - id: present
-        run: echo "exists=$([ -f login-helper/package.json ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
-
-      - if: steps.present.outputs.exists == 'true'
-        uses: actions/setup-node@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
           cache-dependency-path: login-helper/package-lock.json
 
-      - if: steps.present.outputs.exists == 'true'
-        working-directory: login-helper
-        run: |
-          npm ci
-          npm test
+      - run: npm ci
+
+      # Type checks, tests, and a dry-run bundle of the staging worker.
+      - run: npm run check
+        env:
+          WRANGLER_SEND_METRICS: "false"
+
+      - run: npm audit --audit-level=high

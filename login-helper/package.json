@@ -1,0 +1,19 @@
+{
+  "name": "giveaway-login-helper",
+  "private": true,
+  "description": "Stateless helper that exchanges an Instagram login code for a long-lived token. Stores and logs nothing.",
+  "type": "module",
+  "scripts": {
+    "check": "tsc --noEmit -p . && tsc --noEmit -p test && vitest run && wrangler deploy --dry-run --env staging --outdir dist",
+    "test": "vitest run",
+    "deploy:staging": "wrangler deploy --env staging",
+    "deploy:production": "wrangler deploy --env production"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20261001.1",
+    "@types/node": "22.20.4",
+    "typescript": "7.0.2",
+    "vitest": "5.0.3",
+    "wrangler": "4.145.0"
+  }
+}
