@@ -36,9 +36,9 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 /**
- * H-03: on every screen, in English and Arabic at 200% font size, each control TalkBack can activate has a label and
- * a touch target of at least 44 dp (spec: Accessibility). Color-only signals and focus order are covered by the screen
- * tests and the manual TalkBack pass.
+ * H-03 and H-04: on every screen, in English and Arabic, light and dark, at 200% font size, each control TalkBack can
+ * activate has a label and a touch target of at least 44 dp (spec: Accessibility). Color-only signals and focus order
+ * are covered by the screen tests and the manual TalkBack pass.
  */
 @HiltAndroidTest
 @RunWith(RobolectricTestRunner::class)
@@ -121,6 +121,16 @@ class AccessibilityTest {
     @Test
     @Config(qualifiers = "ar-w390dp-h2400dp")
     fun everyControlIsLabelledAndLargeEnoughInArabic() = checkEveryScreen()
+
+    // H-04: the same sweep in dark mode completes the matrix of English and Arabic, light and dark, at 200%.
+
+    @Test
+    @Config(qualifiers = "w390dp-h2400dp-night")
+    fun everyControlIsLabelledAndLargeEnoughInDark() = checkEveryScreen()
+
+    @Test
+    @Config(qualifiers = "ar-w390dp-h2400dp-night")
+    fun everyControlIsLabelledAndLargeEnoughInArabicDark() = checkEveryScreen()
 
     private companion object {
         /** Never under 44 dp (spec: Accessibility); 48 dp where possible. */
