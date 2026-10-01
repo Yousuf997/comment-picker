@@ -28,7 +28,7 @@ Screenshot tests (Roborazzi) compare against golden images committed in each mod
 
 ## CI
 
-- `.github/workflows/ci.yml` runs on every push: debug and release builds, Android lint (warnings are errors, config in `lint.xml`), detekt (`config/detekt/detekt.yml`), unit tests, screenshot comparison, and the 100% coverage gate on `core-draw`. It also runs the login helper's tests once `login-helper/` exists.
+- `.github/workflows/ci.yml` runs on every push: debug and release builds, Android lint (warnings are errors, config in `lint.xml`), detekt (`config/detekt/detekt.yml`), unit tests, screenshot comparison, and the 100% coverage gate on `core-draw`. It also type-checks, tests, bundles and audits the login helper.
 - `.github/workflows/dependency-scan.yml` runs OWASP dependency-check weekly and when build files change, scanning each module's shipped dependencies and failing on CVSS 7 or higher. Vulnerability data comes from the DependencyCheck project's daily NVD mirror, so no API key is needed. Reviewed false positives are suppressed in `config/dependency-check/suppressions.xml`.
 - Dependabot proposes weekly updates for Gradle dependencies and GitHub Actions.
 
