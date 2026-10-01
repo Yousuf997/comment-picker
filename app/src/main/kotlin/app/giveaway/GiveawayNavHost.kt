@@ -8,7 +8,6 @@ import app.giveaway.feature.create.ImportCommentsRoute
 import app.giveaway.feature.create.LockInDrawRoute
 import app.giveaway.feature.create.PickPostRoute
 import app.giveaway.feature.create.ReviewEntriesRoute
-import app.giveaway.feature.create.SetRulesRoute
 import app.giveaway.feature.create.importCommentsScreen
 import app.giveaway.feature.create.lockInDrawScreen
 import app.giveaway.feature.create.pickPostScreen
@@ -88,7 +87,10 @@ fun GiveawayNavHost(
         licensesScreen(onBack = { navController.popBackStack() })
 
         // Creation wizard. S8 returns to Home ("Waiting for deadline"); the giveaway resumes at S9 from its card.
-        pickPostScreen(onPostPicked = { mediaId -> navController.navigate(SetRulesRoute(mediaId)) })
+        pickPostScreen(
+            onBack = { navController.popBackStack() },
+            onPostPicked = { route -> navController.navigate(route) },
+        )
         setRulesScreen(onRulesSaved = { id -> navController.navigate(LockInDrawRoute(id)) })
         lockInDrawScreen(onDone = { navController.backToHome() })
         importCommentsScreen(onReviewEntries = { id -> navController.navigate(ReviewEntriesRoute(id)) })

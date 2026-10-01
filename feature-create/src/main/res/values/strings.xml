@@ -9,4 +9,29 @@
     <string name="review_title">Review entries</string>
     <string name="review_continue">Continue to draw</string>
     <string name="wizard_continue">Continue</string>
+    <string name="wizard_new_giveaway">New giveaway</string>
+    <string name="pick_post_filter_all">All</string>
+    <string name="pick_post_filter_posts">Posts</string>
+    <string name="pick_post_filter_reels">Reels</string>
+    <string name="pick_post_loading">Loading your posts</string>
+    <string name="pick_post_none_selected">Pick one post or Reel for this giveaway.</string>
+    <string name="pick_post_kind_post">Post</string>
+    <string name="pick_post_kind_reel">Reel</string>
+    <!-- %1$s: Post or Reel, %2$s: date posted, %3$s: comment count, for example "120 comments". -->
+    <string name="pick_post_selected">Selected: %1$s from %2$s, %3$s</string>
+    <!-- TalkBack label for a grid tile. Same arguments as pick_post_selected. -->
+    <string name="pick_post_tile">%1$s from %2$s, %3$s</string>
+    <plurals name="pick_post_comments">
+        <item quantity="one">%s comment</item>
+        <item quantity="other">%s comments</item>
+    </plurals>
+    <string name="pick_post_empty_all">There are no posts or Reels on this account yet. Post your giveaway on Instagram first, then come back.</string>
+    <string name="pick_post_empty_posts">No posts here. Try All or Reels.</string>
+    <string name="pick_post_empty_reels">No Reels here. Try All or Posts.</string>
+    <string name="pick_post_error_title">Couldn\'t load your posts</string>
+    <string name="pick_post_error_offline">You\'re offline. Connect to the internet and try again.</string>
+    <string name="pick_post_error_signed_out">Your Instagram sign-in has expired. Go back to Home and sign in again.</string>
+    <string name="pick_post_error_busy">Instagram asked us to slow down. Wait a moment and try again.</string>
+    <string name="pick_post_error_other">Something went wrong on Instagram\'s side. Try again.</string>
+    <string name="pick_post_retry">Try again</string>
 </resources>

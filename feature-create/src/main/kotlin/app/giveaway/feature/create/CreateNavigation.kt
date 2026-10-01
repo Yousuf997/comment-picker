@@ -7,15 +7,53 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import app.giveaway.core.designsystem.component.PlaceholderAction
 import app.giveaway.core.designsystem.component.PlaceholderScreen
+import app.giveaway.core.instagram.api.IgMedia
+import app.giveaway.core.instagram.api.MediaKind
 import kotlinx.serialization.Serializable
+import java.time.Instant
 
 /** S6 Pick post (wizard step 1). */
 @Serializable
 data object PickPostRoute
 
-/** S7 Set rules (wizard step 2) for the chosen Instagram media. */
+/**
+ * S7 Set rules (wizard step 2) for the post picked on S6. The post's details travel with the route, so S7 creates the
+ * draft without asking Instagram again.
+ */
 @Serializable
-data class SetRulesRoute(val mediaId: String)
+data class SetRulesRoute(
+    val mediaId: String,
+    // The kind travels by name: an enum argument would need its serializer kept from R8.
+    val mediaKind: String = MediaKind.IMAGE.name,
+    val isReel: Boolean = false,
+    val thumbnailUrl: String? = null,
+    val caption: String? = null,
+    val postedAtEpochSecond: Long = 0,
+    val commentsCount: Int = 0,
+    val permalink: String? = null,
+) {
+    constructor(media: IgMedia) : this(
+        mediaId = media.id,
+        mediaKind = media.kind.name,
+        isReel = media.isReel,
+        thumbnailUrl = media.thumbnailUrl,
+        caption = media.caption,
+        postedAtEpochSecond = media.timestamp.epochSecond,
+        commentsCount = media.commentsCount,
+        permalink = media.permalink,
+    )
+
+    fun toMedia() = IgMedia(
+        id = mediaId,
+        kind = MediaKind.valueOf(mediaKind),
+        isReel = isReel,
+        thumbnailUrl = thumbnailUrl,
+        caption = caption,
+        timestamp = Instant.ofEpochSecond(postedAtEpochSecond),
+        commentsCount = commentsCount,
+        permalink = permalink,
+    )
+}
 
 /** S8 Lock in the draw (wizard step 3). */
 @Serializable
@@ -29,8 +67,8 @@ data class ImportCommentsRoute(val giveawayId: Long)
 @Serializable
 data class ReviewEntriesRoute(val giveawayId: Long)
 
-fun NavGraphBuilder.pickPostScreen(onPostPicked: (mediaId: String) -> Unit) {
-    composable<PickPostRoute> { PickPostScreen(onPostPicked) }
+fun NavGraphBuilder.pickPostScreen(onBack: () -> Unit, onPostPicked: (SetRulesRoute) -> Unit) {
+    composable<PickPostRoute> { PickPostScreen(onBack = onBack, onContinue = { onPostPicked(SetRulesRoute(it)) }) }
 }
 
 fun NavGraphBuilder.setRulesScreen(onRulesSaved: (giveawayId: Long) -> Unit) {
@@ -55,20 +93,8 @@ fun NavGraphBuilder.reviewEntriesScreen(onContinueToDraw: (giveawayId: Long) -> 
     }
 }
 
-/** Placeholder media ID until S6 lists real posts (C-11). */
-private const val PLACEHOLDER_MEDIA_ID = "placeholder"
-
 /** Placeholder giveaway ID until S7 creates a real draft (C-12). */
 private const val PLACEHOLDER_GIVEAWAY_ID = 0L
-
-@Composable
-internal fun PickPostScreen(onPostPicked: (String) -> Unit) = PlaceholderScreen(
-    screenId = "S6",
-    title = stringResource(R.string.pick_post_title),
-    actions = listOf(
-        PlaceholderAction(stringResource(R.string.wizard_continue), onClick = { onPostPicked(PLACEHOLDER_MEDIA_ID) }),
-    ),
-)
 
 @Composable
 internal fun SetRulesScreen(onRulesSaved: (Long) -> Unit) = PlaceholderScreen(
