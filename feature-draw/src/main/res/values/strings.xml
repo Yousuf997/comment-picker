@@ -74,4 +74,9 @@
     <string name="winners_replace_reason">Reason, e.g. doesn\'t follow the account</string>
     <string name="winners_replace_confirm">Replace</string>
     <string name="winners_replace_cancel">Cancel</string>
+    <string name="drawing_rec">REC</string>
+    <string name="drawing_stop_recording">Stop recording</string>
+    <string name="drawing_only_screen">Only this draw is recorded, not your screen or notifications.</string>
+    <string name="drawing_recording_failed">Recording failed. Your result is safe.</string>
+    <string name="drawing_video_code">Draw code from the caption</string>
 </resources>
