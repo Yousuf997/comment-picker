@@ -1,6 +1,9 @@
 package app.giveaway.core.instagram.di
 
 import app.giveaway.core.instagram.BuildConfig
+import app.giveaway.core.instagram.api.DefaultInstagramRepository
+import app.giveaway.core.instagram.api.GraphService
+import app.giveaway.core.instagram.api.InstagramRepository
 import app.giveaway.core.instagram.auth.AuthConfig
 import app.giveaway.core.instagram.auth.DefaultInstagramAuthenticator
 import app.giveaway.core.instagram.auth.InstagramAuthenticator
@@ -9,8 +12,12 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.serialization.json.Json
 import okhttp3.CertificatePinner
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import java.time.Clock
 import java.time.Duration
 import javax.inject.Singleton
@@ -24,6 +31,9 @@ internal abstract class InstagramModule {
 
     @Binds
     abstract fun authenticator(impl: DefaultInstagramAuthenticator): InstagramAuthenticator
+
+    @Binds
+    abstract fun instagramRepository(impl: DefaultInstagramRepository): InstagramRepository
 
     companion object {
         @Provides
@@ -55,6 +65,16 @@ internal abstract class InstagramModule {
                 .build()
         }
 
+        @Provides
+        @Singleton
+        internal fun graphService(http: OkHttpClient, config: AuthConfig): GraphService = Retrofit.Builder()
+            .baseUrl(config.graphBaseUrl)
+            .client(http)
+            .addConverterFactory(graphJson.asConverterFactory("application/json".toMediaType()))
+            .build()
+            .create(GraphService::class.java)
+
         private const val CALL_TIMEOUT_SECONDS = 30L
+        private val graphJson = Json { ignoreUnknownKeys = true }
     }
 }

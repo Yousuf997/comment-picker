@@ -1,5 +1,6 @@
 package app.giveaway.core.instagram.network
 
+import app.giveaway.core.instagram.api.InstagramRepository
 import app.giveaway.core.instagram.auth.AccountType
 import app.giveaway.core.instagram.auth.AuthConfig
 import app.giveaway.core.instagram.auth.IgAccount
@@ -21,8 +22,8 @@ sealed interface ProfileResult {
 }
 
 /**
- * Reads the signed-in account (`/me`) to get the username and check it is a professional account.
- * The full Instagram API client arrives with C-02 and will absorb this call.
+ * Reads the signed-in account (`/me`) to get the username and check it is a professional account. It takes the
+ * token directly because it runs during sign-in, before the token is stored for [InstagramRepository].
  */
 class InstagramProfileClient @Inject constructor(
     private val http: OkHttpClient,

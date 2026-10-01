@@ -1,0 +1,7 @@
+{
+  "data": [
+    {"id": "18000000000000001", "username": "ana", "text": "@bob @cid #win", "timestamp": "2026-09-30T13:00:00+0000", "replies": {"data": [{"id": "r1"}, {"id": "r2"}], "paging": {"cursors": {"after": "RA"}, "next": "https://graph.instagram.com/v24.0/18000000000000001/replies?after=RA"}}},
+    {"id": "18000000000000002", "username": "bob", "text": "Me! 😍", "timestamp": "2026-09-30T13:05:00+0000"}
+  ],
+  "paging": {"cursors": {"before": "CB", "after": "CA"}, "next": "https://graph.instagram.com/v24.0/m/comments?after=CA"}
+}
