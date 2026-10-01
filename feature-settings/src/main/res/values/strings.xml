@@ -1,5 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="settings_title">Settings</string>
-    <string name="settings_done">Done</string>
+    <string name="settings_security">Security</string>
+    <string name="settings_data">Your data</string>
+    <string name="settings_draw">Draw</string>
+    <string name="settings_instagram">Instagram</string>
+    <string name="settings_about">About</string>
+    <string name="settings_app_lock">App lock</string>
+    <string name="settings_block_screenshots">Block screenshots</string>
+    <string name="settings_lock_after">Lock after</string>
+    <string name="settings_after_30s">30 seconds</string>
+    <string name="settings_after_1m">1 minute</string>
+    <string name="settings_after_5m">5 minutes</string>
+    <string name="settings_after_15m">15 minutes</string>
+    <string name="settings_data_note">Stored only on this phone, encrypted.</string>
+    <string name="settings_auto_delete">Delete finished giveaways after</string>
+    <string name="settings_days_30">30 days</string>
+    <string name="settings_days_90">90 days</string>
+    <string name="settings_days_180">180 days</string>
+    <string name="settings_days_365">1 year</string>
+    <string name="settings_export_backup">Export encrypted backup</string>
+    <string name="settings_restore_backup">Restore from backup</string>
+    <string name="settings_record_draws">Record draws by default</string>
+    <string name="settings_connected_as">Connected account</string>
+    <string name="settings_not_connected">Not connected</string>
+    <string name="settings_disconnect">Disconnect</string>
+    <string name="settings_disconnect_title">Disconnect Instagram?</string>
+    <string name="settings_disconnect_body">Your giveaways stay on this phone. You\'ll need to sign in again to import comments.</string>
+    <string name="settings_lock_off_title">Turn off app lock?</string>
+    <string name="settings_lock_off_body">Anyone with your phone will be able to open the app.</string>
+    <string name="settings_turn_off">Turn off</string>
+    <string name="settings_cancel">Cancel</string>
+    <string name="settings_delete_everything">Delete everything on this phone</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_system">System default</string>
+    <string name="settings_language_en" translatable="false">English</string>
+    <string name="settings_language_ar" translatable="false">العربية</string>
+    <string name="settings_privacy">Privacy policy</string>
+    <string name="settings_licenses">Open-source licenses</string>
+    <string name="settings_version">Version</string>
 </resources>

@@ -78,8 +78,8 @@ class NavigationTest {
         launch()
         val routes = listOf<Pair<Any, String>>(
             WelcomeRoute to "S1",
-            ConnectInstagramRoute to "S2",
-            AppLockSetupRoute to "S3",
+            ConnectInstagramRoute() to "S2",
+            AppLockSetupRoute() to "S3",
             HomeRoute to "S4",
             SettingsRoute to "S5",
             PickPostRoute to "S6",
@@ -111,7 +111,7 @@ class NavigationTest {
         val browser = shadowOf(compose.activity).nextStartedActivity
         assertEquals(Intent.ACTION_VIEW, browser.action)
         assertEquals("www.instagram.com", browser.data?.host)
-        compose.runOnUiThread { navController.navigate(AppLockSetupRoute) }
+        compose.runOnUiThread { navController.navigate(AppLockSetupRoute()) }
         assertScreen("S3")
         tap(OnboardingR.string.app_lock_skip)
         assertScreen("S4")
