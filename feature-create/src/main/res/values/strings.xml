@@ -34,4 +34,25 @@
     <string name="pick_post_error_busy">Instagram asked us to slow down. Wait a moment and try again.</string>
     <string name="pick_post_error_other">Something went wrong on Instagram\'s side. Try again.</string>
     <string name="pick_post_retry">Try again</string>
+    <string name="rules_valid_entry">A valid entry must</string>
+    <string name="rules_mentions">Mention friends</string>
+    <string name="rules_hashtag">Include hashtag (optional)</string>
+    <string name="rules_hashtag_example" translatable="false">#giveaway</string>
+    <string name="rules_keyword">Include keyword (optional)</string>
+    <string name="rules_fairness">Fairness</string>
+    <string name="rules_one_per_person">One entry per person</string>
+    <string name="rules_exclude_past_winners">Exclude past winners</string>
+    <string name="rules_exclude_blocklist">Exclude my blocklist</string>
+    <string name="rules_closes">Entries close</string>
+    <string name="rules_winners_section">Winners</string>
+    <string name="rules_winners">Winners</string>
+    <string name="rules_alternates">Alternates</string>
+    <string name="rules_manual_checks_title">Follows and likes are checked by hand</string>
+    <string name="rules_manual_checks_body">Instagram doesn\'t let apps see who follows you or liked a post. You\'ll confirm each winner yourself before announcing them.</string>
+    <string name="rules_error_closes_in_past">Pick a closing time in the future.</string>
+    <string name="rules_error_hashtag">Start with # and use one word, like #giveaway.</string>
+    <string name="rules_error_nobody">Pick at least one winner or alternate.</string>
+    <string name="rules_picker_next">Next</string>
+    <string name="rules_picker_done">Done</string>
+    <string name="rules_picker_cancel">Cancel</string>
 </resources>

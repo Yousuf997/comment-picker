@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import app.giveaway.core.designsystem.GiveawayDimens
 import app.giveaway.core.designsystem.GiveawayTheme
 import app.giveaway.core.designsystem.R
+import app.giveaway.core.designsystem.formatCount
 
 private val ValueMinWidth = 40.dp
 
@@ -50,7 +51,7 @@ fun Stepper(
             onClick = { onValueChange(value - 1) },
         )
         Text(
-            text = value.toString(),
+            text = formatCount(value),
             modifier = Modifier
                 .widthIn(min = ValueMinWidth)
                 .semantics { liveRegion = LiveRegionMode.Polite },
