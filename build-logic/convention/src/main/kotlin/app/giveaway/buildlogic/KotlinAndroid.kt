@@ -22,11 +22,14 @@ internal fun Project.configureAndroidCommon(extension: CommonExtension) {
     extension.lint.warningsAsErrors = true
     extension.lint.abortOnError = true
     extension.lint.lintConfig = isolated.rootProject.projectDirectory.file("lint.xml").asFile
-    extension.testOptions.managedDevices.allDevices.register(MANAGED_DEVICE, ManagedVirtualDevice::class.java) {
-        device = "Pixel 6"
-        sdkVersion = MANAGED_DEVICE_API
-        systemImageSource = "google"
-        testedAbi = "x86_64"
+    // Only modules with device tests get the emulator; otherwise each module would boot its own and exhaust CI memory.
+    if (layout.projectDirectory.dir("src/androidTest").asFile.exists()) {
+        extension.testOptions.managedDevices.allDevices.register(MANAGED_DEVICE, ManagedVirtualDevice::class.java) {
+            device = "Pixel 6"
+            sdkVersion = MANAGED_DEVICE_API
+            systemImageSource = "google"
+            testedAbi = "x86_64"
+        }
     }
     configureKotlin()
     configureDetekt()

@@ -13,6 +13,7 @@ import java.security.KeyFactory
 import java.security.KeyPairGenerator
 import java.security.KeyStore
 import java.security.PrivateKey
+import java.security.ProviderException
 import java.security.spec.ECGenParameterSpec
 import javax.crypto.SecretKey
 import javax.crypto.SecretKeyFactory
@@ -84,9 +85,14 @@ class KeystoreKeys @Inject constructor(@ApplicationContext context: Context) {
         if (!hasStrongBox) return create(false)
         return try {
             create(true)
-        } catch (expected: StrongBoxUnavailableException) {
-            // Advertised but not usable for this key type; the TEE is still hardware-backed.
-            create(false)
+        } catch (e: ProviderException) {
+            // StrongBoxUnavailableException (API 28+): advertised but not usable for this key type.
+            // The TEE is still hardware-backed. Any other provider failure is a real error.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && e is StrongBoxUnavailableException) {
+                create(false)
+            } else {
+                throw e
+            }
         }
     }
 
