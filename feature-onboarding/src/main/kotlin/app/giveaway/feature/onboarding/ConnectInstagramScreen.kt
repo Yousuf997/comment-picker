@@ -1,5 +1,8 @@
 package app.giveaway.feature.onboarding
 
+import android.content.ActivityNotFoundException
+
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,9 +18,13 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -26,6 +33,10 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LifecycleResumeEffect
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.giveaway.core.designsystem.GiveawayDimens
 import app.giveaway.core.designsystem.GiveawayTheme
 import app.giveaway.core.designsystem.component.GiveawayCard
@@ -54,6 +65,39 @@ sealed interface ConnectState {
 
 /** Instagram Help Center article on switching to a professional account. Re-check at build time (A3). */
 const val PROFESSIONAL_ACCOUNT_HELP_URL = "https://help.instagram.com/502981923235522"
+
+/** S2 with sign-in wired up: opens Instagram's page in a Custom Tab and reports success through [onConnected]. */
+@Composable
+internal fun ConnectInstagramScreen(
+    onConnected: () -> Unit,
+    viewModel: ConnectInstagramViewModel = hiltViewModel(),
+) {
+    val context = LocalContext.current
+    val uriHandler = LocalUriHandler.current
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    LaunchedEffect(viewModel) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is ConnectEvent.OpenBrowser -> try {
+                    val tab = CustomTabsIntent.Builder().setShowTitle(true).build()
+                    tab.launchUrl(context, event.url.toUri())
+                } catch (expected: ActivityNotFoundException) {
+                    viewModel.onBrowserUnavailable()
+                }
+                ConnectEvent.SignedIn -> onConnected()
+            }
+        }
+    }
+    LifecycleResumeEffect(viewModel) {
+        viewModel.onResumed()
+        onPauseOrDispose {}
+    }
+    ConnectInstagramScreen(
+        state = state,
+        onContinue = viewModel::onContinue,
+        onOpenHelp = { uriHandler.openUri(PROFESSIONAL_ACCOUNT_HELP_URL) },
+    )
+}
 
 /**
  * S2 Connect Instagram: explains what the app needs and can do, then starts sign-in on Instagram's own page.

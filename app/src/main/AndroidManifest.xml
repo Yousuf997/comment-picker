@@ -23,5 +23,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Sign-in redirect (spec: Login flow, step 2). autoVerify makes it a verified App Link only this app receives. -->
+        <activity
+            android:name=".AuthCallbackActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            tools:ignore="Instantiatable">
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="https"
+                    android:host="${authHost}"
+                    android:path="/ig/callback" />
+            </intent-filter>
+        </activity>
     </application>
 </manifest>
