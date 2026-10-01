@@ -26,6 +26,10 @@ class InstagramAuthenticatorTest {
     private lateinit var auth: DefaultInstagramAuthenticator
     private val now = Instant.parse("2026-10-01T12:00:00Z")
 
+    private companion object {
+        const val CALLBACK = "https://auth.example.test/ig/callback"
+    }
+
     @Before
     fun setUp() {
         server.start()
@@ -90,7 +94,8 @@ class InstagramAuthenticatorTest {
 
     @Test
     fun aMissingStateIsRejected() {
-        assertEquals(CallbackResult.StateMismatch, auth.parseCallback("https://auth.example.test/ig/callback?code=x", "s1"))
+        val result = auth.parseCallback("$CALLBACK?code=x", "s1")
+        assertEquals(CallbackResult.StateMismatch, result)
     }
 
     @Test
@@ -101,9 +106,9 @@ class InstagramAuthenticatorTest {
 
     @Test
     fun otherHostsAndMissingCodesAreMalformed() {
-        assertEquals(CallbackResult.Malformed, auth.parseCallback("https://evil.test/ig/callback?code=x&state=s1", "s1"))
-        assertEquals(CallbackResult.Malformed, auth.parseCallback("https://auth.example.test/ig/callback?state=s1", "s1"))
-        assertEquals(CallbackResult.Malformed, auth.parseCallback("not a uri ::", "s1"))
+        listOf("https://evil.test/ig/callback?code=x&state=s1", "$CALLBACK?state=s1", "not a uri ::").forEach {
+            assertEquals(it, CallbackResult.Malformed, auth.parseCallback(it, "s1"))
+        }
     }
 
     @Test

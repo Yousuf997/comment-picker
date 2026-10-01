@@ -43,7 +43,7 @@ class InstagramProfileClient @Inject constructor(
                     ProfileResult.Success(IgAccount(me.userId, me.username, accountType(me.accountType)))
                 }.getOrDefault(ProfileResult.Failed)
             }
-        } catch (e: IOException) {
+        } catch (expected: IOException) {
             ProfileResult.Network
         }
     }

@@ -45,7 +45,7 @@ class LoginHelperClient @Inject constructor(
                     else -> TokenResult.Failed
                 }
             }
-        } catch (e: IOException) {
+        } catch (expected: IOException) {
             TokenResult.Network
         }
     }

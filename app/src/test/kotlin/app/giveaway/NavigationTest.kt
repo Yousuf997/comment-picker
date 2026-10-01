@@ -1,9 +1,10 @@
 package app.giveaway
 
 import android.app.Application
+import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -35,19 +36,28 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.robolectric.Shadows.shadowOf
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import dagger.hilt.android.testing.HiltTestApplication
 import app.giveaway.feature.create.R as CreateR
 import app.giveaway.feature.draw.R as DrawR
 import app.giveaway.feature.home.R as HomeR
 import app.giveaway.feature.onboarding.R as OnboardingR
 
 /** F-08 acceptance: every route S1 to S15 opens its screen, and the spec's flow can be walked end to end. */
+@HiltAndroidTest
 @RunWith(RobolectricTestRunner::class)
 // Tall enough that each screen's main action is on screen without scrolling; screen tests cover scrolling.
-@Config(qualifiers = "w390dp-h1400dp")
+@Config(application = HiltTestApplication::class, qualifiers = "w390dp-h1400dp")
 class NavigationTest {
 
-    @get:Rule
-    val compose = createComposeRule()
+    @get:Rule(order = 0)
+    val hilt = HiltAndroidRule(this)
+
+    // Screens with ViewModels (S2) need a Hilt activity.
+    @get:Rule(order = 1)
+    val compose = createAndroidComposeRule<HiltTestActivity>()
 
     private val app = ApplicationProvider.getApplicationContext<Application>()
     private lateinit var navController: NavHostController
@@ -97,6 +107,11 @@ class NavigationTest {
         tap(OnboardingR.string.welcome_get_started)
         assertScreen("S2")
         tap(OnboardingR.string.connect_continue)
+        // Sign-in happens on Instagram's page, opened in the browser; the redirect is covered by ViewModel tests.
+        val browser = shadowOf(compose.activity).nextStartedActivity
+        assertEquals(Intent.ACTION_VIEW, browser.action)
+        assertEquals("www.instagram.com", browser.data?.host)
+        compose.runOnUiThread { navController.navigate(AppLockSetupRoute) }
         assertScreen("S3")
         tap(OnboardingR.string.app_lock_skip)
         assertScreen("S4")
@@ -143,7 +158,7 @@ class NavigationTest {
     }
 
     @Test
-    @Config(qualifiers = "ar-w390dp-h1400dp")
+    @Config(application = HiltTestApplication::class, qualifiers = "ar-w390dp-h1400dp")
     fun arabicIsTranslatedAndRightToLeft() {
         var direction: LayoutDirection? = null
         launch {

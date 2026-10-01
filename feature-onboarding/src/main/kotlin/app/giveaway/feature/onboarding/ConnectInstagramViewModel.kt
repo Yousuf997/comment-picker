@@ -8,6 +8,7 @@ import app.giveaway.core.instagram.auth.AuthCallbacks
 import app.giveaway.core.instagram.auth.AuthOutcome
 import app.giveaway.core.instagram.auth.CallbackResult
 import app.giveaway.core.instagram.auth.InstagramAuthenticator
+import dagger.Lazy
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -37,7 +38,8 @@ class ConnectInstagramViewModel @Inject constructor(
     private val savedState: SavedStateHandle,
     private val authenticator: InstagramAuthenticator,
     private val callbacks: AuthCallbacks,
-    private val accounts: AccountRepository,
+    // Lazy: the encrypted database opens only when an account is saved, not when S2 appears.
+    private val accounts: Lazy<AccountRepository>,
 ) : ViewModel() {
 
     private val mutableState = MutableStateFlow<ConnectState>(ConnectState.Idle)
@@ -98,7 +100,7 @@ class ConnectInstagramViewModel @Inject constructor(
         mutableState.value = ConnectState.Loading
         mutableState.value = when (val outcome = authenticator.complete(code)) {
             is AuthOutcome.Success -> {
-                accounts.saveSignIn(outcome.token, outcome.account)
+                accounts.get().saveSignIn(outcome.token, outcome.account)
                 eventChannel.send(ConnectEvent.SignedIn)
                 ConnectState.Idle
             }

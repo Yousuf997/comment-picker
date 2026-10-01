@@ -80,7 +80,7 @@ internal fun ConnectInstagramScreen(
                 is ConnectEvent.OpenBrowser -> try {
                     val tab = CustomTabsIntent.Builder().setShowTitle(true).build()
                     tab.launchUrl(context, Uri.parse(event.url))
-                } catch (e: ActivityNotFoundException) {
+                } catch (expected: ActivityNotFoundException) {
                     viewModel.onBrowserUnavailable()
                 }
                 ConnectEvent.SignedIn -> onConnected()
