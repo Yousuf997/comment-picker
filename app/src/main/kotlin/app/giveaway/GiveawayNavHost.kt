@@ -1,6 +1,7 @@
 package app.giveaway
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
@@ -86,32 +87,44 @@ fun GiveawayNavHost(
         )
         licensesScreen(onBack = { navController.popBackStack() })
 
-        // Creation wizard. S8 returns to Home ("Waiting for deadline"); the giveaway resumes at S9 from its card.
-        pickPostScreen(
-            onBack = { navController.popBackStack() },
-            onPostPicked = { route -> navController.navigate(route) },
-        )
-        setRulesScreen(
-            onBack = { navController.popBackStack() },
-            onRulesSaved = { id -> navController.navigate(LockInDrawRoute(id)) },
-        )
-        lockInDrawScreen(onBack = { navController.popBackStack() }, onDone = { navController.backToHome() })
-        importCommentsScreen(
-            onBack = { navController.popBackStack() },
-            onReviewEntries = { id -> navController.navigate(ReviewEntriesRoute(id)) },
-        )
-        reviewEntriesScreen(onContinueToDraw = { id -> navController.navigate(DrawRoute(id)) })
-
-        // Draw. Once the real draw ran, the result is fixed: S12 leaves the back stack and S13 opens over S14.
-        drawScreen(onDrawWinners = { id -> navController.navigate(DrawingRoute(id)) })
-        drawingScreen(onDrawFinished = { id ->
-            navController.navigate(WinnersRoute(id)) { popUpTo<DrawingRoute> { inclusive = true } }
-            navController.navigate(SaveVideoRoute(id))
-        })
-        saveVideoSheet(onChoiceMade = { navController.popBackStack() })
-        winnersScreen(onCreateCertificate = { id -> navController.navigate(CertificateRoute(id)) })
-        certificateScreen(onDone = { navController.backToHome() })
+        creationWizard(navController)
+        draw(navController)
     }
+}
+
+/** S6 to S10. */
+private fun NavGraphBuilder.creationWizard(navController: NavHostController) {
+    // Creation wizard. S8 returns to Home ("Waiting for deadline"); the giveaway resumes at S9 from its card.
+    pickPostScreen(
+        onBack = { navController.popBackStack() },
+        onPostPicked = { route -> navController.navigate(route) },
+    )
+    setRulesScreen(
+        onBack = { navController.popBackStack() },
+        onRulesSaved = { id -> navController.navigate(LockInDrawRoute(id)) },
+    )
+    lockInDrawScreen(onBack = { navController.popBackStack() }, onDone = { navController.backToHome() })
+    importCommentsScreen(
+        onBack = { navController.popBackStack() },
+        onReviewEntries = { id -> navController.navigate(ReviewEntriesRoute(id)) },
+    )
+    reviewEntriesScreen(
+        onBack = { navController.popBackStack() },
+        onContinueToDraw = { id -> navController.navigate(DrawRoute(id)) },
+    )
+}
+
+/** S11 to S15. */
+private fun NavGraphBuilder.draw(navController: NavHostController) {
+    // Draw. Once the real draw ran, the result is fixed: S12 leaves the back stack and S13 opens over S14.
+    drawScreen(onDrawWinners = { id -> navController.navigate(DrawingRoute(id)) })
+    drawingScreen(onDrawFinished = { id ->
+        navController.navigate(WinnersRoute(id)) { popUpTo<DrawingRoute> { inclusive = true } }
+        navController.navigate(SaveVideoRoute(id))
+    })
+    saveVideoSheet(onChoiceMade = { navController.popBackStack() })
+    winnersScreen(onCreateCertificate = { id -> navController.navigate(CertificateRoute(id)) })
+    certificateScreen(onDone = { navController.backToHome() })
 }
 
 /** Opens Home and drops everything above it, so Back from Home leaves the app. */

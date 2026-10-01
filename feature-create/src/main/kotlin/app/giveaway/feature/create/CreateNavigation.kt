@@ -1,12 +1,8 @@
 package app.giveaway.feature.create
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import app.giveaway.core.designsystem.component.PlaceholderAction
-import app.giveaway.core.designsystem.component.PlaceholderScreen
 import app.giveaway.core.instagram.api.IgMedia
 import app.giveaway.core.instagram.api.MediaKind
 import kotlinx.serialization.Serializable
@@ -86,16 +82,9 @@ fun NavGraphBuilder.importCommentsScreen(onBack: () -> Unit, onReviewEntries: (g
     }
 }
 
-fun NavGraphBuilder.reviewEntriesScreen(onContinueToDraw: (giveawayId: Long) -> Unit) {
+fun NavGraphBuilder.reviewEntriesScreen(onBack: () -> Unit, onContinueToDraw: (giveawayId: Long) -> Unit) {
     composable<ReviewEntriesRoute> { entry ->
         val giveawayId = entry.toRoute<ReviewEntriesRoute>().giveawayId
-        ReviewEntriesScreen(onContinueToDraw = { onContinueToDraw(giveawayId) })
+        ReviewEntriesScreen(onBack = onBack, onContinueToDraw = { onContinueToDraw(giveawayId) })
     }
 }
-
-@Composable
-internal fun ReviewEntriesScreen(onContinueToDraw: () -> Unit) = PlaceholderScreen(
-    screenId = "S10",
-    title = stringResource(R.string.review_title),
-    actions = listOf(PlaceholderAction(stringResource(R.string.review_continue), onClick = onContinueToDraw)),
-)
