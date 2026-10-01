@@ -49,4 +49,12 @@
     <string name="draw_test_pick">%1$s. %2$s · %3$s</string>
     <string name="draw_test_sheet_note">This was only a test. It doesn\'t count, and the real draw uses the code you posted.</string>
     <string name="draw_test_close">Close</string>
+    <string name="drawing_done">All picked</string>
+    <!-- %1$s of %2$s: which winner, out of how many. -->
+    <string name="drawing_picking_winner">Picking winner %1$s of %2$s</string>
+    <string name="drawing_picking_alternate">Picking alternate %1$s of %2$s</string>
+    <string name="drawing_picked_so_far">Picked so far</string>
+    <!-- Read aloud by TalkBack as each pick lands. %1$s: number, %2$s: @handle. -->
+    <string name="drawing_announce_winner">Winner %1$s: %2$s</string>
+    <string name="drawing_announce_alternate">Alternate %1$s: %2$s</string>
 </resources>

@@ -49,7 +49,7 @@ fun NavGraphBuilder.drawScreen(
 fun NavGraphBuilder.drawingScreen(onDrawFinished: (giveawayId: Long) -> Unit) {
     composable<DrawingRoute> { entry ->
         val giveawayId = entry.toRoute<DrawingRoute>().giveawayId
-        DrawingScreen(onDrawFinished = { onDrawFinished(giveawayId) })
+        DrawingScreen(onFinished = { onDrawFinished(giveawayId) })
     }
 }
 
@@ -69,14 +69,6 @@ fun NavGraphBuilder.winnersScreen(onCreateCertificate: (giveawayId: Long) -> Uni
 fun NavGraphBuilder.certificateScreen(onDone: () -> Unit) {
     composable<CertificateRoute> { CertificateScreen(onDone) }
 }
-
-@Composable
-internal fun DrawingScreen(onDrawFinished: () -> Unit) = PlaceholderScreen(
-    screenId = "S12",
-    title = stringResource(R.string.drawing_title),
-    onStage = true,
-    actions = listOf(PlaceholderAction(stringResource(R.string.drawing_finish), onClick = onDrawFinished)),
-)
 
 @Composable
 internal fun SaveVideoSheet(onChoiceMade: () -> Unit) = PlaceholderScreen(

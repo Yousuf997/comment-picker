@@ -63,4 +63,10 @@
     <string name="draw_test_pick">%1$s. %2$s · %3$s</string>
     <string name="draw_test_sheet_note">كان هذا مجرد اختبار. لا يُحتسب، والسحب الحقيقي يستخدم الرمز الذي نشرته.</string>
     <string name="draw_test_close">إغلاق</string>
+    <string name="drawing_done">اكتمل الاختيار</string>
+    <string name="drawing_picking_winner">اختيار الفائز %1$s من %2$s</string>
+    <string name="drawing_picking_alternate">اختيار الاحتياطي %1$s من %2$s</string>
+    <string name="drawing_picked_so_far">اختيروا حتى الآن</string>
+    <string name="drawing_announce_winner">الفائز %1$s: %2$s</string>
+    <string name="drawing_announce_alternate">الاحتياطي %1$s: %2$s</string>
 </resources>

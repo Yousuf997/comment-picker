@@ -17,6 +17,7 @@ import app.giveaway.draw.DrawOutcome
 import app.giveaway.draw.DrawRecord
 import app.giveaway.draw.DrawV1
 import app.giveaway.draw.ExclusionReason
+import app.giveaway.draw.Pick
 import java.security.SecureRandom
 import java.time.Clock
 import java.time.Instant
@@ -29,6 +30,16 @@ interface RecordSigner {
 
     class Signature(val bytes: ByteArray, val publicKeySpki: ByteArray, val fingerprint: String)
 }
+
+/** A saved real draw, for S12 to replay and S14 to show. */
+data class SavedDraw(
+    val title: String,
+    val picks: List<Pick>,
+    /** A sample of entrants for the reel to scroll past. */
+    val entrants: List<String>,
+    val drawnAt: Instant,
+    val entryCount: Int,
+)
 
 /** What S11 knows before the draw: the caption re-read and the integrity check (spec: S11 checks). */
 data class DrawChecks(val captionCheck: CaptionCheck, val integrityVerified: Boolean)
@@ -83,6 +94,17 @@ class DrawService @Inject constructor(
         } finally {
             seed.fill(0)
         }
+    }
+
+    /** The saved real draw for S12 to replay and S14 to show, or null before the draw. */
+    suspend fun savedDraw(giveawayId: Long): SavedDraw? {
+        val draw = db.drawDao().realDraw(giveawayId) ?: return null
+        val giveaway = db.giveawayDao().get(giveawayId) ?: return null
+        val picks = db.drawDao().results(draw.id).map { Pick(it.position, it.username, it.role) }
+        // The reel only needs a sample of names to scroll past (spec: S12); the result is already fixed.
+        val entrants = CanonicalEntryList.of(db.entryDao().validUsernames(giveawayId)).usernames.distinct()
+            .take(REEL_SAMPLE)
+        return SavedDraw(giveaway.title, picks, entrants, draw.drawnAt, draw.entryCount)
     }
 
     /** A practice run with a fresh random seed: labelled TEST, unsigned, never the committed seed (spec). */
@@ -185,4 +207,8 @@ class DrawService @Inject constructor(
     }
 
     private fun ByteArray.toHex() = joinToString("") { "%02x".format(Locale.ROOT, it) }
+
+    private companion object {
+        const val REEL_SAMPLE = 200
+    }
 }
