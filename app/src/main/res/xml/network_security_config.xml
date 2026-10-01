@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Spec: Network. HTTPS only, and the Instagram API host is pinned to CA keys with backups (plan section 5, step 7;
+  risk R7). The login helper's host is pinned in OkHttp from gradle.properties, because it isn't known until F-01.
+  Thumbnails from Instagram's CDN are HTTPS but not pinned (plan A22).
+
+  Refresh before every release: recompute pins from the live chain and move the expiration about 6 months ahead.
+  After the expiration date Android stops enforcing the pins (HTTPS still applies), so a stale app keeps working.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="false">graph.instagram.com</domain>
+        <pin-set expiration="2027-04-01">
+            <!-- DigiCert Global G2 TLS RSA SHA256 2020 CA1: current issuing intermediate (valid to 2031). -->
+            <pin digest="SHA-256">Wec45nQiFwKvHtuHxSAMGkt19k+uPSw9JlEkxhvYPHk=</pin>
+            <!-- DigiCert Global Root G2: current root (valid to 2038). -->
+            <pin digest="SHA-256">i7WTqTvh0OioIruIfFR4kMPnBqrS2rdiVPl/s2uC/CY=</pin>
+            <!-- Backups if Meta moves to another DigiCert root it has used before. -->
+            <pin digest="SHA-256">r/mIkG3eEpVdm+u/ko/cwxzOMo1bk4TyHIlByibiA5E=</pin>
+            <pin digest="SHA-256">WoiWRyIOVNa9ihaBciRSC7XHjliYS9VwUGOIud4PB18=</pin>
+        </pin-set>
+    </domain-config>
+</network-security-config>
