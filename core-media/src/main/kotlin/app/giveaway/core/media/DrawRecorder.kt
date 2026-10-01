@@ -161,8 +161,10 @@ class DrawRecorder(
         const val SUMMARY_HOLD_MS = 2_500L
 
         /** Rough file size for the S11 storage check (plan M-03): bit rate times length, plus muxing overhead. */
-        fun estimatedBytes(timeline: DrawTimeline, size: VideoSize): Long =
-            (timeline.durationMs + SUMMARY_HOLD_MS) * size.bitRate / BITS_PER_BYTE / MS_PER_S *
+        fun estimatedBytes(timeline: DrawTimeline, size: VideoSize): Long = estimatedBytes(timeline.durationMs, size)
+
+        fun estimatedBytes(animationMs: Long, size: VideoSize): Long =
+            (animationMs + SUMMARY_HOLD_MS) * size.bitRate / BITS_PER_BYTE / MS_PER_S *
                 OVERHEAD_PERCENT / PERCENT
 
         private const val BITS_PER_BYTE = 8

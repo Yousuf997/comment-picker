@@ -65,6 +65,10 @@ class DrawTimeline(
         private const val REEL_LENGTH = 30
         private const val EASE_POWER = 3.0
 
+        /** How long a draw with these counts animates, before anything is picked (for the storage check). */
+        fun estimatedDurationMs(winners: Int, alternates: Int): Long =
+            winners * (WINNER_SPIN_MS + PAUSE_MS) + alternates * (ALTERNATE_SPIN_MS + PAUSE_MS)
+
         /** Fast at first, settling on the result: cubic ease-out. */
         fun easeOut(x: Float): Float = 1f - (1f - x).toDouble().pow(EASE_POWER).toFloat()
 

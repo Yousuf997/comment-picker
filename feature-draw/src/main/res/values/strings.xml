@@ -79,4 +79,6 @@
     <string name="drawing_only_screen">Only this draw is recorded, not your screen or notifications.</string>
     <string name="drawing_recording_failed">Recording failed. Your result is safe.</string>
     <string name="drawing_video_code">Draw code from the caption</string>
+    <string name="draw_low_storage_title">Not enough space to record</string>
+    <string name="draw_low_storage_body">Free up some space, or turn off recording. You can still draw; only the video needs the space.</string>
 </resources>

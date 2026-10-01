@@ -89,4 +89,6 @@
     <string name="drawing_only_screen">يُسجَّل هذا السحب فقط، لا شاشتك ولا إشعاراتك.</string>
     <string name="drawing_recording_failed">فشل التسجيل. نتيجتك محفوظة.</string>
     <string name="drawing_video_code">رمز السحب من وصف المنشور</string>
+    <string name="draw_low_storage_title">لا توجد مساحة كافية للتسجيل</string>
+    <string name="draw_low_storage_body">أفرغ بعض المساحة أو أوقف التسجيل. لا يزال بإمكانك إجراء السحب، فالفيديو وحده يحتاج إلى المساحة.</string>
 </resources>
