@@ -35,6 +35,9 @@ import app.giveaway.feature.onboarding.appLockSetupScreen
 import app.giveaway.feature.onboarding.connectInstagramScreen
 import app.giveaway.feature.onboarding.welcomeScreen
 import app.giveaway.feature.settings.SettingsRoute
+import app.giveaway.feature.settings.LicensesRoute
+import app.giveaway.feature.settings.SettingsActions
+import app.giveaway.feature.settings.licensesScreen
 import app.giveaway.feature.settings.settingsScreen
 
 /**
@@ -48,10 +51,16 @@ fun GiveawayNavHost(
 ) {
     NavHost(navController = navController, startDestination = startDestination) {
         // First launch: S1 -> S2 -> S3 -> S4. Onboarding leaves the back stack once Home is reached.
-        welcomeScreen(onGetStarted = { navController.navigate(ConnectInstagramRoute) })
-        connectInstagramScreen(onConnected = { navController.navigate(AppLockSetupRoute) })
-        appLockSetupScreen(onDone = {
-            navController.navigate(HomeRoute) { popUpTo<WelcomeRoute> { inclusive = true } }
+        welcomeScreen(onGetStarted = { navController.navigate(ConnectInstagramRoute()) })
+        connectInstagramScreen(onConnected = { reconnect ->
+            if (reconnect) navController.backToHome() else navController.navigate(AppLockSetupRoute())
+        })
+        appLockSetupScreen(onDone = { fromSettings ->
+            if (fromSettings) {
+                navController.popBackStack()
+            } else {
+                navController.navigate(HomeRoute) { popUpTo<WelcomeRoute> { inclusive = true } }
+            }
         })
 
         homeScreen(
@@ -59,12 +68,24 @@ fun GiveawayNavHost(
                 onNewGiveaway = { navController.navigate(PickPostRoute) },
                 onOpenSettings = { navController.navigate(SettingsRoute) },
                 onOpenGiveaway = { id, destination -> navController.navigate(destination.route(id)) },
-                onSignInAgain = { navController.navigate(ConnectInstagramRoute) },
+                onSignInAgain = { navController.navigate(ConnectInstagramRoute(reconnect = true)) },
                 // The backup flow lives in Settings (S5).
                 onExportBackup = { navController.navigate(SettingsRoute) },
             ),
         )
-        settingsScreen(onBack = { navController.popBackStack() })
+        settingsScreen(
+            SettingsActions(
+                onBack = { navController.popBackStack() },
+                onSetUpAppLock = { navController.navigate(AppLockSetupRoute(fromSettings = true)) },
+                onDisconnected = { navController.navigate(ConnectInstagramRoute(reconnect = true)) },
+                // Backup, restore and "Delete everything" arrive with M-11..M-14.
+                onExportBackup = {},
+                onRestoreBackup = {},
+                onDeleteEverything = {},
+                onOpenLicenses = { navController.navigate(LicensesRoute) },
+            ),
+        )
+        licensesScreen(onBack = { navController.popBackStack() })
 
         // Creation wizard. S8 returns to Home ("Waiting for deadline"); the giveaway resumes at S9 from its card.
         pickPostScreen(onPostPicked = { mediaId -> navController.navigate(SetRulesRoute(mediaId)) })

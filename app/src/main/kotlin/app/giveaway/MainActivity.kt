@@ -3,7 +3,7 @@ package app.giveaway
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.fragment.app.FragmentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import app.giveaway.core.data.settings.SettingsRepository
 import app.giveaway.core.designsystem.GiveawayTheme
@@ -17,7 +17,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : FragmentActivity() {
+class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var settings: Lazy<SettingsRepository>

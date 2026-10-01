@@ -1,5 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="settings_title">الإعدادات</string>
-    <string name="settings_done">تم</string>
+    <string name="settings_security">الأمان</string>
+    <string name="settings_data">بياناتك</string>
+    <string name="settings_draw">السحب</string>
+    <string name="settings_instagram">إنستغرام</string>
+    <string name="settings_about">حول التطبيق</string>
+    <string name="settings_app_lock">قفل التطبيق</string>
+    <string name="settings_block_screenshots">منع لقطات الشاشة</string>
+    <string name="settings_lock_after">القفل بعد</string>
+    <string name="settings_after_30s">30 ثانية</string>
+    <string name="settings_after_1m">دقيقة واحدة</string>
+    <string name="settings_after_5m">5 دقائق</string>
+    <string name="settings_after_15m">15 دقيقة</string>
+    <string name="settings_data_note">محفوظة على هذا الهاتف فقط، ومشفّرة.</string>
+    <string name="settings_auto_delete">حذف السحوبات المكتملة بعد</string>
+    <string name="settings_days_30">30 يومًا</string>
+    <string name="settings_days_90">90 يومًا</string>
+    <string name="settings_days_180">180 يومًا</string>
+    <string name="settings_days_365">سنة واحدة</string>
+    <string name="settings_export_backup">تصدير نسخة احتياطية مشفّرة</string>
+    <string name="settings_restore_backup">الاستعادة من نسخة احتياطية</string>
+    <string name="settings_record_draws">تسجيل السحوبات افتراضيًا</string>
+    <string name="settings_connected_as">الحساب المرتبط</string>
+    <string name="settings_not_connected">غير مرتبط</string>
+    <string name="settings_disconnect">إلغاء الربط</string>
+    <string name="settings_disconnect_title">إلغاء ربط إنستغرام؟</string>
+    <string name="settings_disconnect_body">تبقى سحوباتك على هذا الهاتف. ستحتاج إلى تسجيل الدخول مجددًا لاستيراد التعليقات.</string>
+    <string name="settings_lock_off_title">إيقاف قفل التطبيق؟</string>
+    <string name="settings_lock_off_body">سيتمكن أي شخص لديه هاتفك من فتح التطبيق.</string>
+    <string name="settings_turn_off">إيقاف</string>
+    <string name="settings_cancel">إلغاء</string>
+    <string name="settings_delete_everything">حذف كل شيء على هذا الهاتف</string>
+    <string name="settings_language">اللغة</string>
+    <string name="settings_language_system">لغة النظام</string>
+    <string name="settings_privacy">سياسة الخصوصية</string>
+    <string name="settings_licenses">تراخيص المصادر المفتوحة</string>
+    <string name="settings_version">الإصدار</string>
 </resources>
