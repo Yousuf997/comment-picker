@@ -12,4 +12,55 @@
     <string name="winners_create_certificate">إنشاء الشهادة</string>
     <string name="certificate_title">شهادة السحب العشوائي</string>
     <string name="certificate_done">العودة إلى السحوبات</string>
+    <string name="draw_caption_checking">جارٍ التحقق من رمز السحب في الوصف…</string>
+    <string name="draw_caption_found">رمز السحب مطابق لوصف المنشور</string>
+    <string name="draw_caption_missing_title">لم يُعثر على رمز السحب في الوصف</string>
+    <string name="draw_caption_missing_body">لا يزال بإمكانك إجراء السحب، لكن الشهادة ستذكر أن الرمز لم يكن في الوصف.</string>
+    <string name="draw_caption_unchecked_title">تعذّر التحقق من الوصف</string>
+    <string name="draw_caption_unchecked_body">تعذّر الوصول إلى إنستغرام. لا يزال بإمكانك إجراء السحب، وستذكر الشهادة أن الوصف لم يُتحقق منه.</string>
+    <plurals name="draw_entries">
+        <item quantity="zero">%s مشاركة صالحة</item>
+        <item quantity="one">%s مشاركة صالحة</item>
+        <item quantity="two">%s مشاركة صالحة</item>
+        <item quantity="few">%s مشاركات صالحة</item>
+        <item quantity="many">%s مشاركة صالحة</item>
+        <item quantity="other">%s مشاركة صالحة</item>
+    </plurals>
+    <string name="draw_entries_label">مشاركة صالحة</string>
+    <plurals name="draw_winner_count">
+        <item quantity="zero">%s فائز</item>
+        <item quantity="one">%s فائز</item>
+        <item quantity="two">%s فائزان</item>
+        <item quantity="few">%s فائزين</item>
+        <item quantity="many">%s فائزًا</item>
+        <item quantity="other">%s فائز</item>
+    </plurals>
+    <plurals name="draw_alternate_count">
+        <item quantity="zero">%s احتياطي</item>
+        <item quantity="one">%s احتياطي</item>
+        <item quantity="two">%s احتياطيان</item>
+        <item quantity="few">%s احتياطيين</item>
+        <item quantity="many">%s احتياطيًا</item>
+        <item quantity="other">%s احتياطي</item>
+    </plurals>
+    <string name="draw_pick_summary">%1$s و%2$s، يُختارون عشوائيًا</string>
+    <string name="draw_fewer_title">عدد المشاركين أقل من الأماكن</string>
+    <plurals name="draw_fewer_body">
+        <item quantity="zero">شارك %s شخص فقط، لذا سيُختار كل مشارك صالح.</item>
+        <item quantity="one">شارك %s شخص فقط، لذا سيُختار.</item>
+        <item quantity="two">شارك %s شخصان فقط، لذا سيُختار كل مشارك صالح.</item>
+        <item quantity="few">شارك %s أشخاص فقط، لذا سيُختار كل مشارك صالح.</item>
+        <item quantity="many">شارك %s شخصًا فقط، لذا سيُختار كل مشارك صالح.</item>
+        <item quantity="other">شارك %s شخص فقط، لذا سيُختار كل مشارك صالح.</item>
+    </plurals>
+    <string name="draw_record">تسجيل السحب</string>
+    <string name="draw_record_help">يحفظ فيديو لهذا السحب فقط وليس لشاشتك. أنت تقرر الاحتفاظ به أو لا.</string>
+    <string name="draw_test_note">السحوبات التجريبية تستخدم رقمًا عشوائيًا مختلفًا ولا تُحتسب أبدًا.</string>
+    <string name="draw_test_label">تجريبي</string>
+    <string name="draw_test_title">نتيجة السحب التجريبي</string>
+    <string name="draw_role_winner">فائز</string>
+    <string name="draw_role_alternate">احتياطي</string>
+    <string name="draw_test_pick">%1$s. %2$s · %3$s</string>
+    <string name="draw_test_sheet_note">كان هذا مجرد اختبار. لا يُحتسب، والسحب الحقيقي يستخدم الرمز الذي نشرته.</string>
+    <string name="draw_test_close">إغلاق</string>
 </resources>

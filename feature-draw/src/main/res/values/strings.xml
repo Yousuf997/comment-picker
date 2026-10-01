@@ -12,4 +12,41 @@
     <string name="winners_create_certificate">Create certificate</string>
     <string name="certificate_title">Certificate of random draw</string>
     <string name="certificate_done">Back to giveaways</string>
+    <string name="draw_caption_checking">Checking your caption for the draw code…</string>
+    <string name="draw_caption_found">Draw code matches your caption</string>
+    <string name="draw_caption_missing_title">Draw code not found in your caption</string>
+    <string name="draw_caption_missing_body">You can still draw, but the certificate will say the code wasn\'t in the caption.</string>
+    <string name="draw_caption_unchecked_title">Couldn\'t check your caption</string>
+    <string name="draw_caption_unchecked_body">Instagram couldn\'t be reached. You can still draw; the certificate will say the caption wasn\'t checked.</string>
+    <plurals name="draw_entries">
+        <item quantity="one">%s valid entry</item>
+        <item quantity="other">%s valid entries</item>
+    </plurals>
+    <string name="draw_entries_label">valid entries</string>
+    <plurals name="draw_winner_count">
+        <item quantity="one">%s winner</item>
+        <item quantity="other">%s winners</item>
+    </plurals>
+    <plurals name="draw_alternate_count">
+        <item quantity="one">%s alternate</item>
+        <item quantity="other">%s alternates</item>
+    </plurals>
+    <!-- %1$s: "3 winners", %2$s: "2 alternates". -->
+    <string name="draw_pick_summary">%1$s and %2$s, picked at random</string>
+    <string name="draw_fewer_title">Fewer people than places</string>
+    <plurals name="draw_fewer_body">
+        <item quantity="one">Only %s person entered, so they will be picked.</item>
+        <item quantity="other">Only %s different people entered, so everyone valid will be picked.</item>
+    </plurals>
+    <string name="draw_record">Record the draw</string>
+    <string name="draw_record_help">Saves a video of this draw only, not your screen. You choose whether to keep it.</string>
+    <string name="draw_test_note">Test draws use a different random number and never count.</string>
+    <string name="draw_test_label">TEST</string>
+    <string name="draw_test_title">Test draw result</string>
+    <string name="draw_role_winner">Winner</string>
+    <string name="draw_role_alternate">Alternate</string>
+    <!-- %1$s: position, %2$s: @handle, %3$s: Winner or Alternate. -->
+    <string name="draw_test_pick">%1$s. %2$s · %3$s</string>
+    <string name="draw_test_sheet_note">This was only a test. It doesn\'t count, and the real draw uses the code you posted.</string>
+    <string name="draw_test_close">Close</string>
 </resources>

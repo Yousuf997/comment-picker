@@ -31,10 +31,18 @@ data class WinnersRoute(val giveawayId: Long)
 @Serializable
 data class CertificateRoute(val giveawayId: Long)
 
-fun NavGraphBuilder.drawScreen(onDrawWinners: (giveawayId: Long) -> Unit) {
+fun NavGraphBuilder.drawScreen(
+    onBack: () -> Unit,
+    onDrawn: (giveawayId: Long, record: Boolean) -> Unit,
+    onAlreadyDrawn: (giveawayId: Long) -> Unit,
+) {
     composable<DrawRoute> { entry ->
         val giveawayId = entry.toRoute<DrawRoute>().giveawayId
-        DrawScreen(onDrawWinners = { onDrawWinners(giveawayId) })
+        DrawStageScreen(
+            onBack = onBack,
+            onDrawn = { record -> onDrawn(giveawayId, record) },
+            onAlreadyDrawn = { onAlreadyDrawn(giveawayId) },
+        )
     }
 }
 
@@ -61,17 +69,6 @@ fun NavGraphBuilder.winnersScreen(onCreateCertificate: (giveawayId: Long) -> Uni
 fun NavGraphBuilder.certificateScreen(onDone: () -> Unit) {
     composable<CertificateRoute> { CertificateScreen(onDone) }
 }
-
-@Composable
-internal fun DrawScreen(onDrawWinners: () -> Unit) = PlaceholderScreen(
-    screenId = "S11",
-    title = stringResource(R.string.draw_title),
-    onStage = true,
-    actions = listOf(
-        PlaceholderAction(stringResource(R.string.draw_winners), onClick = onDrawWinners),
-        PlaceholderAction(stringResource(R.string.draw_test_first), primary = false, onClick = {}),
-    ),
-)
 
 @Composable
 internal fun DrawingScreen(onDrawFinished: () -> Unit) = PlaceholderScreen(

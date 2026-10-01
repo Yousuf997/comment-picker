@@ -117,7 +117,12 @@ private fun NavGraphBuilder.creationWizard(navController: NavHostController) {
 /** S11 to S15. */
 private fun NavGraphBuilder.draw(navController: NavHostController) {
     // Draw. Once the real draw ran, the result is fixed: S12 leaves the back stack and S13 opens over S14.
-    drawScreen(onDrawWinners = { id -> navController.navigate(DrawingRoute(id)) })
+    drawScreen(
+        onBack = { navController.popBackStack() },
+        // Recording (M-02) reads the switch later; the result is already saved and signed here.
+        onDrawn = { id, _ -> navController.navigate(DrawingRoute(id)) },
+        onAlreadyDrawn = { id -> navController.navigate(WinnersRoute(id)) { popUpTo<DrawRoute> { inclusive = true } } },
+    )
     drawingScreen(onDrawFinished = { id ->
         navController.navigate(WinnersRoute(id)) { popUpTo<DrawingRoute> { inclusive = true } }
         navController.navigate(SaveVideoRoute(id))

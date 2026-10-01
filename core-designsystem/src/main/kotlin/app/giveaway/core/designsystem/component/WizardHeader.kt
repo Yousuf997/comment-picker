@@ -47,6 +47,10 @@ fun WizardHeader(
 ) {
     require(step in 1..WIZARD_STEPS) { "step must be 1..$WIZARD_STEPS, was $step" }
     val colors = GiveawayTheme.colors
+    // On the dark stage (S11, S12) the text switches to the stage's light colors.
+    val onStage = LocalOnDrawStage.current
+    val textColor = if (onStage) colors.onDrawBackground else colors.onBackground
+    val mutedColor = if (onStage) colors.onDrawMuted else colors.onMuted
     val stepText = stringResource(R.string.wizard_step, step, WIZARD_STEPS)
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -54,17 +58,17 @@ fun WizardHeader(
                 Icon(
                     painterResource(R.drawable.ic_arrow_back),
                     contentDescription = stringResource(R.string.navigate_back),
-                    tint = colors.onBackground,
+                    tint = textColor,
                 )
             }
             Column(modifier = Modifier.weight(1f).padding(start = 4.dp)) {
                 Text(
                     title,
                     style = GiveawayTheme.typography.title.copy(textDirection = TextDirection.Content),
-                    color = colors.onBackground,
+                    color = textColor,
                     modifier = Modifier.semantics { heading() },
                 )
-                Text(stepText, style = GiveawayTheme.typography.caption, color = colors.onMuted)
+                Text(stepText, style = GiveawayTheme.typography.caption, color = mutedColor)
             }
         }
         Row(
