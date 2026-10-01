@@ -96,7 +96,10 @@ fun GiveawayNavHost(
             onRulesSaved = { id -> navController.navigate(LockInDrawRoute(id)) },
         )
         lockInDrawScreen(onBack = { navController.popBackStack() }, onDone = { navController.backToHome() })
-        importCommentsScreen(onReviewEntries = { id -> navController.navigate(ReviewEntriesRoute(id)) })
+        importCommentsScreen(
+            onBack = { navController.popBackStack() },
+            onReviewEntries = { id -> navController.navigate(ReviewEntriesRoute(id)) },
+        )
         reviewEntriesScreen(onContinueToDraw = { id -> navController.navigate(DrawRoute(id)) })
 
         // Draw. Once the real draw ran, the result is fixed: S12 leaves the back stack and S13 opens over S14.

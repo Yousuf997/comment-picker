@@ -79,10 +79,10 @@ fun NavGraphBuilder.lockInDrawScreen(onBack: () -> Unit, onDone: () -> Unit) {
     composable<LockInDrawRoute> { LockInScreen(onBack = onBack, onDone = onDone) }
 }
 
-fun NavGraphBuilder.importCommentsScreen(onReviewEntries: (giveawayId: Long) -> Unit) {
+fun NavGraphBuilder.importCommentsScreen(onBack: () -> Unit, onReviewEntries: (giveawayId: Long) -> Unit) {
     composable<ImportCommentsRoute> { entry ->
         val giveawayId = entry.toRoute<ImportCommentsRoute>().giveawayId
-        ImportCommentsScreen(onReviewEntries = { onReviewEntries(giveawayId) })
+        ImportCommentsScreen(onBack = onBack, onReviewEntries = { onReviewEntries(giveawayId) })
     }
 }
 
@@ -92,13 +92,6 @@ fun NavGraphBuilder.reviewEntriesScreen(onContinueToDraw: (giveawayId: Long) -> 
         ReviewEntriesScreen(onContinueToDraw = { onContinueToDraw(giveawayId) })
     }
 }
-
-@Composable
-internal fun ImportCommentsScreen(onReviewEntries: () -> Unit) = PlaceholderScreen(
-    screenId = "S9",
-    title = stringResource(R.string.import_title),
-    actions = listOf(PlaceholderAction(stringResource(R.string.import_review), onClick = onReviewEntries)),
-)
 
 @Composable
 internal fun ReviewEntriesScreen(onContinueToDraw: () -> Unit) = PlaceholderScreen(

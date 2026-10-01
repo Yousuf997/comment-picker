@@ -68,4 +68,43 @@
     <string name="lock_in_secret_note">The secret behind this code stays encrypted on this phone until the draw.</string>
     <string name="lock_in_deadline_passed_title">Entries have already closed</string>
     <string name="lock_in_deadline_passed_body">The code has to be in the caption before entries close. Go back and pick a later closing time.</string>
+    <!-- %1$s comments imported so far of %2$s the post reports, e.g. "1,850 of 2,400 comments". Quantity follows %2$s. -->
+    <plurals name="import_count">
+        <item quantity="one">%1$s of %2$s comment</item>
+        <item quantity="other">%1$s of %2$s comments</item>
+    </plurals>
+    <string name="import_percent">%1$s%%</string>
+    <string name="import_page">Page %1$s, saved as it goes</string>
+    <string name="import_leave_note">You can leave the app. The import keeps going and picks up where it stopped.</string>
+    <string name="import_not_yet_title">Entries are still open</string>
+    <string name="import_not_yet_body">Comments can be imported after entries close on %1$s.</string>
+    <string name="import_offline_title">You\'re offline</string>
+    <string name="import_offline_body">The import will continue when you\'re back online.</string>
+    <string name="import_paused_title">Paused by Instagram</string>
+    <string name="import_paused_body">Instagram asked us to slow down. The import resumes on its own in a few minutes.</string>
+    <string name="import_retrying_title">Instagram stopped early</string>
+    <string name="import_retrying_body">Some comments are still missing. Retrying automatically; every saved page is kept.</string>
+    <string name="import_mismatch_title">Some comments are missing</string>
+    <string name="import_mismatch_body">Instagram kept stopping before the last comment, even after three retries. You can try again or continue with what was imported.</string>
+    <string name="import_deleted_title">The post was deleted</string>
+    <string name="import_deleted_body">This post is no longer on Instagram. You can continue with the comments imported before it was deleted.</string>
+    <string name="import_signed_out_title">Sign in to Instagram again</string>
+    <string name="import_signed_out_body">Your Instagram sign-in expired. Sign in again from Home and the import will continue.</string>
+    <string name="import_retry">Retry now</string>
+    <string name="import_step_fetch">Fetching comments</string>
+    <string name="import_step_check">Checking hashtags and mentions</string>
+    <string name="import_step_duplicates">Removing duplicates</string>
+    <string name="import_step_exclusions">Applying exclusions</string>
+    <string name="import_step_pending">Waiting</string>
+    <string name="import_step_running">In progress</string>
+    <string name="import_step_done">Done</string>
+    <string name="import_accept_partial">Continue with what was imported</string>
+    <string name="import_partial_title">Continue with a partial import?</string>
+    <plurals name="import_partial_body">
+        <item quantity="one">The draw will use the %s comment imported so far. The certificate will say the import was incomplete.</item>
+        <item quantity="other">The draw will use the %s comments imported so far. The certificate will say the import was incomplete.</item>
+    </plurals>
+    <string name="import_partial_confirm">Continue</string>
+    <string name="import_partial_cancel">Keep trying</string>
+    <string name="import_step_stopped">Stopped</string>
 </resources>
