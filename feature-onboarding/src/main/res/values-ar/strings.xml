@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_headline">سحوبات عادلة، مع إثبات.</string>
+    <string name="welcome_get_started">ابدأ</string>
+    <string name="connect_title">ربط إنستغرام</string>
+    <string name="connect_continue">المتابعة عبر إنستغرام</string>
+    <string name="app_lock_title">حماية التطبيق</string>
+    <string name="app_lock_use_biometrics">استخدام البصمة أو الوجه</string>
+    <string name="app_lock_set_pin">تعيين رمز PIN بدلًا من ذلك</string>
+    <string name="app_lock_skip">التخطي الآن</string>
+</resources>

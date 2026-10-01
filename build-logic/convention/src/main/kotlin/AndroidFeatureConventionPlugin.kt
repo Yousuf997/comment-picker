@@ -10,12 +10,15 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
         pluginManager.apply("giveaway.android.library")
         pluginManager.apply("giveaway.android.compose")
         pluginManager.apply("giveaway.hilt")
+        // Typed navigation routes are @Serializable classes.
+        pluginManager.apply("org.jetbrains.kotlin.plugin.serialization")
         dependencies {
             "implementation"(project(":core-designsystem"))
             "implementation"(libs.library("androidx-lifecycle-runtime-compose"))
             "implementation"(libs.library("androidx-lifecycle-viewmodel-compose"))
             "implementation"(libs.library("androidx-navigation-compose"))
             "implementation"(libs.library("hilt-navigation-compose"))
+            "implementation"(libs.library("kotlinx-serialization-json"))
         }
     }
 }

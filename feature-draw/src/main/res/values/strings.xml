@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="draw_title">Ready to draw</string>
+    <string name="draw_winners">Draw winners</string>
+    <string name="draw_test_first">Run a test draw first</string>
+    <string name="drawing_title">Picking winners</string>
+    <string name="drawing_finish">See winners</string>
+    <string name="save_video_title">Save the draw video?</string>
+    <string name="save_video_save">Save to gallery</string>
+    <string name="save_video_discard">Don\'t save</string>
+    <string name="winners_title">Your winners</string>
+    <string name="winners_create_certificate">Create certificate</string>
+    <string name="certificate_title">Certificate of random draw</string>
+    <string name="certificate_done">Back to giveaways</string>
+</resources>

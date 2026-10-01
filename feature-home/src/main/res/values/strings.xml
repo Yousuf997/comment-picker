@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_title">Your giveaways</string>
+    <string name="home_new_giveaway">New giveaway</string>
+    <string name="home_settings">Settings</string>
+</resources>

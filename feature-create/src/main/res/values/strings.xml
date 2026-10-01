@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pick_post_title">Pick the giveaway post</string>
+    <string name="set_rules_title">Set the rules</string>
+    <string name="lock_in_title">Lock in the draw</string>
+    <string name="lock_in_done">Done, remind me at the deadline</string>
+    <string name="import_title">Import comments</string>
+    <string name="import_review">Review entries</string>
+    <string name="review_title">Review entries</string>
+    <string name="review_continue">Continue to draw</string>
+    <string name="wizard_continue">Continue</string>
+</resources>

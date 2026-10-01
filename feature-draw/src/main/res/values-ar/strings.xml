@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="draw_title">جاهز للسحب</string>
+    <string name="draw_winners">اختيار الفائزين</string>
+    <string name="draw_test_first">إجراء سحب تجريبي أولًا</string>
+    <string name="drawing_title">جارٍ اختيار الفائزين</string>
+    <string name="drawing_finish">عرض الفائزين</string>
+    <string name="save_video_title">حفظ فيديو السحب؟</string>
+    <string name="save_video_save">الحفظ في المعرض</string>
+    <string name="save_video_discard">عدم الحفظ</string>
+    <string name="winners_title">الفائزون</string>
+    <string name="winners_create_certificate">إنشاء الشهادة</string>
+    <string name="certificate_title">شهادة السحب العشوائي</string>
+    <string name="certificate_done">العودة إلى السحوبات</string>
+</resources>
