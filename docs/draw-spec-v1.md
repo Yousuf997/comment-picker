@@ -2,7 +2,7 @@
 
 This is the open specification of how [APP NAME] picks giveaway winners. Anyone with the revealed seed and the entry list can reproduce a draw exactly and check that the organizer could not have chosen the result.
 
-Test vectors: [`test-vectors-v1.json`](test-vectors-v1.json). Implementations: the app (`core-draw`), an independent [Python reference](../tools/reference-impl/draw_v1.py), and the open web verifier.
+Test vectors: [`test-vectors-v1.json`](test-vectors-v1.json). Implementations: the app (`core-draw`), an independent [Python reference](../tools/reference-impl/draw_v1.py), and the open [web verifier](../tools/verifier/index.html) with its command-line twin [`verify.mjs`](../tools/verifier/verify.mjs).
 
 ## Why it's fair
 
@@ -78,6 +78,15 @@ Positions start at 1. The first `min(winners, length(picked))` picks are winners
 | Empty entry list | No picks. The app blocks the draw before this point. |
 | Fewer distinct people than `winners + alternates` | Everyone is picked; winners are filled first. |
 | `winners = 0` | All picks are alternates. |
+
+## Checking a draw
+
+Anyone with a certificate and the exported entry list can check a draw:
+
+1. Open `tools/verifier/index.html` in a browser (it works offline and makes no network requests), or run
+   `node tools/verifier/verify.mjs --commit <draw code> --seed <revealed seed> --entries entries.txt --winners N --alternates M`.
+2. The verifier checks that `SHA-256(seed)` equals the draw code from the caption, recomputes the entry list hash, and
+   re-runs section 5. Add `--list-hash` and `--picks` (or fill in those fields on the page) to compare with the certificate.
 
 ## Versioning
 
