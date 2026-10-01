@@ -4,5 +4,7 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.coreDraw)
+    api(projects.coreDraw)
+
+    testImplementation(libs.junit)
 }
