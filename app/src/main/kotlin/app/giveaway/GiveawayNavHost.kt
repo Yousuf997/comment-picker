@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import app.giveaway.feature.create.ImportCommentsRoute
 import app.giveaway.feature.create.LockInDrawRoute
 import app.giveaway.feature.create.PickPostRoute
 import app.giveaway.feature.create.ReviewEntriesRoute
@@ -23,6 +24,8 @@ import app.giveaway.feature.draw.drawScreen
 import app.giveaway.feature.draw.drawingScreen
 import app.giveaway.feature.draw.saveVideoSheet
 import app.giveaway.feature.draw.winnersScreen
+import app.giveaway.feature.home.GiveawayDestination
+import app.giveaway.feature.home.HomeActions
 import app.giveaway.feature.home.HomeRoute
 import app.giveaway.feature.home.homeScreen
 import app.giveaway.feature.onboarding.AppLockSetupRoute
@@ -52,8 +55,14 @@ fun GiveawayNavHost(
         })
 
         homeScreen(
-            onNewGiveaway = { navController.navigate(PickPostRoute) },
-            onOpenSettings = { navController.navigate(SettingsRoute) },
+            HomeActions(
+                onNewGiveaway = { navController.navigate(PickPostRoute) },
+                onOpenSettings = { navController.navigate(SettingsRoute) },
+                onOpenGiveaway = { id, destination -> navController.navigate(destination.route(id)) },
+                onSignInAgain = { navController.navigate(ConnectInstagramRoute) },
+                // The backup flow lives in Settings (S5).
+                onExportBackup = { navController.navigate(SettingsRoute) },
+            ),
         )
         settingsScreen(onBack = { navController.popBackStack() })
 
@@ -80,4 +89,13 @@ fun GiveawayNavHost(
 private fun NavHostController.backToHome() = navigate(HomeRoute) {
     popUpTo<HomeRoute> { inclusive = true }
     launchSingleTop = true
+}
+
+/** The screen a Home card opens, by the giveaway's status (spec: S4). */
+private fun GiveawayDestination.route(giveawayId: Long): Any = when (this) {
+    GiveawayDestination.LOCK_IN -> LockInDrawRoute(giveawayId)
+    GiveawayDestination.IMPORT -> ImportCommentsRoute(giveawayId)
+    GiveawayDestination.REVIEW -> ReviewEntriesRoute(giveawayId)
+    GiveawayDestination.WINNERS -> WinnersRoute(giveawayId)
+    GiveawayDestination.CERTIFICATE -> CertificateRoute(giveawayId)
 }

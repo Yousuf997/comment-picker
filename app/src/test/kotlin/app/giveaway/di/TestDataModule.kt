@@ -1,20 +1,25 @@
-package app.giveaway.core.data.di
+package app.giveaway.di
 
-import app.giveaway.core.data.db.DatabaseFactory
+import android.content.Context
+import androidx.room.Room
 import app.giveaway.core.data.db.GiveawayDatabase
+import app.giveaway.core.data.di.DataModule
 import dagger.Module
 import dagger.Provides
-import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import dagger.hilt.testing.TestInstallIn
 import javax.inject.Singleton
 
+/** UI tests use an in-memory database: SQLCipher's native library doesn't load under Robolectric. */
 @Module
-@InstallIn(SingletonComponent::class)
-@Suppress("TooManyFunctions") // One provider per DAO.
-object DataModule {
+@TestInstallIn(components = [SingletonComponent::class], replaces = [DataModule::class])
+@Suppress("TooManyFunctions") // One provider per DAO, mirroring DataModule.
+object TestDataModule {
     @Provides
     @Singleton
-    fun database(factory: DatabaseFactory): GiveawayDatabase = factory.open()
+    fun database(@ApplicationContext context: Context): GiveawayDatabase =
+        Room.inMemoryDatabaseBuilder(context, GiveawayDatabase::class.java).allowMainThreadQueries().build()
 
     @Provides fun accountDao(db: GiveawayDatabase) = db.accountDao()
 

@@ -35,7 +35,8 @@ class KeystoreKeys @Inject constructor(@ApplicationContext context: Context) {
     private val hasStrongBox = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
         context.packageManager.hasSystemFeature(PackageManager.FEATURE_STRONGBOX_KEYSTORE)
 
-    private val keyStore: KeyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) }
+    // Opened on first use, so building the dependency graph never touches the keystore.
+    private val keyStore: KeyStore by lazy { KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) } }
 
     @Synchronized
     fun secretBox(purpose: KeyPurpose): SecretBox {

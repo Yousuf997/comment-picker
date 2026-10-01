@@ -3,4 +3,33 @@
     <string name="home_title">Your giveaways</string>
     <string name="home_new_giveaway">New giveaway</string>
     <string name="home_settings">Settings</string>
+    <string name="home_hero_title">Run a fair giveaway</string>
+    <string name="home_hero_body">Pick a post, set the rules and draw winners anyone can verify.</string>
+    <string name="home_in_progress">In progress</string>
+    <string name="home_completed">Completed</string>
+    <string name="home_empty_title">No giveaways yet</string>
+    <string name="home_empty_body">Your giveaways will appear here. Start with the post you want to run it on.</string>
+    <string name="home_expired_title">Instagram sign-in expired</string>
+    <string name="home_expired_body">Sign in again to import comments. Your giveaways are safe on this phone.</string>
+    <string name="home_expired_action">Sign in again</string>
+    <string name="home_backup_title">Back up your giveaways</string>
+    <string name="home_backup_body">Everything is stored only on this phone. Export an encrypted backup in case you lose it.</string>
+    <string name="home_backup_action">Export backup</string>
+    <string name="home_closes">Closes %1$s</string>
+    <string name="home_created">Created %1$s</string>
+    <plurals name="home_entries">
+        <item quantity="one">%d valid entry</item>
+        <item quantity="other">%d valid entries</item>
+    </plurals>
+    <plurals name="home_comments">
+        <item quantity="one">%d comment</item>
+        <item quantity="other">%d comments</item>
+    </plurals>
+    <string name="status_draft">Draft</string>
+    <string name="status_waiting">Waiting for deadline</string>
+    <string name="status_ready_to_import">Ready to import</string>
+    <string name="status_importing">Importing</string>
+    <string name="status_review">Review entries</string>
+    <string name="status_drawn">Winners picked</string>
+    <string name="status_completed">Completed</string>
 </resources>
