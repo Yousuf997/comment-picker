@@ -76,6 +76,11 @@ class MediaRepository @Inject constructor(
         )
     }
 
+    /** Deletes every private recording and certificate file (a restore replaced the data they belonged to). */
+    fun deleteAllFiles() {
+        listOf(VIDEOS, CERTIFICATES).forEach { File(context.filesDir, it).deleteRecursively() }
+    }
+
     private companion object {
         const val VIDEOS = "videos"
 

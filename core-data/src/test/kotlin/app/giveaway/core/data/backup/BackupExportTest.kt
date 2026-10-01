@@ -11,6 +11,7 @@ import app.giveaway.core.data.db.GiveawayStatus
 import app.giveaway.core.data.giveaway.DefaultGiveawayRepository
 import app.giveaway.core.data.giveaway.SeedVault
 import app.giveaway.core.data.importing.EntryBuilder
+import app.giveaway.core.data.media.MediaRepository
 import app.giveaway.core.data.settings.DefaultSettingsRepository
 import app.giveaway.core.instagram.api.IgMedia
 import app.giveaway.core.instagram.api.MediaKind
@@ -86,7 +87,8 @@ class BackupExportTest {
 
     private suspend fun export(): ByteArray {
         val out = ByteArrayOutputStream()
-        BackupManager(db, cipher, vault, clock).export(out, password)
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        BackupManager(db, cipher, vault, clock, MediaRepository(context, db, clock), { _, _ -> }).export(out, password)
         return out.toByteArray()
     }
 
