@@ -23,6 +23,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import app.giveaway.core.designsystem.GiveawayTheme
 import app.giveaway.core.designsystem.R
@@ -59,7 +60,7 @@ fun WizardHeader(
             Column(modifier = Modifier.weight(1f).padding(start = 4.dp)) {
                 Text(
                     title,
-                    style = GiveawayTheme.typography.title,
+                    style = GiveawayTheme.typography.title.copy(textDirection = TextDirection.Content),
                     color = colors.onBackground,
                     modifier = Modifier.semantics { heading() },
                 )

@@ -95,7 +95,7 @@ fun GiveawayNavHost(
             onBack = { navController.popBackStack() },
             onRulesSaved = { id -> navController.navigate(LockInDrawRoute(id)) },
         )
-        lockInDrawScreen(onDone = { navController.backToHome() })
+        lockInDrawScreen(onBack = { navController.popBackStack() }, onDone = { navController.backToHome() })
         importCommentsScreen(onReviewEntries = { id -> navController.navigate(ReviewEntriesRoute(id)) })
         reviewEntriesScreen(onContinueToDraw = { id -> navController.navigate(DrawRoute(id)) })
 

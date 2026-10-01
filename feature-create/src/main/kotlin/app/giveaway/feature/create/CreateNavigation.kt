@@ -75,8 +75,8 @@ fun NavGraphBuilder.setRulesScreen(onBack: () -> Unit, onRulesSaved: (giveawayId
     composable<SetRulesRoute> { SetRulesScreen(onBack = onBack, onSaved = onRulesSaved) }
 }
 
-fun NavGraphBuilder.lockInDrawScreen(onDone: () -> Unit) {
-    composable<LockInDrawRoute> { LockInDrawScreen(onDone) }
+fun NavGraphBuilder.lockInDrawScreen(onBack: () -> Unit, onDone: () -> Unit) {
+    composable<LockInDrawRoute> { LockInScreen(onBack = onBack, onDone = onDone) }
 }
 
 fun NavGraphBuilder.importCommentsScreen(onReviewEntries: (giveawayId: Long) -> Unit) {
@@ -92,13 +92,6 @@ fun NavGraphBuilder.reviewEntriesScreen(onContinueToDraw: (giveawayId: Long) -> 
         ReviewEntriesScreen(onContinueToDraw = { onContinueToDraw(giveawayId) })
     }
 }
-
-@Composable
-internal fun LockInDrawScreen(onDone: () -> Unit) = PlaceholderScreen(
-    screenId = "S8",
-    title = stringResource(R.string.lock_in_title),
-    actions = listOf(PlaceholderAction(stringResource(R.string.lock_in_done), onClick = onDone)),
-)
 
 @Composable
 internal fun ImportCommentsScreen(onReviewEntries: () -> Unit) = PlaceholderScreen(

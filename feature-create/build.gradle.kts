@@ -14,4 +14,5 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.androidx.paging.testing)
     testImplementation(libs.androidx.navigation.testing)
+    testImplementation(libs.room.runtime)
 }

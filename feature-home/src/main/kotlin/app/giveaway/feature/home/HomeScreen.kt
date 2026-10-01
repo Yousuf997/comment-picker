@@ -28,6 +28,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -189,7 +190,12 @@ private fun GiveawayRow(card: GiveawayCard, onClick: () -> Unit) {
                     .background(colors.surfaceMuted),
             )
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(card.title, style = GiveawayTheme.typography.bodyStrong, color = colors.onBackground, maxLines = 2)
+                Text(
+                    card.title,
+                    style = GiveawayTheme.typography.bodyStrong.copy(textDirection = TextDirection.Content),
+                    color = colors.onBackground,
+                    maxLines = 2,
+                )
                 Text(dateLine(card), style = GiveawayTheme.typography.caption, color = colors.onMuted)
                 countLine(card)?.let { Text(it, style = GiveawayTheme.typography.caption, color = colors.onMuted) }
             }

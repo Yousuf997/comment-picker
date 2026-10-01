@@ -13,6 +13,7 @@ import androidx.navigation.testing.invoke
 import androidx.test.core.app.ApplicationProvider
 import app.giveaway.core.data.account.AccountRepository
 import app.giveaway.core.data.account.SignInState
+import app.giveaway.core.data.db.CommitmentEntity
 import app.giveaway.core.data.db.GiveawayEntity
 import app.giveaway.core.data.db.GiveawayStatus
 import app.giveaway.core.data.db.GiveawaySummary
@@ -77,7 +78,10 @@ class SetRulesTest {
             ruleUpdates += id to rules
         }
         override suspend fun rules(id: Long): Rules? = null
-        override suspend fun commit(id: Long, commitHash: String, encryptedSeed: ByteArray) = Unit
+        override suspend fun commitment(id: Long): CommitmentEntity? = null
+        override suspend fun saveCommitment(id: Long, commitHash: String, encryptedSeed: ByteArray) = Unit
+        override suspend fun commit(id: Long) = Unit
+        override suspend fun markCaptionVerified(id: Long, at: Instant) = Unit
         override suspend fun transition(id: Long, to: GiveawayStatus) = Unit
     }
 
