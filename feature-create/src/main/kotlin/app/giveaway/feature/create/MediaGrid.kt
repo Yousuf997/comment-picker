@@ -25,7 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
@@ -38,16 +37,13 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemKey
 import app.giveaway.core.designsystem.GiveawayTheme
+import app.giveaway.core.designsystem.formatCount
+import app.giveaway.core.designsystem.formatDate
 import app.giveaway.core.designsystem.component.NoticeCard
 import app.giveaway.core.designsystem.component.NoticeTone
 import app.giveaway.core.instagram.api.IgError
 import app.giveaway.core.instagram.api.IgMedia
 import coil3.compose.AsyncImage
-import java.text.NumberFormat
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 import app.giveaway.core.designsystem.R as DesignR
 
 private const val GRID_COLUMNS = 3
@@ -215,16 +211,4 @@ internal fun describe(media: IgMedia, template: Int): String {
     val comments = pluralStringResource(R.plurals.pick_post_comments, media.commentsCount, count)
     val kind = stringResource(if (media.isReel) R.string.pick_post_kind_reel else R.string.pick_post_kind_post)
     return stringResource(template, kind, formatDate(media.timestamp), comments)
-}
-
-/** Counts and dates follow the app's language (spec: Localization). */
-@Composable
-internal fun formatCount(count: Int): String =
-    NumberFormat.getIntegerInstance(LocalConfiguration.current.locales[0]).format(count)
-
-@Composable
-internal fun formatDate(instant: Instant): String {
-    val locale = LocalConfiguration.current.locales[0]
-    return DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale).withZone(ZoneId.systemDefault())
-        .format(instant)
 }

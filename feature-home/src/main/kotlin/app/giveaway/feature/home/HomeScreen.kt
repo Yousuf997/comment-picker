@@ -22,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
@@ -34,6 +33,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.giveaway.core.designsystem.GiveawayDimens
 import app.giveaway.core.designsystem.GiveawayTheme
+import app.giveaway.core.designsystem.formatDate
 import app.giveaway.core.designsystem.handle
 import app.giveaway.core.designsystem.component.ChipTone
 import app.giveaway.core.designsystem.component.DrawStage
@@ -43,10 +43,6 @@ import app.giveaway.core.designsystem.component.NoticeTone
 import app.giveaway.core.designsystem.component.PrimaryButton
 import app.giveaway.core.designsystem.component.StatusChip
 import coil3.compose.AsyncImage
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 import app.giveaway.core.designsystem.R as DesignR
 
 /** Callbacks from S4 to the rest of the app. */
@@ -214,14 +210,6 @@ private fun countLine(card: GiveawayCard): String? = when {
     card.validEntryCount > 0 -> pluralStringResource(R.plurals.home_entries, card.validEntryCount, card.validEntryCount)
     card.commentCount > 0 -> pluralStringResource(R.plurals.home_comments, card.commentCount, card.commentCount)
     else -> null
-}
-
-/** Dates follow the app's language (spec: Localization). */
-@Composable
-private fun formatDate(instant: Instant): String {
-    val locale = LocalConfiguration.current.locales[0]
-    return DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale).withZone(ZoneId.systemDefault())
-        .format(instant)
 }
 
 private val CardStatus.label: Int
