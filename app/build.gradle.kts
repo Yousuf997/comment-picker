@@ -36,3 +36,21 @@ dependencies {
     testImplementation(libs.hilt.android.testing)
     kspTest(libs.hilt.compiler)
 }
+
+// A Play upload (bundleRelease) must not ship placeholder sign-in settings or an unpinned login helper (spec: Release
+// checklist). Development builds, including CI's assembleRelease, keep working before the F-01 setup exists.
+val verifyReleaseConfig by tasks.registering {
+    val igAppId = providers.gradleProperty("giveaway.igAppId")
+    val authHost = providers.gradleProperty("giveaway.authHost")
+    val pins = providers.gradleProperty("giveaway.authHostPins")
+    doLast {
+        val problems = buildList {
+            if (igAppId.get().startsWith("REPLACE")) add("giveaway.igAppId is a placeholder")
+            if (authHost.get().endsWith(".invalid")) add("giveaway.authHost is a placeholder")
+            val pinCount = pins.get().split(",").count { it.isNotBlank() }
+            if (pinCount < 2) add("giveaway.authHostPins needs a pin and a backup pin")
+        }
+        check(problems.isEmpty()) { "Release configuration incomplete:\n" + problems.joinToString("\n") { "  - $it" } }
+    }
+}
+tasks.matching { it.name == "bundleRelease" }.configureEach { dependsOn(verifyReleaseConfig) }
