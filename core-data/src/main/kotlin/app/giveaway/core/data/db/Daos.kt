@@ -108,6 +108,16 @@ interface CommentDao {
 
     @Query("SELECT COUNT(*) FROM comment WHERE giveawayId = :giveawayId")
     suspend fun count(giveawayId: Long): Int
+
+    /** Keyset paging in (timestamp, id) order for the entry rebuild; blocking, for use inside its transaction. */
+    @Query("SELECT * FROM comment WHERE giveawayId = :giveawayId ORDER BY timestamp, id LIMIT :limit")
+    fun firstPage(giveawayId: Long, limit: Int): List<CommentEntity>
+
+    @Query(
+        "SELECT * FROM comment WHERE giveawayId = :giveawayId AND " +
+            "(timestamp > :timestamp OR (timestamp = :timestamp AND id > :id)) ORDER BY timestamp, id LIMIT :limit",
+    )
+    fun pageAfter(giveawayId: Long, timestamp: Instant, id: String, limit: Int): List<CommentEntity>
 }
 
 @Dao
@@ -117,6 +127,19 @@ interface EntryDao {
 
     @Query("SELECT COUNT(*) FROM entry WHERE giveawayId = :giveawayId AND isValid = 1")
     suspend fun validCount(giveawayId: Long): Int
+
+    /** The organizer's choices: MANUAL exclusions with their note, and manual inclusions (valid, with a note). */
+    @Query("SELECT * FROM entry WHERE giveawayId = :giveawayId AND manualNote IS NOT NULL")
+    suspend fun manualDecisions(giveawayId: Long): List<EntryEntity>
+
+    @Query("DELETE FROM entry WHERE giveawayId = :giveawayId")
+    suspend fun deleteAll(giveawayId: Long)
+
+    @Insert
+    fun insertAllBlocking(entries: List<EntryEntity>)
+
+    @Query("SELECT * FROM entry WHERE giveawayId = :giveawayId")
+    suspend fun all(giveawayId: Long): List<EntryEntity>
 }
 
 @Dao

@@ -4,6 +4,9 @@
 
     <!-- The deadline reminder (S8). Android 13+ asks the user when they lock in a draw. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- The comment import runs as a foreground worker with a progress notification (spec: Battery). -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
     <!-- localeConfig (API 33+) lists the app's languages for the system picker; older versions keep the choice
          through AppCompat, so targetApi marks the attribute as intentionally unused below 33. -->
@@ -71,5 +74,9 @@
                 android:value="androidx.startup"
                 tools:node="remove" />
         </provider>
+        <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:foregroundServiceType="dataSync"
+            tools:node="merge" />
     </application>
 </manifest>
