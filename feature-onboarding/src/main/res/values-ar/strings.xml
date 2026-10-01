@@ -49,4 +49,19 @@
     <string name="app_lock_prompt_subtitle">تفعيل قفل التطبيق</string>
     <string name="app_lock_prompt_cancel">إلغاء</string>
     <string name="app_lock_biometric_failed">تعذّر التأكد من هويتك. حاول مجددًا أو عيّن رمز PIN.</string>
+
+    <!-- Lock screen -->
+    <string name="lock_title">افتح القفل للمتابعة</string>
+    <string name="lock_unlock">فتح القفل</string>
+    <string name="lock_prompt_subtitle">فتح قفل التطبيق</string>
+    <string name="lock_biometric_failed">تعذّر التأكد من هويتك. حاول مجددًا.</string>
+    <string name="lock_locked_out">محاولات خاطئة كثيرة. حاول مجددًا بعد %1$s.</string>
+    <plurals name="lock_wrong_pin">
+        <item quantity="zero">رمز خاطئ. لم تتبقَّ أي محاولة قبل الانتظار.</item>
+        <item quantity="one">رمز خاطئ. تبقّت محاولة واحدة قبل الانتظار.</item>
+        <item quantity="two">رمز خاطئ. تبقّت محاولتان قبل الانتظار.</item>
+        <item quantity="few">رمز خاطئ. تبقّت %d محاولات قبل الانتظار.</item>
+        <item quantity="many">رمز خاطئ. تبقّت %d محاولة قبل الانتظار.</item>
+        <item quantity="other">رمز خاطئ. تبقّت %d محاولة قبل الانتظار.</item>
+    </plurals>
 </resources>
