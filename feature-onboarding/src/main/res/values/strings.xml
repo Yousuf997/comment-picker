@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="welcome_headline">Fair giveaways, with proof.</string>
+    <string name="welcome_get_started">Get started</string>
+    <string name="connect_title">Connect Instagram</string>
+    <string name="connect_continue">Continue with Instagram</string>
+    <string name="app_lock_title">Protect the app</string>
+    <string name="app_lock_use_biometrics">Use fingerprint or face</string>
+    <string name="app_lock_set_pin">Set a PIN instead</string>
+    <string name="app_lock_skip">Skip for now</string>
 </resources>

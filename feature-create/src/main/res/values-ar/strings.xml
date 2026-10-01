@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pick_post_title">اختر منشور السحب</string>
+    <string name="set_rules_title">حدّد القواعد</string>
+    <string name="lock_in_title">ثبّت السحب</string>
+    <string name="lock_in_done">تم، ذكّرني عند الموعد النهائي</string>
+    <string name="import_title">استيراد التعليقات</string>
+    <string name="import_review">مراجعة المشاركات</string>
+    <string name="review_title">مراجعة المشاركات</string>
+    <string name="review_continue">المتابعة إلى السحب</string>
+    <string name="wizard_continue">متابعة</string>
+</resources>
