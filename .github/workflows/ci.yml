@@ -65,8 +65,18 @@ jobs:
       - name: Run device tests on the managed emulator (Pixel 6, API 34)
         run: ./gradlew pixel6Api34DebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect --continue
 
+      # Guards against a green job that ran nothing (for example, a module losing its device tests by mistake).
+      - name: Summarize device tests
+        run: |
+          files=$(find . -path '*/build/outputs/androidTest-results/managedDevice/*' -name 'TEST-*.xml')
+          if [ -z "$files" ]; then echo "::error::No device test results found"; exit 1; fi
+          total=$(cat $files | grep -o '<testcase ' | wc -l)
+          failed=$(cat $files | grep -o '<failure' | wc -l)
+          echo "Device tests: $total run, $failed failed" | tee -a "$GITHUB_STEP_SUMMARY"
+          [ "$total" -gt 0 ]
+
       - name: Upload device test reports
-        if: failure()
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: device-test-reports
