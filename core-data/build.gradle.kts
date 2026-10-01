@@ -12,7 +12,8 @@ room {
 dependencies {
     api(projects.coreDraw)
     implementation(projects.coreSecurity)
-    implementation(projects.coreInstagram)
+    // api: AccountRepository and GiveawayRepository expose AuthToken, IgAccount and IgMedia.
+    api(projects.coreInstagram)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)

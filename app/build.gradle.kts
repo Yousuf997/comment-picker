@@ -36,6 +36,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.process)
 
     testImplementation(libs.hilt.android.testing)
+    testImplementation(libs.room.runtime)
     kspTest(libs.hilt.compiler)
 }
 

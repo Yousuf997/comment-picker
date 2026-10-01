@@ -3,4 +3,41 @@
     <string name="home_title">سحوباتك</string>
     <string name="home_new_giveaway">سحب جديد</string>
     <string name="home_settings">الإعدادات</string>
+    <string name="home_hero_title">أجرِ سحبًا عادلًا</string>
+    <string name="home_hero_body">اختر منشورًا، وحدّد القواعد، واختر فائزين يمكن لأي شخص التحقق منهم.</string>
+    <string name="home_in_progress">قيد التنفيذ</string>
+    <string name="home_completed">مكتملة</string>
+    <string name="home_empty_title">لا توجد سحوبات بعد</string>
+    <string name="home_empty_body">ستظهر سحوباتك هنا. ابدأ بالمنشور الذي تريد إجراء السحب عليه.</string>
+    <string name="home_expired_title">انتهت صلاحية تسجيل الدخول إلى إنستغرام</string>
+    <string name="home_expired_body">سجّل الدخول مجددًا لاستيراد التعليقات. سحوباتك محفوظة على هذا الهاتف.</string>
+    <string name="home_expired_action">تسجيل الدخول مجددًا</string>
+    <string name="home_backup_title">احفظ نسخة احتياطية من سحوباتك</string>
+    <string name="home_backup_body">كل شيء محفوظ على هذا الهاتف فقط. صدّر نسخة احتياطية مشفّرة تحسّبًا لفقدانه.</string>
+    <string name="home_backup_action">تصدير نسخة احتياطية</string>
+    <string name="home_closes">ينتهي في %1$s</string>
+    <string name="home_created">أُنشئ في %1$s</string>
+    <plurals name="home_entries">
+        <item quantity="zero">لا توجد مشاركات صالحة</item>
+        <item quantity="one">مشاركة صالحة واحدة</item>
+        <item quantity="two">مشاركتان صالحتان</item>
+        <item quantity="few">%d مشاركات صالحة</item>
+        <item quantity="many">%d مشاركة صالحة</item>
+        <item quantity="other">%d مشاركة صالحة</item>
+    </plurals>
+    <plurals name="home_comments">
+        <item quantity="zero">لا توجد تعليقات</item>
+        <item quantity="one">تعليق واحد</item>
+        <item quantity="two">تعليقان</item>
+        <item quantity="few">%d تعليقات</item>
+        <item quantity="many">%d تعليقًا</item>
+        <item quantity="other">%d تعليق</item>
+    </plurals>
+    <string name="status_draft">مسودة</string>
+    <string name="status_waiting">بانتظار الموعد النهائي</string>
+    <string name="status_ready_to_import">جاهز للاستيراد</string>
+    <string name="status_importing">جارٍ الاستيراد</string>
+    <string name="status_review">مراجعة المشاركات</string>
+    <string name="status_drawn">تم اختيار الفائزين</string>
+    <string name="status_completed">مكتمل</string>
 </resources>
