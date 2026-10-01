@@ -4,3 +4,7 @@ naming:
     # Composable functions are PascalCase by convention.
     ignoreAnnotated:
       - 'Composable'
+  MatchingDeclarationName:
+    # Compose files group a route or data class with the composables that use it (e.g. HomeNavigation.kt holds
+    # HomeRoute and HomeScreen), so the file is named for its role, not its single class.
+    active: false
