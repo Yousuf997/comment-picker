@@ -14,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.test.core.app.ApplicationProvider
 import app.giveaway.core.designsystem.GiveawayTheme
+import app.giveaway.di.FakeInstagramModule
 import app.giveaway.feature.create.ImportCommentsRoute
 import app.giveaway.feature.create.LockInDrawRoute
 import app.giveaway.feature.create.PickPostRoute
@@ -123,6 +124,8 @@ class NavigationTest {
         launch { GiveawayNavHost(navController, startDestination = HomeRoute) }
         tap(HomeR.string.home_new_giveaway)
         assertScreen("S6")
+        // The fake Instagram has one post; Continue stays off until it is picked.
+        compose.onNodeWithTag("pick_post:tile:${FakeInstagramModule.POST.id}").performClick()
         tap(CreateR.string.wizard_continue)
         assertScreen("S7")
         tap(CreateR.string.wizard_continue)

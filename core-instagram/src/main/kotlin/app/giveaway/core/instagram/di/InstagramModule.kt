@@ -34,9 +34,6 @@ internal abstract class InstagramModule {
     abstract fun authenticator(impl: DefaultInstagramAuthenticator): InstagramAuthenticator
 
     @Binds
-    abstract fun instagramRepository(impl: DefaultInstagramRepository): InstagramRepository
-
-    @Binds
     abstract fun tokenRefresher(impl: InstagramTokenRefresher): TokenRefresher
 
     companion object {
@@ -78,4 +75,12 @@ internal abstract class InstagramModule {
         private const val CALL_TIMEOUT_SECONDS = 30L
         private val graphJson = Json { ignoreUnknownKeys = true }
     }
+}
+
+/** The data repository on its own, so UI tests can replace it with a fake Instagram. */
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class InstagramRepositoryModule {
+    @Binds
+    internal abstract fun instagramRepository(impl: DefaultInstagramRepository): InstagramRepository
 }

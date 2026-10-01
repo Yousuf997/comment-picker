@@ -9,4 +9,31 @@
     <string name="review_title">مراجعة المشاركات</string>
     <string name="review_continue">المتابعة إلى السحب</string>
     <string name="wizard_continue">متابعة</string>
+    <string name="wizard_new_giveaway">سحب جديد</string>
+    <string name="pick_post_filter_all">الكل</string>
+    <string name="pick_post_filter_posts">المنشورات</string>
+    <string name="pick_post_filter_reels">ريلز</string>
+    <string name="pick_post_loading">جارٍ تحميل منشوراتك</string>
+    <string name="pick_post_none_selected">اختر منشورًا أو ريلز واحدًا لهذا السحب.</string>
+    <string name="pick_post_kind_post">منشور</string>
+    <string name="pick_post_kind_reel">ريلز</string>
+    <string name="pick_post_selected">المحدد: %1$s بتاريخ %2$s، %3$s</string>
+    <string name="pick_post_tile">%1$s بتاريخ %2$s، %3$s</string>
+    <plurals name="pick_post_comments">
+        <item quantity="zero">لا تعليقات</item>
+        <item quantity="one">تعليق واحد</item>
+        <item quantity="two">تعليقان</item>
+        <item quantity="few">%s تعليقات</item>
+        <item quantity="many">%s تعليقًا</item>
+        <item quantity="other">%s تعليق</item>
+    </plurals>
+    <string name="pick_post_empty_all">لا توجد منشورات أو ريلز على هذا الحساب بعد. انشر السحب على إنستغرام أولًا ثم عُد.</string>
+    <string name="pick_post_empty_posts">لا توجد منشورات هنا. جرّب الكل أو ريلز.</string>
+    <string name="pick_post_empty_reels">لا توجد ريلز هنا. جرّب الكل أو المنشورات.</string>
+    <string name="pick_post_error_title">تعذّر تحميل منشوراتك</string>
+    <string name="pick_post_error_offline">أنت غير متصل. اتصل بالإنترنت وحاول مرة أخرى.</string>
+    <string name="pick_post_error_signed_out">انتهت صلاحية تسجيل دخولك إلى إنستغرام. عُد إلى الرئيسية وسجّل الدخول مرة أخرى.</string>
+    <string name="pick_post_error_busy">طلب إنستغرام التمهّل. انتظر قليلًا ثم حاول مرة أخرى.</string>
+    <string name="pick_post_error_other">حدث خطأ من جهة إنستغرام. حاول مرة أخرى.</string>
+    <string name="pick_post_retry">حاول مرة أخرى</string>
 </resources>
