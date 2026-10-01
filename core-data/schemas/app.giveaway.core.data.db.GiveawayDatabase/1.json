@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "0f5b8ea7ff9244bc107c1d606f33de64",
+    "identityHash": "11843c307a5b611967a2d4b788d3c0ef",
     "entities": [
       {
         "tableName": "account",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`igUserId` TEXT NOT NULL, `username` TEXT NOT NULL, `encryptedToken` BLOB NOT NULL, `tokenExpiresAt` INTEGER NOT NULL, PRIMARY KEY(`igUserId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`igUserId` TEXT NOT NULL, `username` TEXT NOT NULL, `encryptedToken` BLOB NOT NULL, `tokenExpiresAt` INTEGER NOT NULL, `tokenRevoked` INTEGER NOT NULL, PRIMARY KEY(`igUserId`))",
         "fields": [
           {
             "fieldPath": "igUserId",
@@ -29,6 +29,12 @@
           {
             "fieldPath": "tokenExpiresAt",
             "columnName": "tokenExpiresAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tokenRevoked",
+            "columnName": "tokenRevoked",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -911,7 +917,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0f5b8ea7ff9244bc107c1d606f33de64')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '11843c307a5b611967a2d4b788d3c0ef')"
     ]
   }
 }

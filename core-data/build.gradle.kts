@@ -19,6 +19,11 @@ dependencies {
     ksp(libs.room.compiler)
     implementation(libs.sqlcipher.android)
     implementation(libs.androidx.sqlite)
+    implementation(libs.androidx.work.runtime)
+    implementation(libs.androidx.hilt.work)
+    ksp(libs.androidx.hilt.compiler)
+
+    testImplementation(libs.kotlinx.coroutines.test)
 
     androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.room.testing)

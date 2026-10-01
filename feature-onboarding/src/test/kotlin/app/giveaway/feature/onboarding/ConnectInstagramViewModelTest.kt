@@ -2,6 +2,7 @@ package app.giveaway.feature.onboarding
 
 import androidx.lifecycle.SavedStateHandle
 import app.giveaway.core.data.account.AccountRepository
+import app.giveaway.core.data.account.SignInState
 import app.giveaway.core.instagram.auth.AccountType
 import app.giveaway.core.instagram.auth.AuthCallbacks
 import app.giveaway.core.instagram.auth.AuthOutcome
@@ -179,6 +180,14 @@ class ConnectInstagramViewModelTest {
         }
 
         override suspend fun token() = saved?.first
+
+        override suspend fun updateToken(accessToken: String, expiresAt: Instant) = Unit
+
+        override suspend fun markTokenRevoked() = Unit
+
+        override suspend fun isTokenRevoked() = false
+
+        override fun observeSignInState(): Flow<SignInState> = flowOf(SignInState.SignedOut)
 
         override fun observeUsername(): Flow<String?> = flowOf(saved?.second?.username)
 

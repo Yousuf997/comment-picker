@@ -21,6 +21,8 @@ data class AccountEntity(
     val username: String,
     val encryptedToken: ByteArray,
     val tokenExpiresAt: Instant,
+    /** Added: Instagram rejected the token (error 190); S4 asks the user to sign in again. */
+    val tokenRevoked: Boolean = false,
 )
 
 @Entity(

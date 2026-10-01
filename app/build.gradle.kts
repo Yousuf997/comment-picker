@@ -25,10 +25,13 @@ dependencies {
     implementation(projects.featureDraw)
     implementation(projects.featureSettings)
     implementation(projects.coreInstagram)
+    implementation(projects.coreData)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.work.runtime)
+    implementation(libs.androidx.hilt.work)
 
     testImplementation(libs.hilt.android.testing)
     kspTest(libs.hilt.compiler)
