@@ -1,0 +1,917 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "0f5b8ea7ff9244bc107c1d606f33de64",
+    "entities": [
+      {
+        "tableName": "account",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`igUserId` TEXT NOT NULL, `username` TEXT NOT NULL, `encryptedToken` BLOB NOT NULL, `tokenExpiresAt` INTEGER NOT NULL, PRIMARY KEY(`igUserId`))",
+        "fields": [
+          {
+            "fieldPath": "igUserId",
+            "columnName": "igUserId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "username",
+            "columnName": "username",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encryptedToken",
+            "columnName": "encryptedToken",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tokenExpiresAt",
+            "columnName": "tokenExpiresAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "igUserId"
+          ]
+        }
+      },
+      {
+        "tableName": "giveaway",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `igMediaId` TEXT NOT NULL, `mediaType` TEXT NOT NULL, `thumbnailUrl` TEXT, `status` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `closesAt` INTEGER NOT NULL, `autoDeleteAt` INTEGER, `ownerUsername` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "igMediaId",
+            "columnName": "igMediaId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaType",
+            "columnName": "mediaType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "thumbnailUrl",
+            "columnName": "thumbnailUrl",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "closesAt",
+            "columnName": "closesAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "autoDeleteAt",
+            "columnName": "autoDeleteAt",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "ownerUsername",
+            "columnName": "ownerUsername",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_giveaway_status",
+            "unique": false,
+            "columnNames": [
+              "status"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_giveaway_status` ON `${TABLE_NAME}` (`status`)"
+          },
+          {
+            "name": "index_giveaway_autoDeleteAt",
+            "unique": false,
+            "columnNames": [
+              "autoDeleteAt"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_giveaway_autoDeleteAt` ON `${TABLE_NAME}` (`autoDeleteAt`)"
+          }
+        ]
+      },
+      {
+        "tableName": "rules",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`giveawayId` INTEGER NOT NULL, `minMentions` INTEGER NOT NULL, `requiredHashtag` TEXT, `keyword` TEXT, `onePerPerson` INTEGER NOT NULL, `excludePastWinners` INTEGER NOT NULL, `excludeBlocklist` INTEGER NOT NULL, `winnersCount` INTEGER NOT NULL, `alternatesCount` INTEGER NOT NULL, PRIMARY KEY(`giveawayId`), FOREIGN KEY(`giveawayId`) REFERENCES `giveaway`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "giveawayId",
+            "columnName": "giveawayId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "minMentions",
+            "columnName": "minMentions",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "requiredHashtag",
+            "columnName": "requiredHashtag",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "keyword",
+            "columnName": "keyword",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "onePerPerson",
+            "columnName": "onePerPerson",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "excludePastWinners",
+            "columnName": "excludePastWinners",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "excludeBlocklist",
+            "columnName": "excludeBlocklist",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "winnersCount",
+            "columnName": "winnersCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "alternatesCount",
+            "columnName": "alternatesCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "giveawayId"
+          ]
+        },
+        "foreignKeys": [
+          {
+            "table": "giveaway",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "giveawayId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "commitment",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`giveawayId` INTEGER NOT NULL, `encryptedSeed` BLOB NOT NULL, `commitHash` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `captionVerifiedAt` INTEGER, PRIMARY KEY(`giveawayId`), FOREIGN KEY(`giveawayId`) REFERENCES `giveaway`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "giveawayId",
+            "columnName": "giveawayId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encryptedSeed",
+            "columnName": "encryptedSeed",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "commitHash",
+            "columnName": "commitHash",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "captionVerifiedAt",
+            "columnName": "captionVerifiedAt",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "giveawayId"
+          ]
+        },
+        "foreignKeys": [
+          {
+            "table": "giveaway",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "giveawayId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "import_state",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`giveawayId` INTEGER NOT NULL, `nextCursor` TEXT, `pagesFetched` INTEGER NOT NULL, `commentsFetched` INTEGER NOT NULL, `expectedCount` INTEGER NOT NULL, `lastError` TEXT, `updatedAt` INTEGER NOT NULL, `failedRetries` INTEGER NOT NULL, `acceptedPartial` INTEGER NOT NULL, `repliesCounted` INTEGER NOT NULL, PRIMARY KEY(`giveawayId`), FOREIGN KEY(`giveawayId`) REFERENCES `giveaway`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "giveawayId",
+            "columnName": "giveawayId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nextCursor",
+            "columnName": "nextCursor",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "pagesFetched",
+            "columnName": "pagesFetched",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "commentsFetched",
+            "columnName": "commentsFetched",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "expectedCount",
+            "columnName": "expectedCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastError",
+            "columnName": "lastError",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "failedRetries",
+            "columnName": "failedRetries",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "acceptedPartial",
+            "columnName": "acceptedPartial",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "repliesCounted",
+            "columnName": "repliesCounted",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "giveawayId"
+          ]
+        },
+        "foreignKeys": [
+          {
+            "table": "giveaway",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "giveawayId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "comment",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`giveawayId` INTEGER NOT NULL, `id` TEXT NOT NULL, `username` TEXT NOT NULL, `text` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, PRIMARY KEY(`giveawayId`, `id`), FOREIGN KEY(`giveawayId`) REFERENCES `giveaway`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "giveawayId",
+            "columnName": "giveawayId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "username",
+            "columnName": "username",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "text",
+            "columnName": "text",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "giveawayId",
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_comment_giveawayId_timestamp_id",
+            "unique": false,
+            "columnNames": [
+              "giveawayId",
+              "timestamp",
+              "id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_comment_giveawayId_timestamp_id` ON `${TABLE_NAME}` (`giveawayId`, `timestamp`, `id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "giveaway",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "giveawayId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "entry",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`giveawayId` INTEGER NOT NULL, `commentId` TEXT NOT NULL, `username` TEXT NOT NULL, `isValid` INTEGER NOT NULL, `exclusionReason` TEXT, `manualNote` TEXT, PRIMARY KEY(`giveawayId`, `commentId`), FOREIGN KEY(`giveawayId`) REFERENCES `giveaway`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "giveawayId",
+            "columnName": "giveawayId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "commentId",
+            "columnName": "commentId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "username",
+            "columnName": "username",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isValid",
+            "columnName": "isValid",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "exclusionReason",
+            "columnName": "exclusionReason",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "manualNote",
+            "columnName": "manualNote",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "giveawayId",
+            "commentId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_entry_giveawayId_isValid",
+            "unique": false,
+            "columnNames": [
+              "giveawayId",
+              "isValid"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_entry_giveawayId_isValid` ON `${TABLE_NAME}` (`giveawayId`, `isValid`)"
+          },
+          {
+            "name": "index_entry_giveawayId_username",
+            "unique": false,
+            "columnNames": [
+              "giveawayId",
+              "username"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_entry_giveawayId_username` ON `${TABLE_NAME}` (`giveawayId`, `username`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "giveaway",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "giveawayId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "draw",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `giveawayId` INTEGER NOT NULL, `isTest` INTEGER NOT NULL, `realGiveawayId` INTEGER, `seed` BLOB NOT NULL, `entryListHash` TEXT NOT NULL, `drawnAt` INTEGER NOT NULL, `algorithmVersion` TEXT NOT NULL, `deviceSignature` BLOB NOT NULL, `signerPublicKey` BLOB NOT NULL, `signerFingerprint` TEXT NOT NULL, `captionCheck` TEXT NOT NULL, `integrityVerified` INTEGER NOT NULL, `partialImport` INTEGER NOT NULL, `entryCount` INTEGER NOT NULL, FOREIGN KEY(`giveawayId`) REFERENCES `giveaway`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "giveawayId",
+            "columnName": "giveawayId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isTest",
+            "columnName": "isTest",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "realGiveawayId",
+            "columnName": "realGiveawayId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "seed",
+            "columnName": "seed",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "entryListHash",
+            "columnName": "entryListHash",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "drawnAt",
+            "columnName": "drawnAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "algorithmVersion",
+            "columnName": "algorithmVersion",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "deviceSignature",
+            "columnName": "deviceSignature",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "signerPublicKey",
+            "columnName": "signerPublicKey",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "signerFingerprint",
+            "columnName": "signerFingerprint",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "captionCheck",
+            "columnName": "captionCheck",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "integrityVerified",
+            "columnName": "integrityVerified",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "partialImport",
+            "columnName": "partialImport",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "entryCount",
+            "columnName": "entryCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_draw_giveawayId",
+            "unique": false,
+            "columnNames": [
+              "giveawayId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_draw_giveawayId` ON `${TABLE_NAME}` (`giveawayId`)"
+          },
+          {
+            "name": "index_draw_realGiveawayId",
+            "unique": true,
+            "columnNames": [
+              "realGiveawayId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_draw_realGiveawayId` ON `${TABLE_NAME}` (`realGiveawayId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "giveaway",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "giveawayId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "draw_result",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`drawId` INTEGER NOT NULL, `position` INTEGER NOT NULL, `username` TEXT NOT NULL, `role` TEXT NOT NULL, `confirmationStatus` TEXT NOT NULL, `replacedReason` TEXT, `replacedByPosition` INTEGER, PRIMARY KEY(`drawId`, `position`), FOREIGN KEY(`drawId`) REFERENCES `draw`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "drawId",
+            "columnName": "drawId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "position",
+            "columnName": "position",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "username",
+            "columnName": "username",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "role",
+            "columnName": "role",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "confirmationStatus",
+            "columnName": "confirmationStatus",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "replacedReason",
+            "columnName": "replacedReason",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "replacedByPosition",
+            "columnName": "replacedByPosition",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "drawId",
+            "position"
+          ]
+        },
+        "foreignKeys": [
+          {
+            "table": "draw",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "drawId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "blocklist",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`username` TEXT NOT NULL, `addedAt` INTEGER NOT NULL, `note` TEXT, PRIMARY KEY(`username`))",
+        "fields": [
+          {
+            "fieldPath": "username",
+            "columnName": "username",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "addedAt",
+            "columnName": "addedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "note",
+            "columnName": "note",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "username"
+          ]
+        }
+      },
+      {
+        "tableName": "past_winner",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`username` TEXT NOT NULL, `giveawayId` INTEGER NOT NULL, `wonAt` INTEGER NOT NULL, PRIMARY KEY(`username`, `giveawayId`))",
+        "fields": [
+          {
+            "fieldPath": "username",
+            "columnName": "username",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "giveawayId",
+            "columnName": "giveawayId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wonAt",
+            "columnName": "wonAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "username",
+            "giveawayId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_past_winner_username",
+            "unique": false,
+            "columnNames": [
+              "username"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_past_winner_username` ON `${TABLE_NAME}` (`username`)"
+          }
+        ]
+      },
+      {
+        "tableName": "media_file",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `giveawayId` INTEGER NOT NULL, `kind` TEXT NOT NULL, `uri` TEXT NOT NULL, `savedToGallery` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, `pendingDecision` INTEGER NOT NULL, FOREIGN KEY(`giveawayId`) REFERENCES `giveaway`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "giveawayId",
+            "columnName": "giveawayId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "kind",
+            "columnName": "kind",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "uri",
+            "columnName": "uri",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "savedToGallery",
+            "columnName": "savedToGallery",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pendingDecision",
+            "columnName": "pendingDecision",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_media_file_giveawayId",
+            "unique": false,
+            "columnNames": [
+              "giveawayId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_media_file_giveawayId` ON `${TABLE_NAME}` (`giveawayId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "giveaway",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "giveawayId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "settings",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `appLockEnabled` INTEGER NOT NULL, `lockAfterSeconds` INTEGER NOT NULL, `blockScreenshots` INTEGER NOT NULL, `autoDeleteDays` INTEGER NOT NULL, `recordDrawsByDefault` INTEGER NOT NULL, `language` TEXT, `lastBackupAt` INTEGER, `onboardingComplete` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "appLockEnabled",
+            "columnName": "appLockEnabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lockAfterSeconds",
+            "columnName": "lockAfterSeconds",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "blockScreenshots",
+            "columnName": "blockScreenshots",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "autoDeleteDays",
+            "columnName": "autoDeleteDays",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "recordDrawsByDefault",
+            "columnName": "recordDrawsByDefault",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "language",
+            "columnName": "language",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "lastBackupAt",
+            "columnName": "lastBackupAt",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "onboardingComplete",
+            "columnName": "onboardingComplete",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0f5b8ea7ff9244bc107c1d606f33de64')"
+    ]
+  }
+}
