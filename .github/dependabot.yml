@@ -1,0 +1,26 @@
+version: 2
+updates:
+  - package-ecosystem: gradle
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    groups:
+      kotlin:
+        patterns:
+          - "org.jetbrains.kotlin*"
+          - "com.google.devtools.ksp*"
+      android-tooling:
+        patterns:
+          - "com.android.tools*"
+      androidx:
+        patterns:
+          - "androidx.*"
+      dagger:
+        patterns:
+          - "com.google.dagger*"
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
