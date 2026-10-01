@@ -61,7 +61,12 @@ class GiveawayRepositoryTest {
     private suspend fun draft() = repository.createDraft(media, "Summer drop", "shop", rules)
 
     private suspend fun moveTo(id: Long, vararg path: GiveawayStatus) = path.forEach {
-        if (it == COMMITTED) repository.commit(id, "hash", ByteArray(32)) else repository.transition(id, it)
+        if (it == COMMITTED) {
+            repository.saveCommitment(id, "hash", ByteArray(32))
+            repository.commit(id)
+        } else {
+            repository.transition(id, it)
+        }
     }
 
     @Test
@@ -125,8 +130,21 @@ class GiveawayRepositoryTest {
     fun committingTwiceIsRejected() = runTest {
         val id = draft()
         moveTo(id, COMMITTED)
-        assertTrue(runCatching { repository.commit(id, "other", ByteArray(32)) }.isFailure)
+        assertTrue(runCatching { repository.commit(id) }.isFailure)
+        assertTrue(runCatching { repository.saveCommitment(id, "other", ByteArray(32)) }.isFailure)
         assertEquals("hash", db.commitmentDao().get(id)?.commitHash)
+    }
+
+    @Test
+    fun aDraftNeedsItsCodeBeforeCommittingAndKeepsOnlyOne() = runTest {
+        val id = draft()
+        assertTrue(runCatching { repository.commit(id) }.isFailure)
+        repository.saveCommitment(id, "hash", ByteArray(32))
+        assertTrue(runCatching { repository.saveCommitment(id, "other", ByteArray(32)) }.isFailure)
+        repository.saveRules(id, rules.copy(winnersCount = 3))
+        repository.commit(id)
+        assertEquals(COMMITTED, repository.get(id)?.status)
+        assertEquals(3, repository.rules(id)?.winnersCount)
     }
 
     @Test

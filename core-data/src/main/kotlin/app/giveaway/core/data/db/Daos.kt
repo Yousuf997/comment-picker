@@ -83,6 +83,9 @@ interface CommitmentDao {
 
     @Query("SELECT * FROM commitment WHERE giveawayId = :giveawayId")
     suspend fun get(giveawayId: Long): CommitmentEntity?
+
+    @Query("UPDATE commitment SET captionVerifiedAt = :at WHERE giveawayId = :giveawayId")
+    suspend fun setCaptionVerified(giveawayId: Long, at: Instant)
 }
 
 @Dao

@@ -55,4 +55,17 @@
     <string name="rules_picker_next">Next</string>
     <string name="rules_picker_done">Done</string>
     <string name="rules_picker_cancel">Cancel</string>
+    <string name="lock_in_explanation">Post this code in your caption before entries close. It locks in a secret that only this phone knows, so nobody can choose the winners after seeing the entries.</string>
+    <string name="lock_in_code_label">Your draw code</string>
+    <string name="lock_in_sha256" translatable="false">SHA-256</string>
+    <string name="lock_in_copy">Copy code</string>
+    <string name="lock_in_copied">Copied</string>
+    <string name="lock_in_step_copy">Copy the code.</string>
+    <string name="lock_in_step_paste">Paste it at the end of your post\'s caption on Instagram.</string>
+    <!-- %1$s: when entries close, e.g. "Oct 8, 2026, 10:00 AM". -->
+    <string name="lock_in_step_return">Come back after entries close on %1$s to import the comments.</string>
+    <string name="lock_in_confirm">I\'ve added the code to my caption</string>
+    <string name="lock_in_secret_note">The secret behind this code stays encrypted on this phone until the draw.</string>
+    <string name="lock_in_deadline_passed_title">Entries have already closed</string>
+    <string name="lock_in_deadline_passed_body">The code has to be in the caption before entries close. Go back and pick a later closing time.</string>
 </resources>

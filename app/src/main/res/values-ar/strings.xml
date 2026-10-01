@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_channel_deadlines">مواعيد إغلاق السحوبات</string>
+    <string name="notification_entries_closed_title">أُغلقت المشاركات</string>
+    <string name="notification_entries_closed_text">سحب جاهز لاستيراد تعليقاته.</string>
+</resources>

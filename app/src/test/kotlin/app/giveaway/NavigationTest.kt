@@ -1,9 +1,11 @@
 package app.giveaway
 
+import android.Manifest
 import android.app.Application
 import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
@@ -137,8 +139,13 @@ class NavigationTest {
         // S7 saves the draft through Room, which is asynchronous.
         compose.onNodeWithText(app.getString(CreateR.string.wizard_continue)).performScrollTo().performClick()
         awaitScreen("S8")
-        tap(CreateR.string.lock_in_done)
-        assertScreen("S4")
+        // Done needs the box ticked and the code loaded; granting notifications skips the Android 13 prompt.
+        shadowOf(app).grantPermissions(Manifest.permission.POST_NOTIFICATIONS)
+        compose.onNodeWithText(app.getString(CreateR.string.lock_in_confirm)).performScrollTo().performClick()
+        val done = compose.onNodeWithText(app.getString(CreateR.string.lock_in_done))
+        compose.waitUntil(WAIT_MS) { runCatching { done.assertIsEnabled() }.isSuccess }
+        done.performScrollTo().performClick()
+        awaitScreen("S4")
         assertFalse(navController.previousBackStackEntry != null)
     }
 

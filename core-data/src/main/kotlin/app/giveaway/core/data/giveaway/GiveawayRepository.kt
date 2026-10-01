@@ -13,6 +13,7 @@ import app.giveaway.draw.Rules
 import kotlinx.coroutines.flow.Flow
 import java.time.Clock
 import java.time.Duration
+import java.time.Instant
 import javax.inject.Inject
 
 /** Giveaways and their rules, moving only along [GiveawayStateMachine]. */
@@ -29,13 +30,25 @@ interface GiveawayRepository {
 
     suspend fun rules(id: Long): Rules?
 
-    /** Stores the commitment and moves DRAFT -> COMMITTED (S8 "Done"). */
-    suspend fun commit(id: Long, commitHash: String, encryptedSeed: ByteArray)
+    suspend fun commitment(id: Long): CommitmentEntity?
+
+    /**
+     * Stores the sealed seed and its hash when S8 first shows the code, while the giveaway is still a DRAFT, so
+     * going back to S7 keeps the same code. Throws [IllegalStateException] if it isn't a draft or already has one.
+     */
+    suspend fun saveCommitment(id: Long, commitHash: String, encryptedSeed: ByteArray)
+
+    /** S8 "Done": moves DRAFT -> COMMITTED, freezing the rules (plan A9). Needs a stored commitment. */
+    suspend fun commit(id: Long)
+
+    /** The deadline check found the code in the caption (plan A15). */
+    suspend fun markCaptionVerified(id: Long, at: Instant)
 
     /** Moves along the state machine; throws [IllegalStateException] for a move the spec doesn't allow. */
     suspend fun transition(id: Long, to: GiveawayStatus)
 }
 
+@Suppress("TooManyFunctions") // The giveaway aggregate: status, rules and commitment change together.
 class DefaultGiveawayRepository @Inject constructor(
     private val db: GiveawayDatabase,
     private val settings: SettingsRepository,
@@ -79,12 +92,23 @@ class DefaultGiveawayRepository @Inject constructor(
         return db.rulesDao().get(id)?.toModel(giveaway)
     }
 
-    override suspend fun commit(id: Long, commitHash: String, encryptedSeed: ByteArray) = db.withTransaction {
+    override suspend fun commitment(id: Long): CommitmentEntity? = db.commitmentDao().get(id)
+
+    override suspend fun saveCommitment(id: Long, commitHash: String, encryptedSeed: ByteArray) = db.withTransaction {
+        val giveaway = requireGiveaway(id)
+        check(giveaway.status == GiveawayStatus.DRAFT) { "A commitment is made only while drafting" }
+        check(db.commitmentDao().get(id) == null) { "Giveaway $id already has a commitment" }
+        db.commitmentDao().insert(CommitmentEntity(id, encryptedSeed, commitHash, clock.instant(), null))
+    }
+
+    override suspend fun commit(id: Long) = db.withTransaction {
         val giveaway = requireGiveaway(id)
         GiveawayStateMachine.requireMove(giveaway.status, GiveawayStatus.COMMITTED)
-        db.commitmentDao().insert(CommitmentEntity(id, encryptedSeed, commitHash, clock.instant(), null))
+        checkNotNull(db.commitmentDao().get(id)) { "Show the draw code (S8) before committing" }
         giveaways.updateStatus(id, GiveawayStatus.COMMITTED)
     }
+
+    override suspend fun markCaptionVerified(id: Long, at: Instant) = db.commitmentDao().setCaptionVerified(id, at)
 
     override suspend fun transition(id: Long, to: GiveawayStatus) {
         val autoDeleteDays = if (to == GiveawayStatus.ARCHIVED) settings.get().autoDeleteDays else null

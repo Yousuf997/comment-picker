@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Notification texts stay generic: no giveaway titles or handles on the lock screen (plan A23). -->
+    <string name="notification_channel_deadlines">Giveaway deadlines</string>
+    <string name="notification_entries_closed_title">Entries have closed</string>
+    <string name="notification_entries_closed_text">A giveaway is ready to import its comments.</string>
+</resources>
