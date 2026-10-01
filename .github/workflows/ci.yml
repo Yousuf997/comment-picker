@@ -63,7 +63,8 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: Run device tests on the managed emulator (Pixel 6, API 34)
-        run: ./gradlew pixel6Api34DebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect --continue
+        # One module at a time: each boots its own emulator, and two at once can exhaust the runner's memory.
+        run: ./gradlew pixel6Api34DebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect --continue --no-parallel
 
       # Guards against a green job that ran nothing (for example, a module losing its device tests by mistake).
       - name: Summarize device tests
