@@ -37,6 +37,8 @@ fun GiveawaySwitch(
     enabled: Boolean = true,
 ) {
     val colors = GiveawayTheme.colors
+    // Near-black when on, or the accent on the dark stage where near-black wouldn't show.
+    val onTrack = if (LocalOnDrawStage.current) colors.accent else colors.onBackground
     // On: light thumb on a near-black track. Off: muted thumb on a muted track. Thumb position also shows the state.
     val thumbColor = when {
         !enabled -> colors.outline
@@ -59,7 +61,7 @@ fun GiveawaySwitch(
         Box(
             modifier = Modifier
                 .size(TrackWidth, TrackHeight)
-                .background(if (checked) colors.onBackground else colors.surfaceMuted, CircleShape)
+                .background(if (checked) onTrack else colors.surfaceMuted, CircleShape)
                 .padding(ThumbInset),
             contentAlignment = Alignment.CenterStart,
         ) {

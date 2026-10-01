@@ -1,6 +1,7 @@
 package app.giveaway.di
 
 import app.giveaway.core.data.di.CommitModule
+import app.giveaway.core.data.draw.RecordSigner
 import app.giveaway.core.data.giveaway.SeedVault
 import app.giveaway.core.data.work.DeadlineScheduler
 import dagger.Module
@@ -21,4 +22,9 @@ object FakeCommitModule {
 
     @Provides
     fun deadlineScheduler(): DeadlineScheduler = DeadlineScheduler { _, _ -> }
+
+    @Provides
+    fun recordSigner(): RecordSigner = object : RecordSigner {
+        override fun sign(record: ByteArray) = RecordSigner.Signature(ByteArray(0), ByteArray(0), "test")
+    }
 }

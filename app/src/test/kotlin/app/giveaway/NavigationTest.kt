@@ -152,9 +152,7 @@ class NavigationTest {
     @Test
     fun drawFlowShowsTheSaveSheetOverWinnersAndCannotReturnToTheDraw() {
         launch { GiveawayNavHost(navController, startDestination = HomeRoute) }
-        compose.runOnUiThread { navController.navigate(DrawRoute(giveawayId = 7)) }
-        assertScreen("S11")
-        tap(DrawR.string.draw_winners)
+        compose.runOnUiThread { navController.navigate(DrawingRoute(giveawayId = 7)) }
         assertScreen("S12")
         tap(DrawR.string.drawing_finish)
         assertScreen("S13")
