@@ -69,8 +69,8 @@ internal fun SaveVideoSheet(
                     stringResource(
                         R.string.save_video_format,
                         duration(it.durationMs),
-                        formatCount(it.width),
-                        formatCount(it.height),
+                        formatCount(it.width, grouping = false),
+                        formatCount(it.height, grouping = false),
                     ),
                     style = GiveawayTheme.typography.caption,
                     color = GiveawayTheme.colors.onMuted,

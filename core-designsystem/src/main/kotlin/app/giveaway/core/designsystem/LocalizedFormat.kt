@@ -23,10 +23,12 @@ fun formatDate(instant: Instant, style: FormatStyle = FormatStyle.MEDIUM): Strin
         .format(instant)
 }
 
-/** A whole number in the app's language, with grouping ("2,400", "٢٬٤٠٠"). */
+/** A whole number in the app's language, with grouping ("2,400", "٢٬٤٠٠") unless [grouping] is off (sizes, codes). */
 @Composable
-fun formatCount(count: Int): String =
-    NumberFormat.getIntegerInstance(LocalConfiguration.current.locales[0]).format(count)
+fun formatCount(count: Int, grouping: Boolean = true): String =
+    NumberFormat.getIntegerInstance(LocalConfiguration.current.locales[0])
+        .apply { isGroupingUsed = grouping }
+        .format(count)
 
 /** A date and time in the app's language and the phone's time zone, e.g. for when entries close. */
 @Composable
