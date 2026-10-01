@@ -97,6 +97,16 @@ jobs:
       - name: Check test vectors
         run: python3 tools/reference-impl/draw_v1.py docs/test-vectors-v1.json
 
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      # The open verifier (web page and CLI share one implementation) must match too, and stay offline.
+      - name: Check the verifier
+        run: |
+          node tools/verifier/verify.mjs --vectors docs/test-vectors-v1.json
+          node tools/verifier/verify.mjs --check-offline
+
   login-helper:
     name: Login helper tests
     runs-on: ubuntu-latest
