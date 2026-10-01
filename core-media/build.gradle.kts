@@ -5,6 +5,7 @@ plugins {
 
 dependencies {
     api(projects.coreDraw)
+    implementation(libs.androidx.core.ktx)
 
     testImplementation(libs.junit)
 
