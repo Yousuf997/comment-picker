@@ -91,4 +91,41 @@
     <string name="save_video_failed">Couldn\'t save the video. Try again.</string>
     <!-- File name in the gallery. %1$s: the giveaway title. -->
     <string name="save_video_file_name">Draw - %1$s.mp4</string>
+
+    <!-- Certificate (S15, PDF and Story image) -->
+    <string name="certificate_heading">Certificate of random draw</string>
+    <string name="certificate_section_giveaway">Giveaway</string>
+    <string name="certificate_account">Account</string>
+    <string name="certificate_post">Post</string>
+    <string name="certificate_entries_closed">Entries closed</string>
+    <string name="certificate_valid_entries">Valid entries</string>
+    <string name="certificate_section_result">Result</string>
+    <!-- %1$s: the winner's place, 1 for the first winner. -->
+    <string name="certificate_winner">Winner %1$s</string>
+    <!-- %1$s: the alternate's place among the alternates. -->
+    <string name="certificate_alternate">Alternate %1$s</string>
+    <!-- %1$s: the alternate's handle. %2$s: the organizer's reason. -->
+    <string name="certificate_replaced">Replaced by %1$s: %2$s</string>
+    <plurals name="certificate_more">
+        <item quantity="one">and %s more pick</item>
+        <item quantity="other">and %s more picks</item>
+    </plurals>
+    <string name="certificate_section_proof">Proof</string>
+    <string name="certificate_code">Draw code in the caption</string>
+    <string name="certificate_seed">Revealed seed</string>
+    <string name="certificate_list_hash">Entry list hash</string>
+    <string name="certificate_algorithm">Algorithm</string>
+    <string name="certificate_drawn_at">Draw time</string>
+    <string name="certificate_signed">Signed on device</string>
+    <string name="certificate_signature">Signature</string>
+    <string name="certificate_public_key">Public key</string>
+    <string name="certificate_section_notes">Notes</string>
+    <string name="certificate_code_not_found">The draw code was not found in the caption when the draw ran.</string>
+    <string name="certificate_code_not_checked">The caption couldn\'t be checked when the draw ran.</string>
+    <string name="certificate_partial">Not every comment could be imported from Instagram. The draw used the comments that were imported.</string>
+    <string name="certificate_integrity">Device integrity not verified.</string>
+    <!-- %1$s: the excluded person's handle. %2$s: the organizer's reason. -->
+    <string name="certificate_manual">Excluded by the organizer: %1$s. Reason: %2$s</string>
+    <!-- %1$s: the address of the open verifier. -->
+    <string name="certificate_rerun">Anyone can re-run this draw from the revealed seed and the exported entry list. Check it at %1$s</string>
 </resources>
