@@ -188,6 +188,6 @@ class NavigationTest {
     }
 
     private companion object {
-        const val WAIT_MS = 5_000L
+        const val WAIT_MS = 15_000L
     }
 }

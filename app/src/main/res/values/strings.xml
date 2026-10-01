@@ -4,4 +4,6 @@
     <string name="notification_channel_deadlines">Giveaway deadlines</string>
     <string name="notification_entries_closed_title">Entries have closed</string>
     <string name="notification_entries_closed_text">A giveaway is ready to import its comments.</string>
+    <string name="notification_channel_imports">Comment imports</string>
+    <string name="notification_importing_title">Importing comments</string>
 </resources>

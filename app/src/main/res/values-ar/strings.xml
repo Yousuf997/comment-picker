@@ -3,4 +3,6 @@
     <string name="notification_channel_deadlines">مواعيد إغلاق السحوبات</string>
     <string name="notification_entries_closed_title">أُغلقت المشاركات</string>
     <string name="notification_entries_closed_text">سحب جاهز لاستيراد تعليقاته.</string>
+    <string name="notification_channel_imports">استيراد التعليقات</string>
+    <string name="notification_importing_title">جارٍ استيراد التعليقات</string>
 </resources>

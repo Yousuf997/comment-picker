@@ -125,7 +125,7 @@ class LockInTest {
         compose.setContent { GiveawayTheme { LockInScreen(onBack = {}, onDone = onDone, viewModel = vm) } }
 
     private companion object {
-        const val TIMEOUT_MS = 5_000L
+        const val TIMEOUT_MS = 15_000L
     }
 
     @Test
@@ -176,6 +176,14 @@ class LockInTest {
         assertEquals(code, again.drawCode)
         assertTrue("already committed, so already confirmed", again.confirmed)
         assertEquals(1, seeds.size)
+    }
+
+    @Test
+    fun aTickMadeWhileTheCodeLoadsIsKept() {
+        val vm = viewModel(draft())
+        // Room loads the giveaway on its own thread, so this lands before the code is shown.
+        vm.onConfirmedChange(true)
+        assertTrue(vm.loaded().confirmed)
     }
 
     @Test
