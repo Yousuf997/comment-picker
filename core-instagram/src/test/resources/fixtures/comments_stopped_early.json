@@ -1,0 +1,6 @@
+{
+  "data": [
+    {"id": "18000000000000003", "username": "cid", "text": "#win @ana @bob", "timestamp": "2026-09-30T14:00:00+0000"}
+  ],
+  "paging": {"cursors": {"before": "CB2", "after": "CA2"}}
+}

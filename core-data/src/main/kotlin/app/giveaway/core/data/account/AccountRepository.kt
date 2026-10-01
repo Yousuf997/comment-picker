@@ -2,6 +2,7 @@ package app.giveaway.core.data.account
 
 import app.giveaway.core.data.db.AccountDao
 import app.giveaway.core.data.db.AccountEntity
+import app.giveaway.core.instagram.api.TokenProvider
 import app.giveaway.core.instagram.auth.AuthToken
 import app.giveaway.core.instagram.auth.IgAccount
 import app.giveaway.core.security.KeyPurpose
@@ -24,10 +25,11 @@ interface AccountRepository {
     suspend fun signOut()
 }
 
+/** Also the token source for Instagram calls, so core-instagram never depends on core-data. */
 class DefaultAccountRepository @Inject constructor(
     private val dao: AccountDao,
     private val keys: KeystoreKeys,
-) : AccountRepository {
+) : AccountRepository, TokenProvider {
 
     private val box get() = keys.secretBox(KeyPurpose.TOKEN)
 
@@ -52,6 +54,8 @@ class DefaultAccountRepository @Inject constructor(
     override fun observeUsername(): Flow<String?> = dao.observe().map { it?.username }
 
     override suspend fun signOut() = dao.clear()
+
+    override suspend fun accessToken(): String? = token()?.accessToken
 
     /** Binds the ciphertext to its account, so a token copied onto another row fails to decrypt. */
     private fun associatedData(igUserId: String) = "instagram-token:$igUserId".toByteArray()
