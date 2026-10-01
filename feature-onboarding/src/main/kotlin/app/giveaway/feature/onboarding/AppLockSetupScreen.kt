@@ -1,5 +1,6 @@
 package app.giveaway.feature.onboarding
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -48,7 +48,7 @@ import app.giveaway.core.security.lock.PinStore
 @Composable
 internal fun AppLockSetupScreen(onDone: () -> Unit, viewModel: AppLockSetupViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val activity = LocalContext.current as? FragmentActivity
+    val activity = LocalActivity.current as? FragmentActivity
     val promptTitle = stringResource(R.string.app_lock_prompt_title)
     val promptSubtitle = stringResource(R.string.app_lock_prompt_subtitle)
     val promptCancel = stringResource(R.string.app_lock_prompt_cancel)
