@@ -9,6 +9,7 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.test.core.app.ApplicationProvider
 import app.giveaway.core.data.account.AccountRepository
 import app.giveaway.core.data.account.SignInState
+import app.giveaway.core.data.cleanup.EverythingWiper
 import app.giveaway.core.data.db.AppLockMethod
 import app.giveaway.core.data.db.SettingsEntity
 import app.giveaway.core.data.settings.SettingsRepository
@@ -98,7 +99,10 @@ class SettingsTest {
     @After
     fun tearDown() = Dispatchers.resetMain()
 
-    private fun viewModel() = SettingsViewModel(settingsRepo, accounts, { pins }) { languages += it }
+    private var wiped = 0
+    private val wiper = EverythingWiper { wiped++ }
+
+    private fun viewModel() = SettingsViewModel(settingsRepo, accounts, { pins }, { languages += it }, { wiper })
 
     private val noActions = SettingsActions({}, {}, {}, {}, {}, {}, {})
 
@@ -146,6 +150,33 @@ class SettingsTest {
         compose.waitForIdle()
         assertEquals(listOf<String?>("ar"), languages)
         assertEquals("ar", settings.value.language)
+    }
+
+    @Test
+    fun deleteEverythingAsksTwiceThenRestarts() = runTest {
+        var restarts = 0
+        show(viewModel(), noActions.copy(onEverythingDeleted = { restarts++ }))
+        text(R.string.settings_delete_everything).performScrollTo().performClick()
+        text(R.string.settings_delete_continue).performClick()
+        assertEquals("one confirmation is not enough", 0, wiped)
+        text(R.string.settings_delete_second_body).assertExists()
+        // The second dialog's button is the last node labelled "Delete everything"; the row behind it is the first.
+        val deletes = compose.onAllNodesWithText(app.getString(R.string.settings_delete_everything))
+        deletes[deletes.fetchSemanticsNodes().size - 1].performClick()
+        compose.waitForIdle()
+        assertEquals(1, wiped)
+        assertEquals(1, restarts)
+    }
+
+    @Test
+    fun cancellingTheFirstQuestionDeletesNothing() = runTest {
+        show(viewModel())
+        text(R.string.settings_delete_everything).performScrollTo().performClick()
+        text(R.string.settings_cancel).performClick()
+        compose.waitForIdle()
+        assertEquals(0, wiped)
+        val question = compose.onAllNodesWithText(app.getString(R.string.settings_delete_first_body))
+        assertTrue(question.fetchSemanticsNodes().isEmpty())
     }
 
     @Test

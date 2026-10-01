@@ -65,6 +65,10 @@ interface GiveawayDao {
     @Query("UPDATE giveaway SET status = :status WHERE id = :id")
     suspend fun updateStatus(id: Long, status: GiveawayStatus)
 
+    /** Giveaways whose auto-delete date has passed (spec: Privacy). */
+    @Query("SELECT id FROM giveaway WHERE autoDeleteAt IS NOT NULL AND autoDeleteAt <= :now")
+    suspend fun expired(now: Instant): List<Long>
+
     @Query("DELETE FROM giveaway WHERE id = :id")
     suspend fun delete(id: Long)
 }

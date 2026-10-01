@@ -1,6 +1,9 @@
 package app.giveaway
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -51,6 +54,7 @@ fun GiveawayNavHost(
     navController: NavHostController = rememberNavController(),
     startDestination: Any = WelcomeRoute,
 ) {
+    val context = LocalContext.current
     NavHost(navController = navController, startDestination = startDestination) {
         // First launch: S1 -> S2 -> S3 -> S4. Onboarding leaves the back stack once Home is reached.
         welcomeScreen(onGetStarted = { navController.navigate(ConnectInstagramRoute()) })
@@ -81,8 +85,7 @@ fun GiveawayNavHost(
                 onDisconnected = { navController.navigate(ConnectInstagramRoute(reconnect = true)) },
                 onExportBackup = { navController.navigate(BackupRoute) },
                 onRestoreBackup = { navController.navigate(RestoreRoute) },
-                // "Delete everything" arrives with M-14.
-                onDeleteEverything = {},
+                onEverythingDeleted = { restartApp(context) },
                 onOpenLicenses = { navController.navigate(LicensesRoute) },
             ),
         )
@@ -142,6 +145,18 @@ private fun NavGraphBuilder.draw(navController: NavHostController) {
         navController.navigate(CertificateRoute(id)) { popUpTo<WinnersRoute> { inclusive = true } }
     })
     certificateScreen(onDone = { navController.backToHome() })
+}
+
+/**
+ * After "Delete everything": start again at S1 in a fresh process, so nothing from the wiped data (the closed
+ * database, cached keys) stays in memory (plan M-14).
+ */
+private fun restartApp(context: Context) {
+    context.startActivity(
+        Intent(context, MainActivity::class.java)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK),
+    )
+    Runtime.getRuntime().exit(0)
 }
 
 /** Opens Home and drops everything above it, so Back from Home leaves the app. */
