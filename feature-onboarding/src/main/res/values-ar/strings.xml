@@ -1,9 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- S1 Welcome -->
     <string name="welcome_headline">سحوبات عادلة، مع إثبات.</string>
+    <string name="welcome_body">اختر فائزين عشوائيًا من تعليقات منشورك، وأثبت لمتابعيك أن السحب كان عادلًا.</string>
+    <string name="welcome_trust_device">بياناتك تبقى على هذا الهاتف</string>
+    <string name="welcome_trust_verify">سحوبات يمكن لأي شخص التحقق منها</string>
+    <string name="welcome_trust_official">تسجيل دخول رسمي عبر إنستغرام</string>
     <string name="welcome_get_started">ابدأ</string>
+    <string name="welcome_footnote">بدون إنشاء حساب. لا يُرفع أي شيء.</string>
+    <string name="welcome_ticket_winner">فائز</string>
+
+    <!-- S2 Connect Instagram -->
     <string name="connect_title">ربط إنستغرام</string>
+    <string name="connect_body">ستسجّل الدخول من صفحة إنستغرام نفسها. لن نرى كلمة مرورك أبدًا.</string>
+    <string name="connect_requirement_title">يلزم حساب أعمال أو حساب صانع محتوى</string>
+    <string name="connect_requirement_body">لا يسمح إنستغرام للتطبيقات بقراءة التعليقات إلا في الحسابات الاحترافية. التحويل مجاني.</string>
+    <string name="connect_how_to_switch">طريقة التحويل</string>
+    <string name="connect_we_can">نستطيع</string>
+    <string name="connect_can_read_posts">قراءة منشوراتك ومقاطع Reels</string>
+    <string name="connect_can_read_comments">قراءة تعليقاتها</string>
+    <string name="connect_we_never">لن نقوم أبدًا بـ</string>
+    <string name="connect_never_post">النشر أو التعليق نيابةً عنك</string>
+    <string name="connect_never_password">رؤية كلمة مرورك</string>
+    <string name="connect_never_upload">إرسال بياناتك خارج هذا الهاتف</string>
     <string name="connect_continue">المتابعة عبر إنستغرام</string>
+    <string name="connect_loading">جارٍ إكمال تسجيل الدخول…</string>
+    <string name="connect_personal_title">هذا حساب شخصي</string>
+    <string name="connect_personal_body">حوّل إلى حساب أعمال أو صانع محتوى من إعدادات إنستغرام، ثم حاول مجددًا.</string>
+    <string name="connect_cancelled">أُلغي تسجيل الدخول. يمكنك المحاولة مجددًا متى شئت.</string>
+    <string name="connect_network_title">تعذّر الوصول إلى إنستغرام</string>
+    <string name="connect_network_body">تحقّق من اتصالك وحاول مجددًا.</string>
+    <string name="connect_retry">حاول مجددًا</string>
+
+    <!-- S3 App lock setup -->
     <string name="app_lock_title">حماية التطبيق</string>
     <string name="app_lock_use_biometrics">استخدام البصمة أو الوجه</string>
     <string name="app_lock_set_pin">تعيين رمز PIN بدلًا من ذلك</string>

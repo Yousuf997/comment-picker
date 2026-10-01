@@ -42,6 +42,8 @@ import app.giveaway.feature.onboarding.R as OnboardingR
 
 /** F-08 acceptance: every route S1 to S15 opens its screen, and the spec's flow can be walked end to end. */
 @RunWith(RobolectricTestRunner::class)
+// Tall enough that each screen's main action is on screen without scrolling; screen tests cover scrolling.
+@Config(qualifiers = "w390dp-h1400dp")
 class NavigationTest {
 
     @get:Rule
@@ -141,7 +143,7 @@ class NavigationTest {
     }
 
     @Test
-    @Config(qualifiers = "ar")
+    @Config(qualifiers = "ar-w390dp-h1400dp")
     fun arabicIsTranslatedAndRightToLeft() {
         var direction: LayoutDirection? = null
         launch {
