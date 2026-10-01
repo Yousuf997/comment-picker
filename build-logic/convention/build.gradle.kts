@@ -20,6 +20,7 @@ dependencies {
     compileOnly(libs.kotlin.gradlePlugin)
     compileOnly(libs.compose.gradlePlugin)
     compileOnly(libs.detekt.gradlePlugin)
+    compileOnly(libs.dependencyCheck.gradlePlugin)
 }
 
 gradlePlugin {
@@ -43,6 +44,10 @@ gradlePlugin {
         register("hilt") {
             id = "giveaway.hilt"
             implementationClass = "HiltConventionPlugin"
+        }
+        register("dependencyCheck") {
+            id = "giveaway.dependency.check"
+            implementationClass = "DependencyCheckConventionPlugin"
         }
         register("jvmLibrary") {
             id = "giveaway.jvm.library"

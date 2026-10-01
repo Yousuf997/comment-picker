@@ -47,12 +47,15 @@ jobs:
       - name: Scan
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-        run: ./gradlew dependencyCheckAggregate
+        # Download the database once, then scan each module against it (one at a time: they share the database file).
+        run: |
+          ./gradlew :dependencyCheckUpdate
+          ./gradlew dependencyCheckAnalyze --no-parallel --continue
 
       - name: Upload report
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: dependency-check-report
-          path: build/reports/dependency-check-report.*
+          path: "**/build/reports/dependency-check-report.*"
           retention-days: 30

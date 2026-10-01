@@ -19,6 +19,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                 proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             }
         }
+        pluginManager.apply("giveaway.dependency.check")
         enforceModuleRules()
     }
 }

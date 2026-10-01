@@ -47,6 +47,7 @@ ksp-gradlePlugin = { module = "com.google.devtools.ksp:com.google.devtools.ksp.g
 hilt-gradlePlugin = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hilt" }
 detekt-gradlePlugin = { module = "dev.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 kover-gradlePlugin = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", version.ref = "kover" }
+dependencyCheck-gradlePlugin = { module = "org.owasp:dependency-check-gradle", version.ref = "dependencyCheck" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -67,3 +68,4 @@ giveaway-android-compose = { id = "giveaway.android.compose" }
 giveaway-android-feature = { id = "giveaway.android.feature" }
 giveaway-hilt = { id = "giveaway.hilt" }
 giveaway-jvm-library = { id = "giveaway.jvm.library" }
+giveaway-dependency-check = { id = "giveaway.dependency.check" }

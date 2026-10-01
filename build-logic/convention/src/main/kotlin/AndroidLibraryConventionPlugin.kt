@@ -13,6 +13,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
             configureAndroidCommon(this)
             if (namespace == null) namespace = defaultNamespace()
         }
+        pluginManager.apply("giveaway.dependency.check")
         enforceModuleRules()
     }
 }

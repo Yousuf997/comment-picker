@@ -24,6 +24,7 @@ class JvmLibraryConventionPlugin : Plugin<Project> {
         dependencies {
             "testImplementation"(libs.library("junit"))
         }
+        pluginManager.apply("giveaway.dependency.check")
         enforceModuleRules()
     }
 }
