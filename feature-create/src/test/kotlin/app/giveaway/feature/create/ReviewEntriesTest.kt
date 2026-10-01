@@ -1,7 +1,11 @@
 package app.giveaway.feature.create
 
 import android.app.Application
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
@@ -27,7 +31,9 @@ import app.giveaway.core.designsystem.GiveawayTheme
 import app.giveaway.draw.CanonicalEntryList
 import app.giveaway.draw.ExclusionReason
 import app.giveaway.draw.Rules
+import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.captureRoboImage
+import com.github.takahirom.roborazzi.captureScreenRoboImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
@@ -54,7 +60,7 @@ import java.util.TimeZone
  * C-20 acceptance: S10 lists, filters and edits entries; zero valid entries blocks the draw; the export is the
  * canonical list's bytes.
  */
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalRoborazziApi::class)
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(qualifiers = "w390dp-h1000dp-xhdpi")
@@ -132,7 +138,10 @@ class ReviewEntriesTest {
         show()
         await { shown(app.getString(R.string.review_reason_too_few_mentions)) }
         compose.onNodeWithText(app.getString(R.string.review_reason_duplicate)).assertExists()
-        text(R.string.review_filter_valid).performClick()
+        // "Valid" is also a tile and a status tag: pick the filter tab.
+        val tab = hasText(app.getString(R.string.review_filter_valid)) and
+            SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)
+        compose.onNode(tab).performClick()
         await { compose.onAllNodesWithTag("review:row:c1").fetchSemanticsNodes().isEmpty() }
         compose.onNodeWithTag("review:row:c0").assertExists()
     }
@@ -218,8 +227,10 @@ class ReviewEntriesTest {
         show()
         await { shown("Love this") }
         compose.onNodeWithTag("review:row:c1").performClick()
-        // The sheet is its own window, so it is captured on its own.
-        compose.onNodeWithTag("review:sheet").captureRoboImage("src/test/screenshots/s10_review_arabic_sheet.png")
+        await { shown(app.getString(R.string.review_add_blocklist)) }
+        compose.waitForIdle()
+        // The sheet is its own window: capture the whole screen, every window included.
+        captureScreenRoboImage("src/test/screenshots/s10_review_arabic_sheet.png")
     }
 
     private companion object {

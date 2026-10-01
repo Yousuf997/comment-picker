@@ -3,6 +3,7 @@ package app.giveaway.feature.create
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -18,6 +19,7 @@ import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import app.giveaway.core.data.db.EntryRow
 import app.giveaway.core.data.review.EntryRepository
+import app.giveaway.core.designsystem.GiveawayDimens
 import app.giveaway.core.designsystem.GiveawayTheme
 import app.giveaway.core.designsystem.component.ChipTone
 import app.giveaway.core.designsystem.component.GiveawayBottomSheet
@@ -42,7 +44,12 @@ internal fun EntrySheet(
     var mode by remember(row.commentId) { mutableStateOf(SheetMode.VIEW) }
     var text by remember(row.commentId) { mutableStateOf("") }
     GiveawayBottomSheet(onDismissRequest = onDismiss, modifier = Modifier.testTag("review:sheet")) {
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Column(
+            modifier = Modifier
+                .padding(horizontal = GiveawayDimens.screenPadding)
+                .padding(bottom = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
             Text(
                 handle(row.username),
                 style = GiveawayTheme.typography.title,
