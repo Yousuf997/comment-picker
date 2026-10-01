@@ -46,7 +46,7 @@ sealed interface SettingsEvent {
     data object Disconnected : SettingsEvent
 }
 
-/** S5 Settings (spec). Backup, restore and "Delete everything" are wired in M-13 and M-14. */
+/** S5 Settings (spec). Backup and restore have their own pages; "Delete everything" is wired in M-14. */
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val settings: SettingsRepository,

@@ -18,4 +18,5 @@ dependencies {
     implementation(libs.androidx.appcompat)
 
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.room.runtime)
 }
