@@ -1,5 +1,6 @@
 package app.giveaway.feature.onboarding.lock
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,7 +20,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -75,7 +75,7 @@ fun AppLockGate(viewModel: LockGateViewModel = hiltViewModel(), content: @Compos
 @Composable
 internal fun UnlockScreen(viewModel: UnlockViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val activity = LocalContext.current as? FragmentActivity
+    val activity = LocalActivity.current as? FragmentActivity
     val title = stringResource(R.string.app_lock_prompt_title)
     val subtitle = stringResource(R.string.lock_prompt_subtitle)
     val cancel = stringResource(R.string.app_lock_prompt_cancel)
