@@ -49,6 +49,8 @@ class ColorContrastTest {
         Triple("accent on surface", c.accent, c.surface),
         Triple("accent on drawBackground", c.accent, c.drawBackground),
         Triple("switch track (onBackground) on surface", c.onBackground, c.surface),
+        Triple("switch on thumb (surface) on track (onBackground)", c.surface, c.onBackground),
+        Triple("switch off thumb (onMuted) on track (surfaceMuted)", c.onMuted, c.surfaceMuted),
         Triple("recording on drawBackground", c.recording, c.drawBackground),
     )
 

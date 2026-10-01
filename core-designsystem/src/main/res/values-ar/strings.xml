@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stepper_decrease">إنقاص %1$s</string>
+    <string name="stepper_increase">زيادة %1$s</string>
+</resources>
