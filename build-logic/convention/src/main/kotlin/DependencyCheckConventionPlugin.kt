@@ -16,7 +16,9 @@ class DependencyCheckConventionPlugin : Plugin<Project> {
             failBuildOnCVSS.set(7.0f)
             formats.set(listOf("HTML", "SARIF"))
             autoUpdate.set(isRoot)
-            nvd.apiKey.set(providers.environmentVariable("NVD_API_KEY"))
+            suppressionFile.set(isolated.rootProject.projectDirectory.file("config/dependency-check/suppressions.xml").asFile.path)
+            // Daily mirror of the NVD data published by the DependencyCheck project; NVD's own API often returns 503.
+            nvd.datafeedUrl.set("https://dependency-check.github.io/DependencyCheck_Builder/nvd_cache/")
             analyzers.assemblyEnabled.set(false)
             analyzers.nodePackage.enabled.set(false)
             analyzers.nodeAudit.enabled.set(false)
@@ -25,6 +27,9 @@ class DependencyCheckConventionPlugin : Plugin<Project> {
                 val shipped = if (plugins.hasPlugin("com.android.base")) "releaseRuntimeClasspath" else "runtimeClasspath"
                 scanConfigurations.set(listOf(shipped))
             }
+        }
+        tasks.matching { it.name.startsWith("dependencyCheck") }.configureEach {
+            notCompatibleWithConfigurationCache("OWASP dependency-check tasks hold a Project reference")
         }
     }
 }

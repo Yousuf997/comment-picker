@@ -23,7 +23,7 @@ Run the same checks as CI before pushing:
 ## CI
 
 - `.github/workflows/ci.yml` runs on every push: debug and release builds, Android lint (warnings are errors, config in `lint.xml`), detekt (`config/detekt/detekt.yml`), unit tests, and the 100% coverage gate on `core-draw`. It also runs the login helper's tests once `login-helper/` exists.
-- `.github/workflows/dependency-scan.yml` runs OWASP dependency-check weekly and when build files change, failing on CVSS 7 or higher. It needs a free NVD API key stored as the repository secret `NVD_API_KEY`.
+- `.github/workflows/dependency-scan.yml` runs OWASP dependency-check weekly and when build files change, scanning each module's shipped dependencies and failing on CVSS 7 or higher. Vulnerability data comes from the DependencyCheck project's daily NVD mirror, so no API key is needed. Reviewed false positives are suppressed in `config/dependency-check/suppressions.xml`.
 - Dependabot proposes weekly updates for Gradle dependencies and GitHub Actions.
 
 ## Modules
