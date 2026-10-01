@@ -39,6 +39,7 @@ data class SavedDraw(
     val entrants: List<String>,
     val drawnAt: Instant,
     val entryCount: Int,
+    val commitHash: String,
 )
 
 /** What S11 knows before the draw: the caption re-read and the integrity check (spec: S11 checks). */
@@ -104,7 +105,8 @@ class DrawService @Inject constructor(
         // The reel only needs a sample of names to scroll past (spec: S12); the result is already fixed.
         val entrants = CanonicalEntryList.of(db.entryDao().validUsernames(giveawayId)).usernames.distinct()
             .take(REEL_SAMPLE)
-        return SavedDraw(giveaway.title, picks, entrants, draw.drawnAt, draw.entryCount)
+        val commitHash = db.commitmentDao().get(giveawayId)?.commitHash.orEmpty()
+        return SavedDraw(giveaway.title, picks, entrants, draw.drawnAt, draw.entryCount, commitHash)
     }
 
     /** A practice run with a fresh random seed: labelled TEST, unsigned, never the committed seed (spec). */

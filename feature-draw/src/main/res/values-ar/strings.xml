@@ -84,4 +84,9 @@
     <string name="winners_replace_reason">السبب، مثل: لا يتابع الحساب</string>
     <string name="winners_replace_confirm">استبدال</string>
     <string name="winners_replace_cancel">إلغاء</string>
+    <string name="drawing_rec">تسجيل</string>
+    <string name="drawing_stop_recording">إيقاف التسجيل</string>
+    <string name="drawing_only_screen">يُسجَّل هذا السحب فقط، لا شاشتك ولا إشعاراتك.</string>
+    <string name="drawing_recording_failed">فشل التسجيل. نتيجتك محفوظة.</string>
+    <string name="drawing_video_code">رمز السحب من وصف المنشور</string>
 </resources>

@@ -17,7 +17,7 @@ data class DrawRoute(val giveawayId: Long)
 
 /** S12 Drawing and recording (dark stage). */
 @Serializable
-data class DrawingRoute(val giveawayId: Long)
+data class DrawingRoute(val giveawayId: Long, val record: Boolean = false)
 
 /** S13 Save video popup, shown over S14. The user must choose; it can't be dismissed by tapping outside. */
 @Serializable

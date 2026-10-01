@@ -6,6 +6,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ApplicationProvider
 import app.giveaway.core.data.draw.SavedDraw
 import app.giveaway.core.designsystem.GiveawayTheme
@@ -44,10 +45,18 @@ class DrawingTest {
         entrants = listOf("amy.designs", "bob", "cat", "dan", "eve", "fay", "gus", "hal"),
         drawnAt = Instant.parse("2026-10-08T12:00:00Z"),
         entryCount = 8,
+        commitHash = "ab".repeat(32),
     )
     private var finished = 0
 
-    private fun show(reducedMotion: Boolean = false, saved: SavedDraw? = draw) {
+    private var stops = 0
+    private var started = 0
+
+    private fun show(
+        reducedMotion: Boolean = false,
+        saved: SavedDraw? = draw,
+        recording: RecordingState = RecordingState.OFF,
+    ) {
         compose.mainClock.autoAdvance = false
         compose.setContent {
             GiveawayTheme {
@@ -55,6 +64,9 @@ class DrawingTest {
                     loaded = DrawingViewModel.Loaded(saved),
                     reducedMotion = reducedMotion,
                     onFinished = { finished++ },
+                    recording = recording,
+                    onStart = { _, _ -> started++ },
+                    onStopRecording = { stops++ },
                 )
             }
         }
@@ -98,6 +110,24 @@ class DrawingTest {
         advanceTo(quick.durationMs + HOLD + FRAME * 2)
         assertEquals(1, finished)
         assertEquals(true, quick.durationMs < DrawTimeline.WINNER_SPIN_MS)
+    }
+
+    @Test
+    fun recordingShowsTheRecBadgeAndCanBeStopped() {
+        show(recording = RecordingState.RECORDING)
+        advanceTo(FRAME)
+        assertEquals("the recorder starts with the animation", 1, started)
+        compose.onNodeWithTag("drawing:rec").assertExists()
+        compose.onNodeWithText(app.getString(R.string.drawing_only_screen)).assertExists()
+        compose.onNodeWithText(app.getString(R.string.drawing_stop_recording)).performClick()
+        assertEquals(1, stops)
+    }
+
+    @Test
+    fun aFailedRecordingSaysTheResultIsSafe() {
+        show(recording = RecordingState.FAILED)
+        advanceTo(FRAME)
+        compose.onNodeWithText(app.getString(R.string.drawing_recording_failed)).assertExists()
     }
 
     @Test

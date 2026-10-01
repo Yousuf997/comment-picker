@@ -119,8 +119,8 @@ private fun NavGraphBuilder.draw(navController: NavHostController) {
     // Draw. Once the real draw ran, the result is fixed: S12 leaves the back stack and S13 opens over S14.
     drawScreen(
         onBack = { navController.popBackStack() },
-        // Recording (M-02) reads the switch later; the result is already saved and signed here.
-        onDrawn = { id, _ -> navController.navigate(DrawingRoute(id)) },
+        // The result is already saved and signed; S12 plays it back and records it if the switch was on.
+        onDrawn = { id, record -> navController.navigate(DrawingRoute(id, record)) },
         onAlreadyDrawn = { id -> navController.navigate(WinnersRoute(id)) { popUpTo<DrawRoute> { inclusive = true } } },
     )
     drawingScreen(onDrawFinished = { id ->
