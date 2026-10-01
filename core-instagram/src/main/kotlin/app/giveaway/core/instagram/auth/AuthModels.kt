@@ -12,6 +12,8 @@ data class AuthConfig(
     /** Instagram Graph base URL including the pinned API version, ending in a slash. */
     val graphBaseUrl: String,
     val authorizeUrl: String = "https://www.instagram.com/oauth/authorize",
+    /** Unversioned, as documented for long-lived token refresh. */
+    val refreshUrl: String = "https://graph.instagram.com/refresh_access_token",
     /** Read-only scopes (spec: Permissions requested). Confirm names at build time (plan A3). */
     val scopes: List<String> = listOf("instagram_business_basic", "instagram_business_manage_comments"),
 )

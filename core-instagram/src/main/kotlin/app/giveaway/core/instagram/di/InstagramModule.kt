@@ -7,6 +7,8 @@ import app.giveaway.core.instagram.api.InstagramRepository
 import app.giveaway.core.instagram.auth.AuthConfig
 import app.giveaway.core.instagram.auth.DefaultInstagramAuthenticator
 import app.giveaway.core.instagram.auth.InstagramAuthenticator
+import app.giveaway.core.instagram.network.InstagramTokenRefresher
+import app.giveaway.core.instagram.network.TokenRefresher
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -34,6 +36,9 @@ internal abstract class InstagramModule {
 
     @Binds
     abstract fun instagramRepository(impl: DefaultInstagramRepository): InstagramRepository
+
+    @Binds
+    abstract fun tokenRefresher(impl: InstagramTokenRefresher): TokenRefresher
 
     companion object {
         @Provides

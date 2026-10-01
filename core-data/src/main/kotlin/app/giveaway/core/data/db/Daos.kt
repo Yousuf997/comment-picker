@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
+import java.time.Instant
 
 // Base DAOs for schema v1. Repositories built in later tasks add the queries their screens need.
 
@@ -19,6 +20,12 @@ interface AccountDao {
 
     @Upsert
     suspend fun upsert(account: AccountEntity)
+
+    @Query("UPDATE account SET encryptedToken = :encryptedToken, tokenExpiresAt = :expiresAt, tokenRevoked = 0")
+    suspend fun updateToken(encryptedToken: ByteArray, expiresAt: Instant)
+
+    @Query("UPDATE account SET tokenRevoked = 1")
+    suspend fun markTokenRevoked()
 
     @Query("DELETE FROM account")
     suspend fun clear()

@@ -17,6 +17,7 @@ import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.time.Clock
 import java.time.Instant
 
 /** F-12: the Instagram token is stored only encrypted with the TOKEN Keystore key. */
@@ -33,7 +34,7 @@ class AccountRepositoryTest {
     fun setUp() {
         factory.deleteDatabase()
         db = factory.open()
-        repository = DefaultAccountRepository(db.accountDao(), keys)
+        repository = DefaultAccountRepository(db.accountDao(), keys, Clock.systemUTC())
     }
 
     @After
