@@ -20,4 +20,13 @@
         <packageUrl regex="true">^pkg:maven/androidx\.browser/browser@.*$</packageUrl>
         <cve>CVE-2008-7298</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+        org.jetbrains.compose.runtime is the Compose Multiplatform runtime (pulled in by Coil 3), which on Android
+        forwards to androidx.compose.runtime. The scanner maps it to the CPE of the JetBrains Runtime, the JDK build
+        used by IntelliJ; CVE-2025-29903 is a macOS dependency-injection issue in that JDK, not in this library.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.jetbrains\.compose\.runtime/runtime(-saveable)?-android@.*$</packageUrl>
+        <cve>CVE-2025-29903</cve>
+    </suppress>
 </suppressions>
