@@ -39,4 +39,47 @@
     <string name="settings_privacy">Privacy policy</string>
     <string name="settings_licenses">Open-source licenses</string>
     <string name="settings_version">Version</string>
+
+    <!-- Backup export -->
+    <string name="backup_title">Encrypted backup</string>
+    <string name="backup_body">The backup holds every giveaway, its entries and draws, encrypted with a password you choose. Your Instagram sign-in isn\'t included.</string>
+    <string name="backup_keep_password_title">Keep the password safe</string>
+    <string name="backup_keep_password_body">Without it the backup can\'t be opened, and no one can recover it for you.</string>
+    <string name="backup_password">Password</string>
+    <string name="backup_password_again">Password again</string>
+    <string name="backup_mismatch">The passwords don\'t match.</string>
+    <string name="backup_strength_none">Use at least 8 characters</string>
+    <string name="backup_strength_weak">Weak</string>
+    <string name="backup_strength_fair">Fair</string>
+    <string name="backup_strength_good">Good</string>
+    <string name="backup_strength_strong">Strong</string>
+    <string name="backup_create">Create backup</string>
+    <string name="backup_working">Encrypting your data…</string>
+    <string name="backup_saved">Backup saved. Keep it somewhere safe, not only on this phone.</string>
+    <string name="backup_failed">Couldn\'t create the backup. Try again.</string>
+    <string name="backup_done">Done</string>
+    <!-- %1$s: today\'s date, e.g. 2026-10-01. -->
+    <string name="backup_file_name">giveaways-backup-%1$s.gwbk</string>
+
+    <!-- Restore -->
+    <string name="restore_title">Restore from backup</string>
+    <string name="restore_body">Restoring replaces every giveaway on this phone with the ones in the backup.</string>
+    <string name="restore_pick">Choose backup file</string>
+    <string name="restore_pick_other">Choose another file</string>
+    <string name="restore_check">Check backup</string>
+    <string name="restore_checking">Checking…</string>
+    <string name="restore_error_password">Couldn\'t open this backup. Check the password; the file may also be damaged.</string>
+    <string name="restore_error_not_backup">This file isn\'t a backup from this app.</string>
+    <string name="restore_error_newer">This backup was made by a newer version of the app. Update the app, then try again.</string>
+    <string name="restore_error_failed">Something went wrong while restoring. Nothing was changed.</string>
+    <!-- %1$s: when the backup was made. -->
+    <string name="restore_from">Backup from %1$s</string>
+    <plurals name="restore_giveaways">
+        <item quantity="one">%s giveaway</item>
+        <item quantity="other">%s giveaways</item>
+    </plurals>
+    <string name="restore_warning_title">This replaces everything on this phone</string>
+    <string name="restore_warning_body">Giveaways that aren\'t in the backup will be deleted. You\'ll sign in to Instagram again afterwards.</string>
+    <string name="restore_confirm">Replace my data</string>
+    <string name="restore_working">Restoring…</string>
 </resources>

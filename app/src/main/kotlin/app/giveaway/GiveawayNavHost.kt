@@ -32,10 +32,14 @@ import app.giveaway.feature.onboarding.WelcomeRoute
 import app.giveaway.feature.onboarding.appLockSetupScreen
 import app.giveaway.feature.onboarding.connectInstagramScreen
 import app.giveaway.feature.onboarding.welcomeScreen
-import app.giveaway.feature.settings.SettingsRoute
+import app.giveaway.feature.settings.BackupRoute
 import app.giveaway.feature.settings.LicensesRoute
+import app.giveaway.feature.settings.RestoreRoute
 import app.giveaway.feature.settings.SettingsActions
+import app.giveaway.feature.settings.SettingsRoute
+import app.giveaway.feature.settings.backupScreen
 import app.giveaway.feature.settings.licensesScreen
+import app.giveaway.feature.settings.restoreScreen
 import app.giveaway.feature.settings.settingsScreen
 
 /**
@@ -67,8 +71,7 @@ fun GiveawayNavHost(
                 onOpenSettings = { navController.navigate(SettingsRoute) },
                 onOpenGiveaway = { id, destination -> navController.navigate(destination.route(id)) },
                 onSignInAgain = { navController.navigate(ConnectInstagramRoute(reconnect = true)) },
-                // The backup flow lives in Settings (S5).
-                onExportBackup = { navController.navigate(SettingsRoute) },
+                onExportBackup = { navController.navigate(BackupRoute) },
             ),
         )
         settingsScreen(
@@ -76,12 +79,22 @@ fun GiveawayNavHost(
                 onBack = { navController.popBackStack() },
                 onSetUpAppLock = { navController.navigate(AppLockSetupRoute(fromSettings = true)) },
                 onDisconnected = { navController.navigate(ConnectInstagramRoute(reconnect = true)) },
-                // Backup, restore and "Delete everything" arrive with M-11..M-14.
-                onExportBackup = {},
-                onRestoreBackup = {},
+                onExportBackup = { navController.navigate(BackupRoute) },
+                onRestoreBackup = { navController.navigate(RestoreRoute) },
+                // "Delete everything" arrives with M-14.
                 onDeleteEverything = {},
                 onOpenLicenses = { navController.navigate(LicensesRoute) },
             ),
+        )
+        backupScreen(onBack = { navController.popBackStack() })
+        // A restore clears the Instagram account, so the user signs in again with nothing to go back to.
+        restoreScreen(
+            onBack = { navController.popBackStack() },
+            onRestored = {
+                navController.navigate(ConnectInstagramRoute(reconnect = true)) {
+                    popUpTo(navController.graph.id) { inclusive = true }
+                }
+            },
         )
         licensesScreen(onBack = { navController.popBackStack() })
 
