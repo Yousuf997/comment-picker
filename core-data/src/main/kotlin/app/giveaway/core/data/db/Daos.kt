@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 import java.time.Instant
@@ -36,11 +37,28 @@ interface GiveawayDao {
     @Insert
     suspend fun insert(giveaway: GiveawayEntity): Long
 
+    @Update
+    suspend fun update(giveaway: GiveawayEntity)
+
     @Query("SELECT * FROM giveaway WHERE id = :id")
     suspend fun get(id: Long): GiveawayEntity?
 
     @Query("SELECT * FROM giveaway ORDER BY createdAt DESC")
     fun observeAll(): Flow<List<GiveawayEntity>>
+
+    /** Home list rows with their counts, newest first. */
+    @Query(
+        """
+        SELECT g.*,
+            (SELECT COUNT(*) FROM comment c WHERE c.giveawayId = g.id) AS commentCount,
+            (SELECT COUNT(*) FROM entry e WHERE e.giveawayId = g.id AND e.isValid = 1) AS validEntryCount
+        FROM giveaway g ORDER BY g.createdAt DESC
+        """,
+    )
+    fun observeSummaries(): Flow<List<GiveawaySummary>>
+
+    @Query("UPDATE giveaway SET autoDeleteAt = :at WHERE id = :id")
+    suspend fun setAutoDeleteAt(id: Long, at: Instant?)
 
     @Query("UPDATE giveaway SET status = :status WHERE id = :id")
     suspend fun updateStatus(id: Long, status: GiveawayStatus)
