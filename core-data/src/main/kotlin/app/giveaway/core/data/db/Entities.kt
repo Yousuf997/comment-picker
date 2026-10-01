@@ -3,6 +3,7 @@
 
 package app.giveaway.core.data.db
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -230,3 +231,10 @@ data class SettingsEntity(
         const val SINGLE_ROW_ID = 1
     }
 }
+
+/** A giveaway with the counts shown on its Home card (spec: S4). */
+data class GiveawaySummary(
+    @Embedded val giveaway: GiveawayEntity,
+    val commentCount: Int,
+    val validEntryCount: Int,
+)
