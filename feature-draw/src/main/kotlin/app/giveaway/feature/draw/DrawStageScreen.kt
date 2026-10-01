@@ -104,7 +104,7 @@ internal fun DrawStageScreen(
                 step = 6,
                 onBack = onBack,
             )
-            CaptionStatus(state.caption)
+            Checks(state)
             EntryRing(state.entries)
             Text(
                 stringResource(R.string.draw_title),
@@ -144,6 +144,19 @@ internal fun DrawStageScreen(
         }
     }
     state.testPicks?.let { TestDrawSheet(it, onCloseTest) }
+}
+
+/** The checks before the draw (spec: S11): the caption re-read and Play Integrity. Neither blocks the draw. */
+@Composable
+private fun Checks(state: DrawStageState) {
+    CaptionStatus(state.caption)
+    if (state.integrity == false) {
+        NoticeCard(
+            title = stringResource(R.string.draw_integrity_title),
+            body = stringResource(R.string.draw_integrity_body),
+            tone = NoticeTone.Info,
+        )
+    }
 }
 
 /** The caption re-read (spec: S11): a chip when the code is there, a warning when not. */

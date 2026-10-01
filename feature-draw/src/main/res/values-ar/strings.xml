@@ -11,6 +11,8 @@
     <string name="winners_title">الفائزون</string>
     <string name="winners_create_certificate">إنشاء الشهادة</string>
     <string name="certificate_done">العودة إلى السحوبات</string>
+    <string name="draw_integrity_title">تعذّر التحقق من هذا الهاتف</string>
+    <string name="draw_integrity_body">لم يتمكن Google Play من تأكيد أن هذا هو التطبيق الأصلي على جهاز سليم. لا يزال بإمكانك إجراء السحب، وستذكر الشهادة أنه لم يتم التحقق من سلامة الجهاز.</string>
     <string name="draw_caption_checking">جارٍ التحقق من رمز السحب في الوصف…</string>
     <string name="draw_caption_found">رمز السحب مطابق لوصف المنشور</string>
     <string name="draw_caption_missing_title">لم يُعثر على رمز السحب في الوصف</string>

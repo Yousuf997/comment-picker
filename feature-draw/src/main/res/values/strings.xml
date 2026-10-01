@@ -11,6 +11,8 @@
     <string name="winners_title">Your winners</string>
     <string name="winners_create_certificate">Create certificate</string>
     <string name="certificate_done">Back to giveaways</string>
+    <string name="draw_integrity_title">This phone couldn\'t be verified</string>
+    <string name="draw_integrity_body">Google Play couldn\'t confirm this is the genuine app on a genuine device. You can still draw; the certificate will say device integrity wasn\'t verified.</string>
     <string name="draw_caption_checking">Checking your caption for the draw code…</string>
     <string name="draw_caption_found">Draw code matches your caption</string>
     <string name="draw_caption_missing_title">Draw code not found in your caption</string>

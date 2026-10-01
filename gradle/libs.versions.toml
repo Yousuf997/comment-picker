@@ -27,6 +27,7 @@ retrofit = "3.0.0"
 work = "2.12.0"
 hiltWork = "1.4.0"
 argon2kt = "1.6.0"
+playIntegrity = "1.4.0"
 biometric = "1.1.0"
 fragment = "1.9.1"
 coil = "3.6.3"
@@ -78,6 +79,7 @@ androidx-work-testing = { module = "androidx.work:work-testing", version.ref = "
 androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hiltWork" }
 androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hiltWork" }
 argon2kt = { module = "com.lambdapioneer.argon2kt:argon2kt", version.ref = "argon2kt" }
+play-integrity = { module = "com.google.android.play:integrity", version.ref = "playIntegrity" }
 androidx-biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
 androidx-fragment = { module = "androidx.fragment:fragment-ktx", version.ref = "fragment" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }

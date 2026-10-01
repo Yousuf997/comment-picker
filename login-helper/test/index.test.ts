@@ -106,7 +106,8 @@ describe("POST /v1/token", () => {
     ["code with spaces", { code: "a b" }, {}],
     ["code too long", { code: "x".repeat(2049) }, {}],
     ["non-string integrity token", { code: "abc", integrityToken: 5 }, {}],
-    ["oversized body", { code: "abc", padding: "p".repeat(5000) }, {}],
+    ["oversized body", { code: "abc", padding: "p".repeat(17_000) }, {}],
+    ["oversized integrity token", { code: "abc", integrityToken: "t".repeat(12_001) }, {}],
   ])("rejects %s with 400 before calling Instagram", async (_name, body, headers) => {
     const calls = mockInstagram();
     const response = await worker.fetch(tokenRequest(body, headers as Record<string, string>), env());
@@ -114,10 +115,10 @@ describe("POST /v1/token", () => {
     expect(calls).toHaveLength(0);
   });
 
-  it("fails closed when integrity enforcement is on", async () => {
+  it("fails closed without an integrity token when enforcement is on", async () => {
     const calls = mockInstagram();
     const response = await worker.fetch(tokenRequest({ code: "abc" }), env({ INTEGRITY_ENFORCE: "true" }));
-    expect(response.status).toBe(503);
+    expect(response.status).toBe(403);
     expect(calls).toHaveLength(0);
   });
 

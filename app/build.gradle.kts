@@ -36,6 +36,7 @@ dependencies {
     implementation(libs.androidx.hilt.work)
     implementation(libs.androidx.lifecycle.process)
 
+    testImplementation(projects.coreSecurity)
     testImplementation(libs.hilt.android.testing)
     testImplementation(libs.room.runtime)
     kspTest(libs.hilt.compiler)
@@ -50,6 +51,7 @@ val verifyReleaseConfig by tasks.registering {
     val pins = providers.gradleProperty("giveaway.authHostPins")
     val privacyPolicy = providers.gradleProperty("giveaway.privacyPolicyUrl")
     val verifier = providers.gradleProperty("giveaway.verifierUrl")
+    val cloudProject = providers.gradleProperty("giveaway.cloudProjectNumber")
     doLast {
         val problems = buildList {
             if (igAppId.get().startsWith("REPLACE")) add("giveaway.igAppId is a placeholder")
@@ -57,6 +59,7 @@ val verifyReleaseConfig by tasks.registering {
             if (authHost.get().endsWith(".invalid")) add("giveaway.authHost is a placeholder")
             if (privacyPolicy.get().contains(".invalid")) add("giveaway.privacyPolicyUrl is a placeholder")
             if (verifier.get().contains(".invalid")) add("giveaway.verifierUrl is a placeholder")
+            if (cloudProject.get() == "0") add("giveaway.cloudProjectNumber is not set (Play Integrity)")
             val pinCount = pins.get().split(",").count { it.isNotBlank() }
             if (pinCount < 2) add("giveaway.authHostPins needs a pin and a backup pin")
         }

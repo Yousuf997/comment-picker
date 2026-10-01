@@ -22,7 +22,11 @@ sealed interface TokenResult {
     data object Failed : TokenResult
 }
 
-/** Calls the login helper's `POST /v1/token`, the only call that involves our server (spec: Architecture). */
+/** What the helper's integrity check said about a draw (plan A6): booleans only. */
+@Serializable
+data class DrawIntegrityVerdict(val appRecognized: Boolean, val deviceIntegrity: Boolean, val hashMatches: Boolean)
+
+/** Calls the login helper, the only server of ours the app talks to (spec: Architecture). */
 class LoginHelperClient @Inject constructor(
     private val http: OkHttpClient,
     private val config: AuthConfig,
@@ -50,6 +54,24 @@ class LoginHelperClient @Inject constructor(
         }
     }
 
+    /** `POST /v1/integrity`: has a Standard integrity token decoded; null if the check couldn't run. */
+    suspend fun drawIntegrity(token: String, requestHash: String): DrawIntegrityVerdict? = withContext(Dispatchers.IO) {
+        val body = json.encodeToString(IntegrityRequest.serializer(), IntegrityRequest(token, requestHash))
+        val request = Request.Builder()
+            .url("${config.helperBaseUrl}v1/integrity")
+            .post(body.toRequestBody(JSON))
+            .build()
+        try {
+            http.newCall(request).execute().use { response ->
+                val text = response.body.string()
+                if (!response.isSuccessful) return@use null
+                runCatching { json.decodeFromString(DrawIntegrityVerdict.serializer(), text) }.getOrNull()
+            }
+        } catch (expected: IOException) {
+            null
+        }
+    }
+
     private fun parse(text: String): TokenResult = runCatching {
         val response = json.decodeFromString(TokenResponse.serializer(), text)
         TokenResult.Success(
@@ -63,6 +85,9 @@ class LoginHelperClient @Inject constructor(
 
     @Serializable
     private data class TokenRequest(val code: String, val integrityToken: String?)
+
+    @Serializable
+    private data class IntegrityRequest(val token: String, val requestHash: String)
 
     @Serializable
     private data class TokenResponse(
