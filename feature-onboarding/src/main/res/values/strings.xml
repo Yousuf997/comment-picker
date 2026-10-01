@@ -37,4 +37,16 @@
     <string name="app_lock_use_biometrics">Use fingerprint or face</string>
     <string name="app_lock_set_pin">Set a PIN instead</string>
     <string name="app_lock_skip">Skip for now</string>
+    <string name="app_lock_body">Lock the app with your fingerprint, face or a PIN, so nobody else can open your giveaways.</string>
+    <string name="app_lock_no_biometrics">This phone has no fingerprint or face unlock set up, so use a PIN.</string>
+    <string name="app_lock_pin_title">Choose a 6-digit PIN</string>
+    <string name="app_lock_pin_confirm_title">Enter the PIN again</string>
+    <string name="app_lock_pin_label">PIN</string>
+    <string name="app_lock_pin_mismatch">The PINs don\'t match. Choose a new one.</string>
+    <string name="app_lock_continue">Continue</string>
+    <string name="app_lock_back">Back</string>
+    <string name="app_lock_prompt_title">Confirm it\'s you</string>
+    <string name="app_lock_prompt_subtitle">Turn on app lock</string>
+    <string name="app_lock_prompt_cancel">Cancel</string>
+    <string name="app_lock_biometric_failed">Couldn\'t confirm it\'s you. Try again or set a PIN.</string>
 </resources>

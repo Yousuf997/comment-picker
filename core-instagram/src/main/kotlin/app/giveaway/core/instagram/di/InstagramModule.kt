@@ -20,7 +20,6 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
-import java.time.Clock
 import java.time.Duration
 import javax.inject.Singleton
 
@@ -48,9 +47,6 @@ internal abstract class InstagramModule {
             helperBaseUrl = "https://${BuildConfig.AUTH_HOST}/",
             graphBaseUrl = "https://graph.instagram.com/$GRAPH_API_VERSION/",
         )
-
-        @Provides
-        fun clock(): Clock = Clock.systemUTC()
 
         /** HTTPS only (cleartext is off app-wide); the login helper is pinned when pins are configured (F-13). */
         @Provides

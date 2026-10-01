@@ -37,4 +37,16 @@
     <string name="app_lock_use_biometrics">استخدام البصمة أو الوجه</string>
     <string name="app_lock_set_pin">تعيين رمز PIN بدلًا من ذلك</string>
     <string name="app_lock_skip">التخطي الآن</string>
+    <string name="app_lock_body">اقفل التطبيق ببصمتك أو وجهك أو رمز PIN، حتى لا يفتح أحد غيرك سحوباتك.</string>
+    <string name="app_lock_no_biometrics">لا توجد بصمة أو قفل بالوجه على هذا الهاتف، لذا استخدم رمز PIN.</string>
+    <string name="app_lock_pin_title">اختر رمز PIN من 6 أرقام</string>
+    <string name="app_lock_pin_confirm_title">أدخل الرمز مرة أخرى</string>
+    <string name="app_lock_pin_label">رمز PIN</string>
+    <string name="app_lock_pin_mismatch">الرمزان غير متطابقين. اختر رمزًا جديدًا.</string>
+    <string name="app_lock_continue">متابعة</string>
+    <string name="app_lock_back">رجوع</string>
+    <string name="app_lock_prompt_title">تأكيد هويتك</string>
+    <string name="app_lock_prompt_subtitle">تفعيل قفل التطبيق</string>
+    <string name="app_lock_prompt_cancel">إلغاء</string>
+    <string name="app_lock_biometric_failed">تعذّر التأكد من هويتك. حاول مجددًا أو عيّن رمز PIN.</string>
 </resources>
