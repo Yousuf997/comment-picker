@@ -69,4 +69,19 @@
     <string name="drawing_picked_so_far">اختيروا حتى الآن</string>
     <string name="drawing_announce_winner">الفائز %1$s: %2$s</string>
     <string name="drawing_announce_alternate">الاحتياطي %1$s: %2$s</string>
+    <string name="winners_subtitle">سُحب %1$s من %2$s مشاركة</string>
+    <string name="winners_check_note">لا يُظهر إنستغرام من يتابعك أو أعجب بالمنشور. تحقق من كل فائز يدويًا ثم أكّده، أو استبدله بالاحتياطي التالي.</string>
+    <string name="winners_open_profile">فتح الملف</string>
+    <string name="winners_promoted">حلّ محل فائز من قائمة الاحتياط</string>
+    <string name="winners_confirmed">مؤكَّد</string>
+    <string name="winners_confirm">تأكيد</string>
+    <string name="winners_replace">استبدال</string>
+    <string name="winners_alternates">الاحتياط</string>
+    <string name="winners_no_alternates_title">لم يتبقَّ احتياط</string>
+    <string name="winners_no_alternates_body">استُخدم كل الاحتياط. يمكنك الإنهاء بعدد أقل من الفائزين، وتذكر الشهادة كل استبدال.</string>
+    <string name="winners_replace_title">استبدال %1$s؟</string>
+    <string name="winners_replace_body">يأخذ الاحتياطي التالي هذا المكان. يُطبع السبب في الشهادة.</string>
+    <string name="winners_replace_reason">السبب، مثل: لا يتابع الحساب</string>
+    <string name="winners_replace_confirm">استبدال</string>
+    <string name="winners_replace_cancel">إلغاء</string>
 </resources>

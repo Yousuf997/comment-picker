@@ -180,6 +180,24 @@ interface DrawDao {
 
     @Query("SELECT * FROM draw_result WHERE drawId = :drawId ORDER BY position")
     suspend fun results(drawId: Long): List<DrawResultEntity>
+
+    /** The real draw's results, updated as winners are confirmed or replaced (S14). */
+    @Query(
+        "SELECT r.* FROM draw_result r JOIN draw d ON d.id = r.drawId " +
+            "WHERE d.realGiveawayId = :giveawayId ORDER BY r.position",
+    )
+    fun observeRealResults(giveawayId: Long): Flow<List<DrawResultEntity>>
+
+    @Update
+    suspend fun updateResult(result: DrawResultEntity)
+
+    /** A person's entry comment: their earliest valid one. [username] is lowercase, as in the canonical list. */
+    @Query(
+        "SELECT c.text FROM entry e JOIN comment c ON c.giveawayId = e.giveawayId AND c.id = e.commentId " +
+            "WHERE e.giveawayId = :giveawayId AND e.isValid = 1 AND lower(e.username) = :username " +
+            "ORDER BY c.timestamp, c.id LIMIT 1",
+    )
+    suspend fun entryComment(giveawayId: Long, username: String): String?
 }
 
 @Dao

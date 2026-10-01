@@ -81,15 +81,6 @@ internal fun SaveVideoSheet(onChoiceMade: () -> Unit) = PlaceholderScreen(
 )
 
 @Composable
-internal fun WinnersScreen(onCreateCertificate: () -> Unit) = PlaceholderScreen(
-    screenId = "S14",
-    title = stringResource(R.string.winners_title),
-    actions = listOf(
-        PlaceholderAction(stringResource(R.string.winners_create_certificate), onClick = onCreateCertificate),
-    ),
-)
-
-@Composable
 internal fun CertificateScreen(onDone: () -> Unit) = PlaceholderScreen(
     screenId = "S15",
     title = stringResource(R.string.certificate_title),
