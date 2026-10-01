@@ -179,6 +179,14 @@ class LockInTest {
     }
 
     @Test
+    fun aTickMadeWhileTheCodeLoadsIsKept() {
+        val vm = viewModel(draft())
+        // Room loads the giveaway on its own thread, so this lands before the code is shown.
+        vm.onConfirmedChange(true)
+        assertTrue(vm.loaded().confirmed)
+    }
+
+    @Test
     fun aDraftWhoseDeadlinePassedCannotBeCommitted() {
         val id = draft()
         clock = Clock.fixed(closesAt.plusSeconds(1), ZoneOffset.UTC)
