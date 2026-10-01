@@ -19,10 +19,6 @@ data class DrawRoute(val giveawayId: Long)
 @Serializable
 data class DrawingRoute(val giveawayId: Long, val record: Boolean = false)
 
-/** S13 Save video popup, shown over S14. The user must choose; it can't be dismissed by tapping outside. */
-@Serializable
-data class SaveVideoRoute(val giveawayId: Long)
-
 /** S14 Winners. */
 @Serializable
 data class WinnersRoute(val giveawayId: Long)
@@ -53,12 +49,6 @@ fun NavGraphBuilder.drawingScreen(onDrawFinished: (giveawayId: Long) -> Unit) {
     }
 }
 
-fun NavGraphBuilder.saveVideoSheet(onChoiceMade: () -> Unit) {
-    dialog<SaveVideoRoute>(
-        dialogProperties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false),
-    ) { SaveVideoSheet(onChoiceMade) }
-}
-
 fun NavGraphBuilder.winnersScreen(onCreateCertificate: (giveawayId: Long) -> Unit) {
     composable<WinnersRoute> { entry ->
         val giveawayId = entry.toRoute<WinnersRoute>().giveawayId
@@ -69,16 +59,6 @@ fun NavGraphBuilder.winnersScreen(onCreateCertificate: (giveawayId: Long) -> Uni
 fun NavGraphBuilder.certificateScreen(onDone: () -> Unit) {
     composable<CertificateRoute> { CertificateScreen(onDone) }
 }
-
-@Composable
-internal fun SaveVideoSheet(onChoiceMade: () -> Unit) = PlaceholderScreen(
-    screenId = "S13",
-    title = stringResource(R.string.save_video_title),
-    actions = listOf(
-        PlaceholderAction(stringResource(R.string.save_video_save), onClick = onChoiceMade),
-        PlaceholderAction(stringResource(R.string.save_video_discard), primary = false, onClick = onChoiceMade),
-    ),
-)
 
 @Composable
 internal fun CertificateScreen(onDone: () -> Unit) = PlaceholderScreen(

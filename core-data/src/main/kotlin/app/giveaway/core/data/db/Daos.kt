@@ -2,6 +2,7 @@ package app.giveaway.core.data.db
 
 import androidx.paging.PagingSource
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -228,6 +229,18 @@ interface MediaFileDao {
 
     @Query("SELECT * FROM media_file WHERE giveawayId = :giveawayId")
     suspend fun forGiveaway(giveawayId: Long): List<MediaFileEntity>
+
+    @Query(
+        "SELECT * FROM media_file WHERE giveawayId = :giveawayId AND kind = 'VIDEO' AND pendingDecision = 1 " +
+            "ORDER BY createdAt DESC LIMIT 1",
+    )
+    fun observePendingVideo(giveawayId: Long): Flow<MediaFileEntity?>
+
+    @Update
+    suspend fun update(file: MediaFileEntity)
+
+    @Delete
+    suspend fun delete(file: MediaFileEntity)
 }
 
 @Dao

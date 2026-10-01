@@ -91,4 +91,12 @@
     <string name="drawing_video_code">رمز السحب من وصف المنشور</string>
     <string name="draw_low_storage_title">لا توجد مساحة كافية للتسجيل</string>
     <string name="draw_low_storage_body">أفرغ بعض المساحة أو أوقف التسجيل. لا يزال بإمكانك إجراء السحب، فالفيديو وحده يحتاج إلى المساحة.</string>
+    <string name="save_video_format">%1$s · MP4 · %2$s × %3$s</string>
+    <string name="save_video_body">احفظه في معرض الصور لمشاركته في القصص أو ريلز. يُظهر السحب فقط، لا شاشتك.</string>
+    <string name="save_video_note">إن لم تحفظه، يُحذف التسجيل فورًا.</string>
+    <string name="save_video_play">تشغيل الفيديو</string>
+    <string name="save_video_saved">حُفظ في معرض الصور</string>
+    <string name="save_video_view">عرض</string>
+    <string name="save_video_failed">تعذّر حفظ الفيديو. حاول مرة أخرى.</string>
+    <string name="save_video_file_name">سحب - %1$s.mp4</string>
 </resources>

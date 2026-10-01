@@ -81,4 +81,14 @@
     <string name="drawing_video_code">Draw code from the caption</string>
     <string name="draw_low_storage_title">Not enough space to record</string>
     <string name="draw_low_storage_body">Free up some space, or turn off recording. You can still draw; only the video needs the space.</string>
+    <!-- %1$s: length, %2$s x %3$s: width and height in pixels. -->
+    <string name="save_video_format">%1$s · MP4 · %2$s × %3$s</string>
+    <string name="save_video_body">Save it to your gallery to share on Stories or Reels. It shows only the draw, not your screen.</string>
+    <string name="save_video_note">If you don\'t save it, the recording is deleted straight away.</string>
+    <string name="save_video_play">Play the video</string>
+    <string name="save_video_saved">Saved to your gallery</string>
+    <string name="save_video_view">View</string>
+    <string name="save_video_failed">Couldn\'t save the video. Try again.</string>
+    <!-- File name in the gallery. %1$s: the giveaway title. -->
+    <string name="save_video_file_name">Draw - %1$s.mp4</string>
 </resources>

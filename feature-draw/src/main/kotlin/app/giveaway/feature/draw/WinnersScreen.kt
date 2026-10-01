@@ -1,6 +1,12 @@
 package app.giveaway.feature.draw
 
+import android.Manifest
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,9 +24,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,6 +47,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -55,27 +66,85 @@ import app.giveaway.core.designsystem.component.StatusChip
 import app.giveaway.core.designsystem.formatCount
 import app.giveaway.core.designsystem.formatDateTime
 import app.giveaway.core.designsystem.handle
+import app.giveaway.core.designsystem.R as DesignR
 
 @Composable
 internal fun WinnersScreen(onCreateCertificate: () -> Unit, viewModel: WinnersViewModel = hiltViewModel()) {
     val view by viewModel.view.collectAsStateWithLifecycle()
     val replacing by viewModel.replacing.collectAsStateWithLifecycle()
+    val video by viewModel.pendingVideo.collectAsStateWithLifecycle()
+    val saving by viewModel.saving.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    WinnersScreen(
-        view = view,
-        replacing = replacing,
-        actions = WinnersActions(
-            onConfirm = viewModel::confirm,
-            onReplace = { viewModel.startReplace(it) },
-            onReplaceConfirmed = viewModel::replace,
-            onReplaceCancelled = { viewModel.startReplace(null) },
-            // The app never messages anyone: this only opens the profile in Instagram or the browser (spec: S14).
-            onOpenProfile = { username ->
-                context.startActivity(Intent(Intent.ACTION_VIEW, "https://www.instagram.com/$username/".toUri()))
-            },
-            onCreateCertificate = onCreateCertificate,
-        ),
+    val snackbar = remember { SnackbarHostState() }
+    SavedVideoMessages(viewModel, snackbar)
+    val save = rememberSaveVideo(viewModel, view?.title)
+    Box {
+        val actions = winnersActions(viewModel, context, onCreateCertificate)
+        WinnersScreen(view = view, replacing = replacing, actions = actions)
+        video?.let { SaveVideoSheet(it.file.uri, it.info, saving, save, viewModel::discardVideo) }
+        SnackbarHost(snackbar, modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp))
+    }
+}
+
+private fun winnersActions(viewModel: WinnersViewModel, context: Context, onCreateCertificate: () -> Unit) =
+    WinnersActions(
+        onConfirm = viewModel::confirm,
+        onReplace = { viewModel.startReplace(it) },
+        onReplaceConfirmed = viewModel::replace,
+        onReplaceCancelled = { viewModel.startReplace(null) },
+        // The app never messages anyone: this only opens the profile in Instagram or the browser (spec: S14).
+        onOpenProfile = { username ->
+            context.startActivity(Intent(Intent.ACTION_VIEW, "https://www.instagram.com/$username/".toUri()))
+        },
+        onCreateCertificate = onCreateCertificate,
     )
+
+/**
+ * "Save to gallery" (spec: requirement 7): Movies/[APP NAME]. Android 8 and 9 ask for the storage permission first;
+ * later versions need none.
+ */
+@Composable
+private fun rememberSaveVideo(viewModel: WinnersViewModel, title: String?): () -> Unit {
+    val context = LocalContext.current
+    val album = stringResource(DesignR.string.app_name)
+    val fileName = stringResource(R.string.save_video_file_name, title.orEmpty().ifBlank { album })
+    val askStorage = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
+        viewModel.saveVideo(album, fileName)
+    }
+    return {
+        val mustAsk = Build.VERSION.SDK_INT < Build.VERSION_CODES.Q &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+            PackageManager.PERMISSION_GRANTED
+        if (mustAsk) {
+            askStorage.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        } else {
+            viewModel.saveVideo(album, fileName)
+        }
+    }
+}
+
+/** The confirmation after saving, with View to open the video (spec: requirement 7). */
+@Composable
+private fun SavedVideoMessages(viewModel: WinnersViewModel, snackbar: SnackbarHostState) {
+    val context = LocalContext.current
+    val saved = stringResource(R.string.save_video_saved)
+    val view = stringResource(R.string.save_video_view)
+    val failed = stringResource(R.string.save_video_failed)
+    LaunchedEffect(viewModel) {
+        viewModel.saved.collect { result ->
+            when (result) {
+                is WinnersViewModel.SaveResult.Saved -> {
+                    val choice = snackbar.showSnackbar(saved, actionLabel = view)
+                    if (choice == SnackbarResult.ActionPerformed) {
+                        val open = Intent(Intent.ACTION_VIEW).setDataAndType(result.uri, "video/mp4")
+                            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        runCatching { context.startActivity(open) }
+                    }
+                }
+                WinnersViewModel.SaveResult.Failed -> snackbar.showSnackbar(failed)
+            }
+        }
+    }
 }
 
 internal data class WinnersActions(
