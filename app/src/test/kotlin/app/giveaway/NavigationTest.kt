@@ -3,7 +3,12 @@ package app.giveaway
 import android.Manifest
 import android.app.Application
 import android.content.Intent
+import android.view.WindowManager
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -145,6 +150,28 @@ class NavigationTest {
         done.performScrollTo().performClick()
         awaitScreen("S4")
         assertFalse(navController.previousBackStackEntry != null)
+    }
+
+    @Test
+    fun screenshotsAreBlockedWhereEntriesOrWinnersShowWhenAsked() {
+        var block by mutableStateOf(true)
+        lateinit var secure: SecureWindow
+        launch {
+            secure = remember { SecureWindow(compose.activity.window) }
+            GiveawayNavHost(navController, HomeRoute, blockScreenshots = block, onSecureScreen = { secure.screen = it })
+        }
+        fun flagged() = compose.activity.window.attributes.flags and WindowManager.LayoutParams.FLAG_SECURE != 0
+        compose.waitForIdle()
+        assertFalse("Home shows no entries", flagged())
+        compose.runOnUiThread { navController.navigate(WinnersRoute(giveawayId = 7)) }
+        compose.waitUntil(WAIT_MS) { flagged() }
+        // Turning the setting off lifts it straight away.
+        block = false
+        compose.waitUntil(WAIT_MS) { !flagged() }
+        block = true
+        compose.waitUntil(WAIT_MS) { flagged() }
+        compose.runOnUiThread { navController.popBackStack() }
+        compose.waitUntil(WAIT_MS) { !flagged() }
     }
 
     @Test
