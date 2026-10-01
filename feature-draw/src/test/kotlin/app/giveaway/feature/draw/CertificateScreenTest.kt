@@ -214,6 +214,14 @@ class CertificateScreenTest {
         compose.onRoot().captureRoboImage("src/test/screenshots/s15_certificate.png")
     }
 
+    @Test
+    @Config(qualifiers = "ar-w390dp-h1400dp-xhdpi")
+    fun screenshotArabic() {
+        show()
+        compose.waitUntil(WAIT_MS) { vm.files.value != null }
+        compose.onRoot().captureRoboImage("src/test/screenshots/s15_certificate_ar.png")
+    }
+
     private companion object {
         const val WAIT_MS = 15_000L
     }

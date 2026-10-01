@@ -34,6 +34,7 @@ internal fun rememberSceneStyle(context: Context): SceneStyle {
         ),
         body = body,
         code = font(DesignR.font.jetbrains_mono, Typeface.MONOSPACE),
+        rtl = arabic,
     )
 }
 

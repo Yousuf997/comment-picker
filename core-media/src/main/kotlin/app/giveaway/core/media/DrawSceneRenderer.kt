@@ -20,6 +20,8 @@ data class SceneStyle(
     val display: Typeface,
     val body: Typeface,
     val code: Typeface,
+    /** Right-to-left (Arabic): lists start at the right edge (spec: full RTL mirroring). */
+    val rtl: Boolean = false,
 )
 
 /** The words on the recorded scene, in the app's language, supplied by the caller (spec: Localization). */
@@ -99,10 +101,10 @@ class DrawSceneRenderer(
 
     private fun picked(canvas: Canvas, landed: List<Pick>, unit: Float, top: Float) {
         if (landed.isEmpty()) return
-        left(canvas, text.pickedSoFar, style.body, unit * SMALL_SIZE, style.muted, unit * MARGIN, top)
+        start(canvas, text.pickedSoFar, style.body, unit * SMALL_SIZE, style.muted, unit * MARGIN, top)
         landed.forEachIndexed { i, pick ->
             val y = top + unit * LIST_STEP * (i + 1)
-            left(canvas, text.announcement(pick), style.body, unit * LIST_SIZE, style.text, unit * MARGIN, y)
+            start(canvas, text.announcement(pick), style.body, unit * LIST_SIZE, style.text, unit * MARGIN, y)
         }
     }
 
@@ -128,9 +130,11 @@ class DrawSceneRenderer(
         canvas.drawText(ellipsize(s, canvas.width * TEXT_WIDTH), x, y - (paint.ascent() + paint.descent()) / 2, paint)
     }
 
-    private fun left(canvas: Canvas, s: String, face: Typeface, size: Float, color: Int, x: Float, y: Float) {
-        setUp(face, size, color, Paint.Align.LEFT)
-        canvas.drawText(ellipsize(s, canvas.width - x * 2), x, y - (paint.ascent() + paint.descent()) / 2, paint)
+    /** Text from the start edge, [margin] in from it: the left in English, the right in Arabic. */
+    private fun start(canvas: Canvas, s: String, face: Typeface, size: Float, color: Int, margin: Float, y: Float) {
+        setUp(face, size, color, if (style.rtl) Paint.Align.RIGHT else Paint.Align.LEFT)
+        val x = if (style.rtl) canvas.width - margin else margin
+        canvas.drawText(ellipsize(s, canvas.width - margin * 2), x, y - (paint.ascent() + paint.descent()) / 2, paint)
     }
 
     private fun setUp(face: Typeface, size: Float, color: Int, align: Paint.Align) {
