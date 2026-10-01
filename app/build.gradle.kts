@@ -33,6 +33,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.work.runtime)
     implementation(libs.androidx.hilt.work)
+    implementation(libs.androidx.lifecycle.process)
 
     testImplementation(libs.hilt.android.testing)
     kspTest(libs.hilt.compiler)

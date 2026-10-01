@@ -49,4 +49,15 @@
     <string name="app_lock_prompt_subtitle">Turn on app lock</string>
     <string name="app_lock_prompt_cancel">Cancel</string>
     <string name="app_lock_biometric_failed">Couldn\'t confirm it\'s you. Try again or set a PIN.</string>
+
+    <!-- Lock screen -->
+    <string name="lock_title">Unlock to continue</string>
+    <string name="lock_unlock">Unlock</string>
+    <string name="lock_prompt_subtitle">Unlock the app</string>
+    <string name="lock_biometric_failed">Couldn\'t confirm it\'s you. Try again.</string>
+    <string name="lock_locked_out">Too many wrong PINs. Try again in %1$s.</string>
+    <plurals name="lock_wrong_pin">
+        <item quantity="one">Wrong PIN. %d try left before a short wait.</item>
+        <item quantity="other">Wrong PIN. %d tries left before a short wait.</item>
+    </plurals>
 </resources>
