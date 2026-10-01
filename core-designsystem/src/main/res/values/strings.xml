@@ -2,4 +2,6 @@
 <resources>
     <string name="stepper_decrease">Decrease %1$s</string>
     <string name="stepper_increase">Increase %1$s</string>
+    <string name="navigate_back">Back</string>
+    <string name="wizard_step">Step %1$d of %2$d</string>
 </resources>
