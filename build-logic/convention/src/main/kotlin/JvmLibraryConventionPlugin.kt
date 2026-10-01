@@ -1,3 +1,4 @@
+import app.giveaway.buildlogic.configureDetekt
 import app.giveaway.buildlogic.configureKotlin
 import app.giveaway.buildlogic.enforceModuleRules
 import app.giveaway.buildlogic.libs
@@ -18,6 +19,8 @@ class JvmLibraryConventionPlugin : Plugin<Project> {
             targetCompatibility = JavaVersion.VERSION_17
         }
         configureKotlin()
+        configureDetekt()
+        pluginManager.apply("org.jetbrains.kotlinx.kover")
         dependencies {
             "testImplementation"(libs.library("junit"))
         }

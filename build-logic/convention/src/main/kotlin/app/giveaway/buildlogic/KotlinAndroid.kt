@@ -13,7 +13,11 @@ internal fun Project.configureAndroidCommon(extension: CommonExtension) {
     extension.defaultConfig.minSdk = libs.versionInt("minSdk")
     extension.compileOptions.sourceCompatibility = JavaVersion.VERSION_17
     extension.compileOptions.targetCompatibility = JavaVersion.VERSION_17
+    extension.lint.warningsAsErrors = true
+    extension.lint.abortOnError = true
+    extension.lint.lintConfig = isolated.rootProject.projectDirectory.file("lint.xml").asFile
     configureKotlin()
+    configureDetekt()
     dependencies {
         "testImplementation"(libs.library("junit"))
     }

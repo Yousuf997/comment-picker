@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- targetSdk follows what Google Play requires, not the newest platform (spec: Non-functional requirements). -->
+    <issue id="OldTargetApi" severity="ignore" />
+    <!-- Dependabot proposes version bumps; lint should not fail the build over them. -->
+    <issue id="GradleDependency" severity="ignore" />
+    <issue id="NewerVersionAvailable" severity="ignore" />
+    <issue id="AndroidGradlePluginVersion" severity="ignore" />
+</lint>

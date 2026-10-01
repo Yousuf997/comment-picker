@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  android:
+    name: Android build and checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+
+      # Also validates the Gradle wrapper checksum.
+      - uses: gradle/actions/setup-gradle@v6
+
+      - name: Build, lint, detekt, unit tests, coverage gate
+        run: ./gradlew assembleDebug assembleRelease lint detekt test koverVerify --continue
+
+      - name: Upload reports
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: reports
+          path: |
+            **/build/reports/
+            **/build/test-results/
+          retention-days: 14
+
+  login-helper:
+    name: Login helper tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      # The worker is added in F-07; until then this job has nothing to test.
+      - id: present
+        run: echo "exists=$([ -f login-helper/package.json ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+      - if: steps.present.outputs.exists == 'true'
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: login-helper/package-lock.json
+
+      - if: steps.present.outputs.exists == 'true'
+        working-directory: login-helper
+        run: |
+          npm ci
+          npm test
