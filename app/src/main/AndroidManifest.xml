@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- localeConfig (API 33+) lists the app's languages for the system picker; older versions keep the choice
+         through AppCompat, so targetApi marks the attribute as intentionally unused below 33. -->
     <application
         android:name=".GiveawayApplication"
         android:allowBackup="false"
@@ -13,7 +15,8 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:localeConfig="@xml/locales_config"
-        android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
+        android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
+        tools:targetApi="33">
 
         <!-- Instantiatable is a false positive: lint in AGP 9.4.1 cannot resolve androidx ComponentActivity
              even though it is on the lint classpath. Remove the ignore once lint resolves it. -->
