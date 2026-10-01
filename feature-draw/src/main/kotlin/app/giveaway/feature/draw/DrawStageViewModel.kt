@@ -13,6 +13,8 @@ import app.giveaway.core.data.review.EntryRepository
 import app.giveaway.core.data.settings.SettingsRepository
 import app.giveaway.core.instagram.api.IgResult
 import app.giveaway.core.instagram.api.InstagramRepository
+import app.giveaway.core.media.FreeSpace
+import app.giveaway.core.media.RecordingSpace
 import app.giveaway.draw.Commit
 import app.giveaway.draw.Pick
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -40,6 +42,8 @@ data class DrawStageState(
     /** The last test draw's picks, shown in the TEST sheet. */
     val testPicks: List<Pick>? = null,
     val drawing: Boolean = false,
+    /** Not enough free space to record this draw (spec: warn before the draw on S11). */
+    val lowStorage: Boolean = false,
 ) {
     val checking: Boolean get() = caption == null
 
@@ -66,6 +70,7 @@ class DrawStageViewModel @Inject constructor(
     private val instagram: InstagramRepository,
     private val draws: DrawService,
     private val settings: SettingsRepository,
+    private val freeSpace: FreeSpace,
 ) : ViewModel() {
 
     private val giveawayId = savedStateHandle.toRoute<DrawRoute>().giveawayId
@@ -96,6 +101,7 @@ class DrawStageViewModel @Inject constructor(
                 winners = rules?.winnersCount ?: 0,
                 alternates = rules?.alternatesCount ?: 0,
                 recordDraw = settings.get().recordDrawsByDefault,
+                lowStorage = !RecordingSpace.enough(freeSpace, rules?.winnersCount ?: 0, rules?.alternatesCount ?: 0),
             )
         }
         uiState.update { it.copy(caption = checkCaption(giveaway.igMediaId)) }

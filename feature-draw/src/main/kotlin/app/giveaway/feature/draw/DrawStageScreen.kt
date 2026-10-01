@@ -125,7 +125,7 @@ internal fun DrawStageScreen(
                     tone = NoticeTone.Info,
                 )
             }
-            RecordSwitch(state.recordDraw, onRecordDraw)
+            RecordingOptions(state, onRecordDraw)
             PrimaryButton(
                 text = stringResource(R.string.draw_winners),
                 onClick = onDraw,
@@ -190,6 +190,19 @@ private fun EntryRing(entries: Int) {
                 color = colors.onDrawMuted,
             )
         }
+    }
+}
+
+/** The record switch, and a warning when the phone is short of space for the video (spec: S11 checks). */
+@Composable
+private fun RecordingOptions(state: DrawStageState, onRecordDraw: (Boolean) -> Unit) {
+    RecordSwitch(state.recordDraw, onRecordDraw)
+    if (state.recordDraw && state.lowStorage) {
+        NoticeCard(
+            title = stringResource(R.string.draw_low_storage_title),
+            body = stringResource(R.string.draw_low_storage_body),
+            tone = NoticeTone.Warning,
+        )
     }
 }
 

@@ -123,6 +123,7 @@ class DrawStageTest {
         EntryBuilder(db).rebuild(id)
     }
 
+    private var freeBytes = Long.MAX_VALUE
     private val drawn = mutableListOf<Boolean>()
     private var alreadyDrawn = 0
 
@@ -134,6 +135,7 @@ class DrawStageTest {
             instagram,
             DrawService(db, vault, signer, clock),
             DefaultSettingsRepository(db.settingsDao()),
+            { freeBytes },
         )
         compose.setContent {
             GiveawayTheme {
@@ -183,6 +185,19 @@ class DrawStageTest {
         reviewed(people = 3, winners = 3, alternates = 2)
         show()
         awaitText(app.getString(R.string.draw_fewer_title))
+    }
+
+    @Test
+    fun shortStorageWarnsWhileRecordingIsOn() {
+        reviewed(people = 8)
+        freeBytes = 1_000_000
+        show()
+        awaitText(app.getString(R.string.draw_low_storage_title))
+        // The draw itself is still allowed: only the video needs the space.
+        compose.onNodeWithText(app.getString(R.string.draw_record)).performClick()
+        compose.waitUntil(WAIT_MS) {
+            compose.onAllNodesWithText(app.getString(R.string.draw_low_storage_title)).fetchSemanticsNodes().isEmpty()
+        }
     }
 
     @Test
