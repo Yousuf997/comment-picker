@@ -12,6 +12,8 @@ android {
         applicationId = "app.giveaway"
         versionCode = 1
         versionName = "0.1.0"
+        // Host of the login helper; the App Link below is verified against its assetlinks.json.
+        manifestPlaceholders["authHost"] = providers.gradleProperty("giveaway.authHost").get()
     }
 }
 
@@ -22,6 +24,7 @@ dependencies {
     implementation(projects.featureCreate)
     implementation(projects.featureDraw)
     implementation(projects.featureSettings)
+    implementation(projects.coreInstagram)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)

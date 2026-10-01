@@ -1,7 +1,6 @@
 package app.giveaway.feature.onboarding
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -26,15 +25,7 @@ fun NavGraphBuilder.welcomeScreen(onGetStarted: () -> Unit) {
 }
 
 fun NavGraphBuilder.connectInstagramScreen(onConnected: () -> Unit) {
-    composable<ConnectInstagramRoute> {
-        val uriHandler = LocalUriHandler.current
-        // Sign-in itself arrives with F-12; until then Continue moves on as if it succeeded.
-        ConnectInstagramScreen(
-            state = ConnectState.Idle,
-            onContinue = onConnected,
-            onOpenHelp = { uriHandler.openUri(PROFESSIONAL_ACCOUNT_HELP_URL) },
-        )
-    }
+    composable<ConnectInstagramRoute> { ConnectInstagramScreen(onConnected) }
 }
 
 fun NavGraphBuilder.appLockSetupScreen(onDone: () -> Unit) {
