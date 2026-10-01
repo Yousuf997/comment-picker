@@ -27,8 +27,8 @@ jobs:
       # Also validates the Gradle wrapper checksum.
       - uses: gradle/actions/setup-gradle@v6
 
-      - name: Build, lint, detekt, unit tests, coverage gate
-        run: ./gradlew assembleDebug assembleRelease lint detekt test koverVerify --continue
+      - name: Build, lint, detekt, unit tests, coverage gate, screenshots
+        run: ./gradlew assembleDebug assembleRelease lint detekt test koverVerify verifyRoborazziDebug --continue
 
       - name: Upload reports
         if: failure()
@@ -38,6 +38,7 @@ jobs:
           path: |
             **/build/reports/
             **/build/test-results/
+            **/build/outputs/roborazzi/
           retention-days: 14
 
   login-helper:

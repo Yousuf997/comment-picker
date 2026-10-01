@@ -17,12 +17,18 @@ Missing SDK platforms are downloaded automatically when the SDK licenses are acc
 Run the same checks as CI before pushing:
 
 ```sh
-./gradlew assembleDebug assembleRelease lint detekt test koverVerify --continue
+./gradlew assembleDebug assembleRelease lint detekt test koverVerify verifyRoborazziDebug --continue
+```
+
+Screenshot tests (Roborazzi) compare against golden images committed in each module's `src/test/screenshots`. After an intended visual change, re-record and review the images before committing:
+
+```sh
+./gradlew recordRoborazziDebug
 ```
 
 ## CI
 
-- `.github/workflows/ci.yml` runs on every push: debug and release builds, Android lint (warnings are errors, config in `lint.xml`), detekt (`config/detekt/detekt.yml`), unit tests, and the 100% coverage gate on `core-draw`. It also runs the login helper's tests once `login-helper/` exists.
+- `.github/workflows/ci.yml` runs on every push: debug and release builds, Android lint (warnings are errors, config in `lint.xml`), detekt (`config/detekt/detekt.yml`), unit tests, screenshot comparison, and the 100% coverage gate on `core-draw`. It also runs the login helper's tests once `login-helper/` exists.
 - `.github/workflows/dependency-scan.yml` runs OWASP dependency-check weekly and when build files change, scanning each module's shipped dependencies and failing on CVSS 7 or higher. Vulnerability data comes from the DependencyCheck project's daily NVD mirror, so no API key is needed. Reviewed false positives are suppressed in `config/dependency-check/suppressions.xml`.
 - Dependabot proposes weekly updates for Gradle dependencies and GitHub Actions.
 
