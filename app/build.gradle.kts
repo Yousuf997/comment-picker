@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.giveaway.android.application)
     alias(libs.plugins.giveaway.android.compose)
     alias(libs.plugins.giveaway.hilt)
+    alias(libs.plugins.giveaway.android.screenshot)
 }
 
 android {
