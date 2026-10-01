@@ -1,7 +1,7 @@
 package app.giveaway.feature.onboarding
 
 import android.content.ActivityNotFoundException
-import android.net.Uri
+
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -33,6 +33,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -79,7 +80,7 @@ internal fun ConnectInstagramScreen(
             when (event) {
                 is ConnectEvent.OpenBrowser -> try {
                     val tab = CustomTabsIntent.Builder().setShowTitle(true).build()
-                    tab.launchUrl(context, Uri.parse(event.url))
+                    tab.launchUrl(context, event.url.toUri())
                 } catch (expected: ActivityNotFoundException) {
                     viewModel.onBrowserUnavailable()
                 }
