@@ -1,6 +1,7 @@
 package app.giveaway.feature.onboarding
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -25,26 +26,20 @@ fun NavGraphBuilder.welcomeScreen(onGetStarted: () -> Unit) {
 }
 
 fun NavGraphBuilder.connectInstagramScreen(onConnected: () -> Unit) {
-    composable<ConnectInstagramRoute> { ConnectInstagramScreen(onConnected) }
+    composable<ConnectInstagramRoute> {
+        val uriHandler = LocalUriHandler.current
+        // Sign-in itself arrives with F-12; until then Continue moves on as if it succeeded.
+        ConnectInstagramScreen(
+            state = ConnectState.Idle,
+            onContinue = onConnected,
+            onOpenHelp = { uriHandler.openUri(PROFESSIONAL_ACCOUNT_HELP_URL) },
+        )
+    }
 }
 
 fun NavGraphBuilder.appLockSetupScreen(onDone: () -> Unit) {
     composable<AppLockSetupRoute> { AppLockSetupScreen(onDone) }
 }
-
-@Composable
-internal fun WelcomeScreen(onGetStarted: () -> Unit) = PlaceholderScreen(
-    screenId = "S1",
-    title = stringResource(R.string.welcome_headline),
-    actions = listOf(PlaceholderAction(stringResource(R.string.welcome_get_started), onClick = onGetStarted)),
-)
-
-@Composable
-internal fun ConnectInstagramScreen(onConnected: () -> Unit) = PlaceholderScreen(
-    screenId = "S2",
-    title = stringResource(R.string.connect_title),
-    actions = listOf(PlaceholderAction(stringResource(R.string.connect_continue), onClick = onConnected)),
-)
 
 @Composable
 internal fun AppLockSetupScreen(onDone: () -> Unit) = PlaceholderScreen(
