@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.giveaway.android.compose)
     alias(libs.plugins.giveaway.hilt)
     alias(libs.plugins.giveaway.android.screenshot)
+    alias(libs.plugins.baselineprofile)
 }
 
 // Crash reporting (spec: Tech stack) needs the Firebase project from the F-01 setup. Until its google-services.json
@@ -49,6 +50,9 @@ dependencies {
     implementation(libs.androidx.work.runtime)
     implementation(libs.androidx.hilt.work)
     implementation(libs.androidx.lifecycle.process)
+    // Installs the Baseline Profile on devices without Play's cloud profiles (H-06: cold start under 2 s).
+    implementation(libs.androidx.profileinstaller)
+    baselineProfile(projects.benchmark)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
 
