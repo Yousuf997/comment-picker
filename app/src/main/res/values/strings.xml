@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- Final name is open decision 1 in the spec. -->
-    <string name="app_name" translatable="false">[APP NAME]</string>
-</resources>

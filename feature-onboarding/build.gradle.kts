@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.giveaway.android.feature)
+    alias(libs.plugins.giveaway.android.screenshot)
 }
 
 dependencies {

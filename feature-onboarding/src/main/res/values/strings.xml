@@ -1,9 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- S1 Welcome -->
     <string name="welcome_headline">Fair giveaways, with proof.</string>
+    <string name="welcome_body">Pick random winners from your post\'s comments, and show your followers the draw was fair.</string>
+    <string name="welcome_trust_device">Your data stays on this phone</string>
+    <string name="welcome_trust_verify">Draws anyone can verify</string>
+    <string name="welcome_trust_official">Official Instagram sign-in</string>
     <string name="welcome_get_started">Get started</string>
+    <string name="welcome_footnote">No sign-up. Nothing uploaded.</string>
+    <string name="welcome_ticket_winner">Winner</string>
+
+    <!-- S2 Connect Instagram -->
     <string name="connect_title">Connect Instagram</string>
+    <string name="connect_body">You\'ll sign in on Instagram\'s own page. We never see your password.</string>
+    <string name="connect_requirement_title">Business or Creator account needed</string>
+    <string name="connect_requirement_body">Instagram only lets apps read comments on professional accounts. Switching is free.</string>
+    <string name="connect_how_to_switch">How to switch</string>
+    <string name="connect_we_can">We can</string>
+    <string name="connect_can_read_posts">Read your posts and Reels</string>
+    <string name="connect_can_read_comments">Read their comments</string>
+    <string name="connect_we_never">We never</string>
+    <string name="connect_never_post">Post or comment for you</string>
+    <string name="connect_never_password">See your password</string>
+    <string name="connect_never_upload">Send your data off this phone</string>
     <string name="connect_continue">Continue with Instagram</string>
+    <string name="connect_loading">Finishing sign-in…</string>
+    <string name="connect_personal_title">This is a personal account</string>
+    <string name="connect_personal_body">Switch to a Business or Creator account in Instagram\'s settings, then try again.</string>
+    <string name="connect_cancelled">Sign-in was cancelled. You can try again whenever you\'re ready.</string>
+    <string name="connect_network_title">Couldn\'t reach Instagram</string>
+    <string name="connect_network_body">Check your connection and try again.</string>
+    <string name="connect_retry">Try again</string>
+
+    <!-- S3 App lock setup -->
     <string name="app_lock_title">Protect the app</string>
     <string name="app_lock_use_biometrics">Use fingerprint or face</string>
     <string name="app_lock_set_pin">Set a PIN instead</string>
