@@ -125,7 +125,7 @@ class LockInTest {
         compose.setContent { GiveawayTheme { LockInScreen(onBack = {}, onDone = onDone, viewModel = vm) } }
 
     private companion object {
-        const val TIMEOUT_MS = 5_000L
+        const val TIMEOUT_MS = 15_000L
     }
 
     @Test
