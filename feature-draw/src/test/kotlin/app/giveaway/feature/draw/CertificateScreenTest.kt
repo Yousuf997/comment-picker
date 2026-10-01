@@ -3,6 +3,8 @@ package app.giveaway.feature.draw
 import android.app.Application
 import android.net.Uri
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
@@ -30,6 +32,7 @@ import app.giveaway.core.data.settings.DefaultSettingsRepository
 import app.giveaway.core.designsystem.GiveawayTheme
 import app.giveaway.core.instagram.api.IgMedia
 import app.giveaway.core.media.CertificateContent
+import app.giveaway.core.media.CertificateData
 import app.giveaway.core.media.CertificateOutput
 import app.giveaway.core.media.CertificateRenderer
 import app.giveaway.core.media.CertificateStyle
@@ -38,6 +41,9 @@ import app.giveaway.core.media.VideoInfo
 import app.giveaway.core.security.DeviceSigner
 import app.giveaway.draw.CanonicalEntryList
 import app.giveaway.draw.Commit
+import app.giveaway.draw.DrawRecord
+import app.giveaway.draw.Pick
+import app.giveaway.draw.Role
 import app.giveaway.draw.Rules
 import com.github.takahirom.roborazzi.captureRoboImage
 import kotlinx.coroutines.Dispatchers
@@ -214,10 +220,47 @@ class CertificateScreenTest {
     }
 
     @Test
-    fun screenshot() {
-        show()
-        compose.waitUntil(WAIT_MS) { vm.files.value != null }
-        compose.onRoot().captureRoboImage("src/test/screenshots/s15_certificate.png")
+    fun screenshot() = screenshotOf("src/test/screenshots/s15_certificate.png")
+
+    @Test
+    @Config(qualifiers = "ar-w390dp-h1400dp-xhdpi")
+    fun screenshotArabic() = screenshotOf("src/test/screenshots/s15_certificate_ar.png")
+
+    /**
+     * S15 with fixed certificate data. A real ECDSA key and signature differ on every run, so the screenshot uses
+     * fixed values; the tests above cover the real signature check.
+     */
+    private fun screenshotOf(path: String) {
+        val record = DrawRecord(
+            algorithmVersion = "v1",
+            account = "shop",
+            postId = "17890012345",
+            title = "Win a tote bag!",
+            entriesClosedAt = closesAt,
+            commitHash = Commit.commitHash(seed),
+            seedHex = seed.joinToString("") { "%02x".format(it) },
+            entryListHash = CanonicalEntryList.of(listOf("amy", "bob", "cat", "dan")).hashHex,
+            entryCount = 4,
+            winnersRequested = 2,
+            alternatesRequested = 1,
+            picks = listOf(Pick(1, "bob", Role.WINNER), Pick(2, "cat", Role.WINNER), Pick(3, "amy", Role.ALTERNATE)),
+            drawnAt = closesAt.plusSeconds(7_200),
+            captionCheck = "FOUND",
+            integrityVerified = true,
+            partialImport = false,
+            manualExclusions = emptyList(),
+        )
+        val data = CertificateData(record, "30".repeat(36), "3059".repeat(23), "9c".repeat(32), emptyList())
+        val actions = CertificateActions({}, {}, {}, {}, {}, {})
+        compose.setContent {
+            GiveawayTheme {
+                val context = LocalContext.current
+                val writer = remember { CertificateWriter(context, "https://verify.example/v1", ZoneOffset.UTC) }
+                val content = remember { writer.pdf(data) }
+                CertificateScreen(CertificateState.Ready(data), content, true, false, false, actions)
+            }
+        }
+        compose.onRoot().captureRoboImage(path)
     }
 
     private companion object {
