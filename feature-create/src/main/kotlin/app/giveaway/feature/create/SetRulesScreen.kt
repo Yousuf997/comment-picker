@@ -91,41 +91,9 @@ internal fun SetRulesScreen(
             modifier = Modifier.semantics { heading() },
         )
         EntryRules(form, errors, onFormChange)
-        Section(stringResource(R.string.rules_fairness)) {
-            SettingsSwitchRow(
-                stringResource(R.string.rules_one_per_person),
-                checked = form.onePerPerson,
-                onCheckedChange = { on -> onFormChange { it.copy(onePerPerson = on) } },
-            )
-            Divider()
-            SettingsSwitchRow(
-                stringResource(R.string.rules_exclude_past_winners),
-                checked = form.excludePastWinners,
-                onCheckedChange = { on -> onFormChange { it.copy(excludePastWinners = on) } },
-            )
-            Divider()
-            SettingsSwitchRow(
-                stringResource(R.string.rules_exclude_blocklist),
-                checked = form.excludeBlocklist,
-                onCheckedChange = { on -> onFormChange { it.copy(excludeBlocklist = on) } },
-            )
-            Divider()
-            SettingsRow(
-                stringResource(R.string.rules_closes),
-                value = formatDateTime(form.closesAt),
-                onClick = { pickingDeadline = true },
-            )
-        }
+        FairnessSection(form, onFormChange, onPickDeadline = { pickingDeadline = true })
         ErrorText(RulesError.CLOSES_IN_PAST in errors, R.string.rules_error_closes_in_past)
-        Section(stringResource(R.string.rules_winners_section)) {
-            StepperRow(stringResource(R.string.rules_winners), form.winners, RulesForm.WINNERS_RANGE) { n ->
-                onFormChange { it.copy(winners = n) }
-            }
-            Divider()
-            StepperRow(stringResource(R.string.rules_alternates), form.alternates, RulesForm.ALTERNATES_RANGE) { n ->
-                onFormChange { it.copy(alternates = n) }
-            }
-        }
+        WinnersSection(form, onFormChange)
         ErrorText(RulesError.NOBODY_TO_PICK in errors, R.string.rules_error_nobody)
         NoticeCard(
             title = stringResource(R.string.rules_manual_checks_title),
@@ -145,6 +113,52 @@ internal fun SetRulesScreen(
             onPicked = { at -> onFormChange { it.copy(closesAt = at) } },
             onDismiss = { pickingDeadline = false },
         )
+    }
+}
+
+@Composable
+private fun FairnessSection(
+    form: RulesForm,
+    onFormChange: ((RulesForm) -> RulesForm) -> Unit,
+    onPickDeadline: () -> Unit,
+) {
+    Section(stringResource(R.string.rules_fairness)) {
+        SettingsSwitchRow(
+            stringResource(R.string.rules_one_per_person),
+            checked = form.onePerPerson,
+            onCheckedChange = { on -> onFormChange { it.copy(onePerPerson = on) } },
+        )
+        Divider()
+        SettingsSwitchRow(
+            stringResource(R.string.rules_exclude_past_winners),
+            checked = form.excludePastWinners,
+            onCheckedChange = { on -> onFormChange { it.copy(excludePastWinners = on) } },
+        )
+        Divider()
+        SettingsSwitchRow(
+            stringResource(R.string.rules_exclude_blocklist),
+            checked = form.excludeBlocklist,
+            onCheckedChange = { on -> onFormChange { it.copy(excludeBlocklist = on) } },
+        )
+        Divider()
+        SettingsRow(
+            stringResource(R.string.rules_closes),
+            value = formatDateTime(form.closesAt),
+            onClick = onPickDeadline,
+        )
+    }
+}
+
+@Composable
+private fun WinnersSection(form: RulesForm, onFormChange: ((RulesForm) -> RulesForm) -> Unit) {
+    Section(stringResource(R.string.rules_winners_section)) {
+        StepperRow(stringResource(R.string.rules_winners), form.winners, RulesForm.WINNERS_RANGE) { n ->
+            onFormChange { it.copy(winners = n) }
+        }
+        Divider()
+        StepperRow(stringResource(R.string.rules_alternates), form.alternates, RulesForm.ALTERNATES_RANGE) { n ->
+            onFormChange { it.copy(alternates = n) }
+        }
     }
 }
 

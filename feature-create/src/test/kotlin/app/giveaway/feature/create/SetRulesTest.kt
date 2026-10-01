@@ -107,7 +107,8 @@ class SetRulesTest {
         TimeZone.setDefault(systemZone)
     }
 
-    private fun viewModel() = SetRulesViewModel(SavedStateHandle(route = SetRulesRoute(post)), giveaways, accounts, clock)
+    private fun viewModel() =
+        SetRulesViewModel(SavedStateHandle(route = SetRulesRoute(post)), giveaways, accounts, clock)
 
     private fun text(id: Int) = compose.onNodeWithText(app.getString(id))
 

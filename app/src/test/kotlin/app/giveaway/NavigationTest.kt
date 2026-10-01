@@ -5,9 +5,11 @@ import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -74,6 +76,10 @@ class NavigationTest {
 
     private fun assertScreen(id: String) = compose.onNodeWithTag("screen:$id").assertExists()
 
+    private fun awaitScreen(id: String) = compose.waitUntil(WAIT_MS) {
+        compose.onAllNodesWithTag("screen:$id").fetchSemanticsNodes().isNotEmpty()
+    }
+
     @Test
     fun everyRouteOpensItsScreen() {
         launch()
@@ -128,8 +134,9 @@ class NavigationTest {
         compose.onNodeWithTag("pick_post:tile:${FakeInstagramModule.POST.id}").performClick()
         tap(CreateR.string.wizard_continue)
         assertScreen("S7")
-        tap(CreateR.string.wizard_continue)
-        assertScreen("S8")
+        // S7 saves the draft through Room, which is asynchronous.
+        compose.onNodeWithText(app.getString(CreateR.string.wizard_continue)).performScrollTo().performClick()
+        awaitScreen("S8")
         tap(CreateR.string.lock_in_done)
         assertScreen("S4")
         assertFalse(navController.previousBackStackEntry != null)
@@ -171,5 +178,9 @@ class NavigationTest {
         compose.onNodeWithText(app.getString(OnboardingR.string.welcome_headline)).assertExists()
         assertEquals("سحوبات عادلة، مع إثبات.", app.getString(OnboardingR.string.welcome_headline))
         assertEquals(LayoutDirection.Rtl, direction)
+    }
+
+    private companion object {
+        const val WAIT_MS = 5_000L
     }
 }
