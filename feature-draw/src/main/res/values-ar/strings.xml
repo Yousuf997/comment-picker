@@ -10,7 +10,6 @@
     <string name="save_video_discard">عدم الحفظ</string>
     <string name="winners_title">الفائزون</string>
     <string name="winners_create_certificate">إنشاء الشهادة</string>
-    <string name="certificate_title">شهادة السحب العشوائي</string>
     <string name="certificate_done">العودة إلى السحوبات</string>
     <string name="draw_caption_checking">جارٍ التحقق من رمز السحب في الوصف…</string>
     <string name="draw_caption_found">رمز السحب مطابق لوصف المنشور</string>
@@ -134,4 +133,33 @@
     <string name="certificate_integrity">لم يتم التحقق من سلامة الجهاز.</string>
     <string name="certificate_manual">استبعده المنظّم: %1$s. السبب: %2$s</string>
     <string name="certificate_rerun">يمكن لأي شخص إعادة هذا السحب من البذرة المكشوفة وقائمة المشاركات المصدّرة. تحقّق منه على %1$s</string>
+
+    <string name="certificate_loading">جارٍ التحقق من توقيع السحب…</string>
+    <string name="certificate_no_draw">لم يُجرَ السحب لهذه المسابقة بعد.</string>
+    <string name="certificate_broken_title">تغيّر سجل هذا السحب</string>
+    <string name="certificate_broken_body">لم تعد النتيجة المحفوظة تطابق التوقيع الذي أُنشئ عند السحب، لذلك لا يمكن إصدار شهادة.</string>
+    <string name="certificate_failed">تعذّر إنشاء ملفات الشهادة.</string>
+    <string name="certificate_retry">حاول مرة أخرى</string>
+    <string name="certificate_share_story">مشاركة في القصة</string>
+    <string name="certificate_share_title">مشاركة الشهادة</string>
+    <string name="certificate_save_pdf">حفظ PDF</string>
+    <string name="certificate_save_video">حفظ فيديو الكشف</string>
+    <string name="certificate_export_list">تصدير قائمة المشاركات</string>
+    <string name="certificate_pdf_file">شهادة - %1$s.pdf</string>
+    <string name="certificate_list_file">المشاركات - %1$s.txt</string>
+    <string name="certificate_pdf_saved">تم حفظ ملف PDF</string>
+    <string name="certificate_list_saved">تم حفظ قائمة المشاركات</string>
+    <string name="certificate_save_failed">تعذّر حفظ الملف. حاول مرة أخرى.</string>
+    <string name="certificate_make_title">إصدار الشهادة؟</string>
+    <string name="certificate_make_body">تثبّت الشهادة النتيجة. بعد إصدارها لا يمكن تأكيد الفائزين أو استبدالهم.</string>
+    <plurals name="certificate_make_pending">
+        <item quantity="zero">لم يُؤكَّد %s فائز بعد.</item>
+        <item quantity="one">لم يُؤكَّد %s فائز بعد.</item>
+        <item quantity="two">لم يُؤكَّد %s فائزَين بعد.</item>
+        <item quantity="few">لم يُؤكَّد %s فائزين بعد.</item>
+        <item quantity="many">لم يُؤكَّد %s فائزًا بعد.</item>
+        <item quantity="other">لم يُؤكَّد %s فائز بعد.</item>
+    </plurals>
+    <string name="certificate_make_confirm">إصدار الشهادة</string>
+    <string name="certificate_make_cancel">ليس الآن</string>
 </resources>

@@ -45,6 +45,7 @@ dependencies {
 // checklist). Development builds, including CI's assembleRelease, keep working before the F-01 setup exists.
 val verifyReleaseConfig by tasks.registering {
     val igAppId = providers.gradleProperty("giveaway.igAppId")
+    val metaAppId = providers.gradleProperty("giveaway.metaAppId")
     val authHost = providers.gradleProperty("giveaway.authHost")
     val pins = providers.gradleProperty("giveaway.authHostPins")
     val privacyPolicy = providers.gradleProperty("giveaway.privacyPolicyUrl")
@@ -52,6 +53,7 @@ val verifyReleaseConfig by tasks.registering {
     doLast {
         val problems = buildList {
             if (igAppId.get().startsWith("REPLACE")) add("giveaway.igAppId is a placeholder")
+            if (metaAppId.get().startsWith("REPLACE")) add("giveaway.metaAppId is a placeholder")
             if (authHost.get().endsWith(".invalid")) add("giveaway.authHost is a placeholder")
             if (privacyPolicy.get().contains(".invalid")) add("giveaway.privacyPolicyUrl is a placeholder")
             if (verifier.get().contains(".invalid")) add("giveaway.verifierUrl is a placeholder")

@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -77,11 +78,22 @@ internal fun WinnersScreen(onCreateCertificate: () -> Unit, viewModel: WinnersVi
     val context = LocalContext.current
     val snackbar = remember { SnackbarHostState() }
     SavedVideoMessages(viewModel, snackbar)
-    val save = rememberSaveVideo(viewModel, view?.title)
+    val save = rememberSaveVideo(view?.title, viewModel::saveVideo)
+    var askingCertificate by remember { mutableStateOf(false) }
     Box {
-        val actions = winnersActions(viewModel, context, onCreateCertificate)
+        val actions = winnersActions(viewModel, context) { askingCertificate = true }
         WinnersScreen(view = view, replacing = replacing, actions = actions)
         video?.let { SaveVideoSheet(it.file.uri, it.info, saving, save, viewModel::discardVideo) }
+        if (askingCertificate) {
+            MakeCertificateDialog(
+                pending = view?.winners?.count { it.status == ConfirmationStatus.PENDING } ?: 0,
+                onConfirm = {
+                    askingCertificate = false
+                    onCreateCertificate()
+                },
+                onDismiss = { askingCertificate = false },
+            )
+        }
         SnackbarHost(snackbar, modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp))
     }
 }
@@ -104,12 +116,12 @@ private fun winnersActions(viewModel: WinnersViewModel, context: Context, onCrea
  * later versions need none.
  */
 @Composable
-private fun rememberSaveVideo(viewModel: WinnersViewModel, title: String?): () -> Unit {
+internal fun rememberSaveVideo(title: String?, save: (album: String, fileName: String) -> Unit): () -> Unit {
     val context = LocalContext.current
     val album = stringResource(DesignR.string.app_name)
     val fileName = stringResource(R.string.save_video_file_name, title.orEmpty().ifBlank { album })
     val askStorage = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
-        viewModel.saveVideo(album, fileName)
+        save(album, fileName)
     }
     return {
         val mustAsk = Build.VERSION.SDK_INT < Build.VERSION_CODES.Q &&
@@ -118,7 +130,7 @@ private fun rememberSaveVideo(viewModel: WinnersViewModel, title: String?): () -
         if (mustAsk) {
             askStorage.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         } else {
-            viewModel.saveVideo(album, fileName)
+            save(album, fileName)
         }
     }
 }
@@ -135,16 +147,19 @@ private fun SavedVideoMessages(viewModel: WinnersViewModel, snackbar: SnackbarHo
             when (result) {
                 is WinnersViewModel.SaveResult.Saved -> {
                     val choice = snackbar.showSnackbar(saved, actionLabel = view)
-                    if (choice == SnackbarResult.ActionPerformed) {
-                        val open = Intent(Intent.ACTION_VIEW).setDataAndType(result.uri, "video/mp4")
-                            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        runCatching { context.startActivity(open) }
-                    }
+                    if (choice == SnackbarResult.ActionPerformed) openVideo(context, result.uri)
                 }
                 WinnersViewModel.SaveResult.Failed -> snackbar.showSnackbar(failed)
             }
         }
     }
+}
+
+/** Opens a saved video in the gallery or a player. */
+internal fun openVideo(context: Context, uri: Uri) {
+    val open = Intent(Intent.ACTION_VIEW).setDataAndType(uri, "video/mp4")
+        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    runCatching { context.startActivity(open) }
 }
 
 internal data class WinnersActions(

@@ -55,7 +55,31 @@ class MediaRepository @Inject constructor(
         files.delete(video)
     }
 
+    /** Where a giveaway's certificate is written: app-private, shared only through FileProvider (spec: S15). */
+    fun certificateFile(giveawayId: Long, kind: MediaKind): File {
+        val extension = if (kind == MediaKind.CERTIFICATE_PDF) "pdf" else "png"
+        return File(context.filesDir, "$CERTIFICATES/certificate-$giveawayId.$extension").apply { parentFile?.mkdirs() }
+    }
+
+    /** Records a certificate file once; making it again overwrites the same file (spec: media_file). */
+    suspend fun certificateMade(giveawayId: Long, kind: MediaKind, file: File) {
+        if (files.forGiveaway(giveawayId).any { it.kind == kind }) return
+        files.insert(
+            MediaFileEntity(
+                giveawayId = giveawayId,
+                kind = kind,
+                uri = file.absolutePath,
+                savedToGallery = false,
+                createdAt = clock.instant(),
+                pendingDecision = false,
+            ),
+        )
+    }
+
     private companion object {
         const val VIDEOS = "videos"
+
+        /** Shared with Instagram through FileProvider; nothing else in filesDir is exposed. */
+        const val CERTIFICATES = "certificates"
     }
 }

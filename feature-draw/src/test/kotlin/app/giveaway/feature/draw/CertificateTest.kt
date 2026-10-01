@@ -65,7 +65,7 @@ class CertificateTest {
             partialImport = true,
             manualExclusions = listOf(DrawRecord.ManualExclusion("spam.bot", "Fake account")),
         ),
-        replacements = listOf(CertificateData.Replacement(2, 3, "Didn't follow")),
+        replacements = listOf(CertificateData.Replacement("sam_r", "lina.art", "Didn't follow")),
     )
 
     private fun writer() = CertificateWriter(app, "https://verify.example/v1", ZoneOffset.UTC)

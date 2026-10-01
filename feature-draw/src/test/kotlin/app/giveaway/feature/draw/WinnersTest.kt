@@ -172,9 +172,17 @@ class WinnersTest {
     }
 
     @Test
-    fun createCertificateMovesOn() {
+    fun createCertificateAsksFirstBecauseItFixesTheResult() {
         show()
-        compose.onNodeWithText(app.getString(R.string.winners_create_certificate)).performClick()
+        val create = compose.onNodeWithText(app.getString(R.string.winners_create_certificate))
+        create.performClick()
+        // Both winners are still pending, and the dialog says so (plan A28).
+        val pending = app.resources.getQuantityString(R.plurals.certificate_make_pending, 2, "2")
+        compose.onNodeWithText(pending).assertExists()
+        compose.onNodeWithText(app.getString(R.string.certificate_make_cancel)).performClick()
+        assertEquals(0, certificates)
+        create.performClick()
+        compose.onNodeWithTag("certificate:make_confirm").performClick()
         assertEquals(1, certificates)
     }
 

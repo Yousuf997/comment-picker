@@ -159,7 +159,12 @@ class NavigationTest {
             navController.currentBackStack.value.any { it.destination.hasRoute<DrawingRoute>() },
         )
         tap(DrawR.string.winners_create_certificate)
+        compose.onNodeWithTag("certificate:make_confirm").performClick()
         assertScreen("S15")
+        assertFalse(
+            "The certificate archives the giveaway, so S14 leaves the back stack",
+            navController.currentBackStack.value.any { it.destination.hasRoute<WinnersRoute>() },
+        )
         tap(DrawR.string.certificate_done)
         assertScreen("S4")
     }

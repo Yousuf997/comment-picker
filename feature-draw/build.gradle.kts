@@ -9,6 +9,8 @@ android {
     }
     defaultConfig {
         buildConfigField("String", "VERIFIER_URL", "\"${providers.gradleProperty("giveaway.verifierUrl").get()}\"")
+        // Instagram's Story share needs the Meta (Facebook) app ID, not the Instagram app ID (plan R18).
+        buildConfigField("String", "META_APP_ID", "\"${providers.gradleProperty("giveaway.metaAppId").get()}\"")
     }
 }
 

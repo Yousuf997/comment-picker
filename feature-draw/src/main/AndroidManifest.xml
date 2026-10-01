@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Lets screenshot tests of this module render Arabic right to left, as the app does. -->
-    <application android:supportsRtl="true" />
+    <!-- Share to Story hands the certificate image to Instagram, the only app this one looks for (spec: S15). -->
+    <queries>
+        <package android:name="com.instagram.android" />
+    </queries>
+    <!-- supportsRtl lets screenshot tests of this module render Arabic right to left, as the app does. -->
+    <application android:supportsRtl="true">
+        <!-- Shares only the certificate files (res/xml/certificate_paths.xml), never the database or recordings. -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.certificates"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/certificate_paths" />
+        </provider>
+    </application>
 </manifest>
