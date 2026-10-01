@@ -1,5 +1,6 @@
 package app.giveaway.core.data.db
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -140,6 +141,30 @@ interface EntryDao {
 
     @Query("SELECT * FROM entry WHERE giveawayId = :giveawayId")
     suspend fun all(giveawayId: Long): List<EntryEntity>
+
+    @Query("SELECT * FROM entry WHERE giveawayId = :giveawayId AND commentId = :commentId")
+    suspend fun get(giveawayId: Long, commentId: String): EntryEntity?
+
+    @Query("SELECT username FROM entry WHERE giveawayId = :giveawayId AND isValid = 1")
+    suspend fun validUsernames(giveawayId: Long): List<String>
+
+    @Query(
+        "SELECT COUNT(*) AS total, COALESCE(SUM(isValid), 0) AS valid FROM entry WHERE giveawayId = :giveawayId",
+    )
+    fun observeCounts(giveawayId: Long): Flow<EntryCounts>
+
+    /** S10 rows in comment order; [query] is a LIKE pattern body with %, _ and \ escaped, or empty. */
+    @Query(
+        """
+        SELECT e.commentId, e.username, e.isValid, e.exclusionReason, e.manualNote, c.text, c.timestamp
+        FROM entry e JOIN comment c ON c.giveawayId = e.giveawayId AND c.id = e.commentId
+        WHERE e.giveawayId = :giveawayId AND (:valid IS NULL OR e.isValid = :valid)
+            AND (:query = '' OR e.username LIKE '%' || :query || '%' ESCAPE '\'
+                OR c.text LIKE '%' || :query || '%' ESCAPE '\')
+        ORDER BY c.timestamp, c.id
+        """,
+    )
+    fun rows(giveawayId: Long, valid: Boolean?, query: String): PagingSource<Int, EntryRow>
 }
 
 @Dao

@@ -107,4 +107,38 @@
     <string name="import_partial_confirm">Continue</string>
     <string name="import_partial_cancel">Keep trying</string>
     <string name="import_step_stopped">Stopped</string>
+    <string name="review_tile_comments">Comments</string>
+    <string name="review_tile_valid">Valid</string>
+    <string name="review_tile_excluded">Excluded</string>
+    <string name="review_filter_all">All</string>
+    <string name="review_filter_valid">Valid</string>
+    <string name="review_filter_excluded">Excluded</string>
+    <string name="review_search">Search handles or comments</string>
+    <string name="review_export">Export entry list</string>
+    <string name="review_no_valid_title">No valid entries yet</string>
+    <string name="review_no_valid_body">The draw needs at least one valid entry. Check your rules, or include comments that only missed a content check.</string>
+    <string name="review_no_results">Nothing matches.</string>
+    <string name="review_status_valid">Valid</string>
+    <string name="review_reason_after_deadline">Late</string>
+    <string name="review_reason_own_account">Your account</string>
+    <string name="review_reason_blocklisted">Blocklisted</string>
+    <string name="review_reason_past_winner">Past winner</string>
+    <string name="review_reason_too_few_mentions">Too few mentions</string>
+    <string name="review_reason_missing_hashtag">No hashtag</string>
+    <string name="review_reason_missing_keyword">No keyword</string>
+    <string name="review_reason_duplicate">Duplicate</string>
+    <string name="review_reason_manual">Excluded by you</string>
+    <!-- %1$s: the organizer's note on a manual decision. -->
+    <string name="review_manual_note">Your note: %1$s</string>
+    <string name="review_exclude">Exclude</string>
+    <string name="review_exclude_reason">Reason (shown on the certificate)</string>
+    <string name="review_exclude_confirm">Exclude this comment</string>
+    <string name="review_include">Include</string>
+    <string name="review_include_note">Note (optional)</string>
+    <string name="review_include_confirm">Include this comment</string>
+    <string name="review_undo_exclusion">Undo exclusion</string>
+    <string name="review_add_blocklist">Add to blocklist</string>
+    <string name="review_cannot_include">This rule can\'t be overridden, so nobody can be slipped in.</string>
+    <!-- %1$s: the giveaway title. -->
+    <string name="review_export_file">%1$s entries.txt</string>
 </resources>
