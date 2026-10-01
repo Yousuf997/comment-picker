@@ -109,6 +109,38 @@ class DrawService @Inject constructor(
         return SavedDraw(giveaway.title, picks, entrants, draw.drawnAt, draw.entryCount, commitHash)
     }
 
+    /**
+     * The real draw's signed record, rebuilt from the database exactly as it was signed, or null before the draw
+     * (plan M-06). Confirming or replacing winners doesn't change it; editing any signed value breaks
+     * [SignedDrawRecord.verifies].
+     */
+    suspend fun signedRecord(giveawayId: Long): SignedDrawRecord? {
+        val draw = db.drawDao().realDraw(giveawayId) ?: return null
+        val giveaway = checkNotNull(db.giveawayDao().get(giveawayId)) { "No giveaway $giveawayId" }
+        val rules = checkNotNull(db.rulesDao().get(giveawayId)) { "No rules for $giveawayId" }
+        val commitment = checkNotNull(db.commitmentDao().get(giveawayId)) { "No commitment for $giveawayId" }
+        val record = DrawRecord(
+            algorithmVersion = draw.algorithmVersion,
+            account = giveaway.ownerUsername,
+            postId = giveaway.igMediaId,
+            title = giveaway.title,
+            entriesClosedAt = giveaway.closesAt,
+            commitHash = commitment.commitHash,
+            seedHex = draw.seed.toHex(),
+            entryListHash = draw.entryListHash,
+            entryCount = draw.entryCount,
+            winnersRequested = rules.winnersCount,
+            alternatesRequested = rules.alternatesCount,
+            picks = db.drawDao().results(draw.id).map { Pick(it.position, it.username, it.role) },
+            drawnAt = draw.drawnAt,
+            captionCheck = draw.captionCheck.name,
+            integrityVerified = draw.integrityVerified,
+            partialImport = draw.partialImport,
+            manualExclusions = manualExclusions(giveawayId),
+        )
+        return SignedDrawRecord(record, draw.deviceSignature, draw.signerPublicKey, draw.signerFingerprint)
+    }
+
     /** A practice run with a fresh random seed: labelled TEST, unsigned, never the committed seed (spec). */
     suspend fun testDraw(giveawayId: Long, random: SecureRandom = SecureRandom()): DrawOutcome {
         val inputs = inputs(giveawayId)
@@ -154,20 +186,21 @@ class DrawService @Inject constructor(
         val list = CanonicalEntryList.of(db.entryDao().validUsernames(giveawayId))
         check(list.size > 0) { "No valid entries" }
         val importState = db.importStateDao().get(giveawayId)
-        val manual = db.entryDao().manualDecisions(giveawayId)
-            .filter { it.exclusionReason == ExclusionReason.MANUAL }
-            .map { DrawRecord.ManualExclusion(it.username, it.manualNote.orEmpty()) }
-            // A fixed order, so the signed record can be rebuilt from the database exactly.
-            .sortedWith(compareBy({ it.username }, { it.reason }))
         return Inputs(
             giveaway = giveaway,
             list = list,
             winners = rules.winnersCount,
             alternates = rules.alternatesCount,
             partialImport = importState?.let { it.acceptedPartial && !it.isComplete() } ?: false,
-            manualExclusions = manual,
+            manualExclusions = manualExclusions(giveawayId),
         )
     }
+
+    private suspend fun manualExclusions(giveawayId: Long) = db.entryDao().manualDecisions(giveawayId)
+        .filter { it.exclusionReason == ExclusionReason.MANUAL }
+        .map { DrawRecord.ManualExclusion(it.username, it.manualNote.orEmpty()) }
+        // A fixed order, so the signed record can be rebuilt from the database exactly.
+        .sortedWith(compareBy({ it.username }, { it.reason }))
 
     private fun record(
         inputs: Inputs,
