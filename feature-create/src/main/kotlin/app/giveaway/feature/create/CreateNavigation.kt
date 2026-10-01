@@ -71,8 +71,8 @@ fun NavGraphBuilder.pickPostScreen(onBack: () -> Unit, onPostPicked: (SetRulesRo
     composable<PickPostRoute> { PickPostScreen(onBack = onBack, onContinue = { onPostPicked(SetRulesRoute(it)) }) }
 }
 
-fun NavGraphBuilder.setRulesScreen(onRulesSaved: (giveawayId: Long) -> Unit) {
-    composable<SetRulesRoute> { SetRulesScreen(onRulesSaved) }
+fun NavGraphBuilder.setRulesScreen(onBack: () -> Unit, onRulesSaved: (giveawayId: Long) -> Unit) {
+    composable<SetRulesRoute> { SetRulesScreen(onBack = onBack, onSaved = onRulesSaved) }
 }
 
 fun NavGraphBuilder.lockInDrawScreen(onDone: () -> Unit) {
@@ -92,21 +92,6 @@ fun NavGraphBuilder.reviewEntriesScreen(onContinueToDraw: (giveawayId: Long) -> 
         ReviewEntriesScreen(onContinueToDraw = { onContinueToDraw(giveawayId) })
     }
 }
-
-/** Placeholder giveaway ID until S7 creates a real draft (C-12). */
-private const val PLACEHOLDER_GIVEAWAY_ID = 0L
-
-@Composable
-internal fun SetRulesScreen(onRulesSaved: (Long) -> Unit) = PlaceholderScreen(
-    screenId = "S7",
-    title = stringResource(R.string.set_rules_title),
-    actions = listOf(
-        PlaceholderAction(
-            stringResource(R.string.wizard_continue),
-            onClick = { onRulesSaved(PLACEHOLDER_GIVEAWAY_ID) },
-        ),
-    ),
-)
 
 @Composable
 internal fun LockInDrawScreen(onDone: () -> Unit) = PlaceholderScreen(

@@ -36,4 +36,24 @@
     <string name="pick_post_error_busy">طلب إنستغرام التمهّل. انتظر قليلًا ثم حاول مرة أخرى.</string>
     <string name="pick_post_error_other">حدث خطأ من جهة إنستغرام. حاول مرة أخرى.</string>
     <string name="pick_post_retry">حاول مرة أخرى</string>
+    <string name="rules_valid_entry">لتكون المشاركة صالحة يجب</string>
+    <string name="rules_mentions">الإشارة إلى أصدقاء</string>
+    <string name="rules_hashtag">تضمين وسم (اختياري)</string>
+    <string name="rules_keyword">تضمين كلمة (اختياري)</string>
+    <string name="rules_fairness">العدالة</string>
+    <string name="rules_one_per_person">مشاركة واحدة لكل شخص</string>
+    <string name="rules_exclude_past_winners">استبعاد الفائزين السابقين</string>
+    <string name="rules_exclude_blocklist">استبعاد قائمة الحظر الخاصة بي</string>
+    <string name="rules_closes">إغلاق المشاركات</string>
+    <string name="rules_winners_section">الفائزون</string>
+    <string name="rules_winners">الفائزون</string>
+    <string name="rules_alternates">الاحتياط</string>
+    <string name="rules_manual_checks_title">المتابعة والإعجابات تُراجع يدويًا</string>
+    <string name="rules_manual_checks_body">لا يسمح إنستغرام للتطبيقات بمعرفة من يتابعك أو من أعجب بالمنشور. ستتحقق بنفسك من كل فائز قبل الإعلان عنه.</string>
+    <string name="rules_error_closes_in_past">اختر وقت إغلاق في المستقبل.</string>
+    <string name="rules_error_hashtag">ابدأ بـ # واستخدم كلمة واحدة، مثل #giveaway.</string>
+    <string name="rules_error_nobody">اختر فائزًا واحدًا أو احتياطيًا واحدًا على الأقل.</string>
+    <string name="rules_picker_next">التالي</string>
+    <string name="rules_picker_done">تم</string>
+    <string name="rules_picker_cancel">إلغاء</string>
 </resources>

@@ -27,3 +27,14 @@ fun formatDate(instant: Instant, style: FormatStyle = FormatStyle.MEDIUM): Strin
 @Composable
 fun formatCount(count: Int): String =
     NumberFormat.getIntegerInstance(LocalConfiguration.current.locales[0]).format(count)
+
+/** A date and time in the app's language and the phone's time zone, e.g. for when entries close. */
+@Composable
+fun formatDateTime(instant: Instant): String {
+    val locale = LocalConfiguration.current.locales[0]
+    return DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
+        .withLocale(locale)
+        .withDecimalStyle(DecimalStyle.of(locale))
+        .withZone(ZoneId.systemDefault())
+        .format(instant)
+}
