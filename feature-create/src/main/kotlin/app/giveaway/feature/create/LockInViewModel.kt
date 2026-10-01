@@ -61,7 +61,8 @@ class LockInViewModel @Inject constructor(
                     title = giveaway.title,
                     drawCode = Commit.drawCode(hash),
                     closesAt = giveaway.closesAt,
-                    confirmed = giveaway.status != GiveawayStatus.DRAFT,
+                    // Keep a tick made while the code was loading.
+                    confirmed = it.confirmed || giveaway.status != GiveawayStatus.DRAFT,
                 )
             }
         }
