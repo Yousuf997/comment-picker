@@ -57,4 +57,21 @@
     <!-- Read aloud by TalkBack as each pick lands. %1$s: number, %2$s: @handle. -->
     <string name="drawing_announce_winner">Winner %1$s: %2$s</string>
     <string name="drawing_announce_alternate">Alternate %1$s: %2$s</string>
+    <!-- %1$s: when the draw ran, %2$s: number of entries. -->
+    <string name="winners_subtitle">Drawn %1$s from %2$s entries</string>
+    <string name="winners_check_note">Instagram can\'t show who follows you or liked the post. Check each winner by hand, then confirm, or replace them with the next alternate.</string>
+    <string name="winners_open_profile">Open profile</string>
+    <string name="winners_promoted">Stepped in from the alternates</string>
+    <string name="winners_confirmed">Confirmed</string>
+    <string name="winners_confirm">Confirm</string>
+    <string name="winners_replace">Replace</string>
+    <string name="winners_alternates">Alternates</string>
+    <string name="winners_no_alternates_title">No alternates left</string>
+    <string name="winners_no_alternates_body">Every alternate has been used. You can finish with fewer winners; the certificate lists each replacement.</string>
+    <!-- %1$s: the winner's @handle. -->
+    <string name="winners_replace_title">Replace %1$s?</string>
+    <string name="winners_replace_body">The next alternate takes this place. The reason is printed on the certificate.</string>
+    <string name="winners_replace_reason">Reason, e.g. doesn\'t follow the account</string>
+    <string name="winners_replace_confirm">Replace</string>
+    <string name="winners_replace_cancel">Cancel</string>
 </resources>
