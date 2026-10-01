@@ -17,7 +17,8 @@ import app.giveaway.core.designsystem.GiveawayTheme
 private val ButtonContentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp)
 
 /**
- * Main action: 56 dp, near-black fill, white text. On the dark draw stage ([onStage]) it uses the accent fill.
+ * Main action: 56 dp, near-black fill, white text. On the dark draw stage ([onStage], on by default inside a
+ * [DrawStage]) it uses the accent fill.
  * Height is a minimum so text at 200% font size grows the button instead of clipping.
  */
 @Composable
@@ -26,7 +27,7 @@ fun PrimaryButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    onStage: Boolean = false,
+    onStage: Boolean = LocalOnDrawStage.current,
 ) {
     val colors = GiveawayTheme.colors
     val container = if (onStage) colors.accent else colors.onBackground

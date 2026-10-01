@@ -29,3 +29,7 @@ updates:
     directory: /login-helper
     schedule:
       interval: weekly
+    ignore:
+      # Types must match the Node major the tooling runs on (22 in CI).
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
