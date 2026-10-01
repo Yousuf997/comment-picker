@@ -3,25 +3,17 @@ package app.giveaway.feature.onboarding.lock
 import app.giveaway.core.data.db.AppLockMethod
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import java.time.Clock
-import java.time.Instant
-import java.time.ZoneId
-import java.time.ZoneOffset
 
 /** C-04 acceptance: with a fake clock, the app locks after the idle timeout and not before. */
 class AppLockControllerTest {
 
-    private var now = Instant.parse("2026-10-01T12:00:00Z")
-    private val clock = object : Clock() {
-        override fun instant() = now
-        override fun getZone(): ZoneId = ZoneOffset.UTC
-        override fun withZone(zone: ZoneId?) = this
-    }
-    private val controller = AppLockController(clock)
+    /** Milliseconds since boot, as SystemClock.elapsedRealtime gives them. */
+    private var now = 1_000_000L
+    private val controller = AppLockController { now }
 
     private fun awayFor(seconds: Long) {
         controller.onBackground()
-        now = now.plusSeconds(seconds)
+        now += seconds * 1_000
         controller.onForeground()
     }
 
@@ -82,7 +74,7 @@ class AppLockControllerTest {
     fun aForegroundWithoutABackgroundChangesNothing() {
         controller.onSettings(AppLockMethod.PIN, lockAfterSeconds = 60)
         controller.onUnlocked()
-        now = now.plusSeconds(600)
+        now += 600_000
         controller.onForeground()
         assertEquals(LockStatus.UNLOCKED, controller.status.value)
     }

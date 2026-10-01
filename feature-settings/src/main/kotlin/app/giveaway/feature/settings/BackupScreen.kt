@@ -24,7 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,7 +52,8 @@ import app.giveaway.core.designsystem.R as DesignR
 @Composable
 internal fun BackupScreen(onBack: () -> Unit, viewModel: BackupViewModel = hiltViewModel()) {
     val status by viewModel.status.collectAsStateWithLifecycle()
-    var password by rememberSaveable { mutableStateOf("") }
+    // Not saveable: a password must never go into saved instance state.
+    var password by remember { mutableStateOf("") }
     val fileName = stringResource(R.string.backup_file_name, LocalDate.now().toString())
     val create = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/octet-stream")) {
         if (it != null) {
@@ -78,7 +79,7 @@ internal fun BackupScreen(
     onCreate: () -> Unit,
     onBack: () -> Unit,
 ) {
-    var confirmation by rememberSaveable { mutableStateOf("") }
+    var confirmation by remember { mutableStateOf("") }
     val strength = PasswordStrength.of(password)
     val matches = password == confirmation
     SettingsPage(stringResource(R.string.backup_title), onBack, "screen:backup") {

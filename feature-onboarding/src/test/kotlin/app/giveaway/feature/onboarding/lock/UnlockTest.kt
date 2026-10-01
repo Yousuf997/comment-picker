@@ -28,7 +28,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.time.Clock
 import java.time.Instant
 
 /** C-04: unlocking with a PIN (including the lockout) or biometrics. */
@@ -41,7 +40,7 @@ class UnlockTest {
 
     private val app = ApplicationProvider.getApplicationContext<Application>()
     private val dispatcher = StandardTestDispatcher()
-    private val controller = AppLockController(Clock.systemUTC())
+    private val controller = AppLockController { 0L }
     private val pins = object : PinStore {
         var result: PinCheck = PinCheck.Correct
         override fun hasPin() = true
