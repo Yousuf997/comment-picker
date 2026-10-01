@@ -10,7 +10,6 @@
     <string name="save_video_discard">Don\'t save</string>
     <string name="winners_title">Your winners</string>
     <string name="winners_create_certificate">Create certificate</string>
-    <string name="certificate_title">Certificate of random draw</string>
     <string name="certificate_done">Back to giveaways</string>
     <string name="draw_caption_checking">Checking your caption for the draw code…</string>
     <string name="draw_caption_found">Draw code matches your caption</string>
@@ -128,4 +127,32 @@
     <string name="certificate_manual">Excluded by the organizer: %1$s. Reason: %2$s</string>
     <!-- %1$s: the address of the open verifier. -->
     <string name="certificate_rerun">Anyone can re-run this draw from the revealed seed and the exported entry list. Check it at %1$s</string>
+
+    <!-- S15 Certificate screen -->
+    <string name="certificate_loading">Checking the draw\'s signature…</string>
+    <string name="certificate_no_draw">This giveaway hasn\'t been drawn yet.</string>
+    <string name="certificate_broken_title">This draw\'s record has changed</string>
+    <string name="certificate_broken_body">The saved result no longer matches the signature made at the draw, so no certificate can be made.</string>
+    <string name="certificate_failed">Couldn\'t make the certificate files.</string>
+    <string name="certificate_retry">Try again</string>
+    <string name="certificate_share_story">Share to Story</string>
+    <string name="certificate_share_title">Share the certificate</string>
+    <string name="certificate_save_pdf">Save PDF</string>
+    <string name="certificate_save_video">Save reveal video</string>
+    <string name="certificate_export_list">Export entry list</string>
+    <!-- File names. %1$s: the giveaway title. -->
+    <string name="certificate_pdf_file">Certificate - %1$s.pdf</string>
+    <string name="certificate_list_file">Entries - %1$s.txt</string>
+    <string name="certificate_pdf_saved">PDF saved</string>
+    <string name="certificate_list_saved">Entry list saved</string>
+    <string name="certificate_save_failed">Couldn\'t save the file. Try again.</string>
+    <!-- Asked on S14 before making the certificate. -->
+    <string name="certificate_make_title">Make the certificate?</string>
+    <string name="certificate_make_body">The certificate fixes the result. After it\'s made, winners can\'t be confirmed or replaced.</string>
+    <plurals name="certificate_make_pending">
+        <item quantity="one">%s winner isn\'t confirmed yet.</item>
+        <item quantity="other">%s winners aren\'t confirmed yet.</item>
+    </plurals>
+    <string name="certificate_make_confirm">Make certificate</string>
+    <string name="certificate_make_cancel">Not yet</string>
 </resources>

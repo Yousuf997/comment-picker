@@ -90,10 +90,9 @@ internal class CertificateWriter(
 
     /** The handle, and for a replaced winner who took the place and why (spec: S14). */
     private fun pick(pick: Pick, data: CertificateData): String {
-        val replacement = data.replacements.firstOrNull { it.position == pick.position } ?: return handle(pick.username)
-        val by = data.record.picks.firstOrNull { it.position == replacement.replacedByPosition }?.username.orEmpty()
+        val replacement = data.replacements.firstOrNull { it.username == pick.username } ?: return handle(pick.username)
         val reason = replacement.reason.firstStrongIsolated()
-        val note = context.getString(R.string.certificate_replaced, handle(by), reason)
+        val note = context.getString(R.string.certificate_replaced, handle(replacement.replacedBy), reason)
         return handle(pick.username) + "\n" + note
     }
 

@@ -1,14 +1,8 @@
 package app.giveaway.feature.draw
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.dialog
 import androidx.navigation.toRoute
-import app.giveaway.core.designsystem.component.PlaceholderAction
-import app.giveaway.core.designsystem.component.PlaceholderScreen
 import kotlinx.serialization.Serializable
 
 /** S11 Draw (wizard step 6, dark stage). */
@@ -59,10 +53,3 @@ fun NavGraphBuilder.winnersScreen(onCreateCertificate: (giveawayId: Long) -> Uni
 fun NavGraphBuilder.certificateScreen(onDone: () -> Unit) {
     composable<CertificateRoute> { CertificateScreen(onDone) }
 }
-
-@Composable
-internal fun CertificateScreen(onDone: () -> Unit) = PlaceholderScreen(
-    screenId = "S15",
-    title = stringResource(R.string.certificate_title),
-    actions = listOf(PlaceholderAction(stringResource(R.string.certificate_done), primary = false, onClick = onDone)),
-)

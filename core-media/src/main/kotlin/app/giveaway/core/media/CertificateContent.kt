@@ -14,7 +14,7 @@ data class CertificateData(
     val replacements: List<Replacement>,
 ) {
     /** A winner replaced from the alternates, with the organizer's reason (spec: S14). */
-    data class Replacement(val position: Int, val replacedByPosition: Int, val reason: String)
+    data class Replacement(val username: String, val replacedBy: String, val reason: String)
 }
 
 /**
