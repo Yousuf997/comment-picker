@@ -1,0 +1,15 @@
+*.iml
+.gradle/
+.kotlin/
+build/
+/local.properties
+/captures
+.externalNativeBuild/
+.cxx/
+.idea/
+.DS_Store
+
+# Signing material and secrets never go in the repo
+*.jks
+*.keystore
+keystore.properties
