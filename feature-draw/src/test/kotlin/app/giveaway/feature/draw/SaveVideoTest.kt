@@ -195,6 +195,14 @@ class SaveVideoTest {
         captureScreenRoboImage("src/test/screenshots/s13_save_video.png")
     }
 
+    @Test
+    @Config(qualifiers = "ar-w390dp-h844dp-xhdpi")
+    fun screenshotSheetArabic() {
+        show()
+        compose.waitForIdle()
+        captureScreenRoboImage("src/test/screenshots/s13_save_video_ar.png")
+    }
+
     private companion object {
         const val WAIT_MS = 15_000L
     }
