@@ -28,7 +28,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v6
 
       - name: Build, lint, detekt, unit tests, coverage gate, screenshots
-        run: ./gradlew assembleDebug assembleRelease lint detekt test koverVerify verifyRoborazziDebug --continue
+        run: ./gradlew assembleDebug assembleRelease :app:checkReleaseApk lint detekt test koverVerify verifyRoborazziDebug --continue
 
       - name: Upload reports
         if: failure()

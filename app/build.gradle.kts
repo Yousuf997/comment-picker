@@ -1,3 +1,5 @@
+import java.util.zip.ZipFile
+
 plugins {
     alias(libs.plugins.giveaway.android.application)
     alias(libs.plugins.giveaway.android.compose)
@@ -85,3 +87,29 @@ val verifyReleaseConfig by tasks.registering {
     }
 }
 tasks.matching { it.name == "bundleRelease" }.configureEach { dependsOn(verifyReleaseConfig) }
+
+// H-02: the release APK carries no secrets, is obfuscated by R8, and stays well under the 25 MB download limit (the
+// universal APK holds every ABI; Play delivers one). CI runs this after assembleRelease.
+val checkReleaseApk by tasks.registering {
+    dependsOn("assembleRelease")
+    val apkDir = layout.buildDirectory.dir("outputs/apk/release")
+    val mapping = layout.buildDirectory.file("outputs/mapping/release/mapping.txt")
+    val maxBytes = 25L * 1024 * 1024
+    // Things that must never ship: the Meta app secret and its OAuth parameter, private keys, service account keys.
+    val forbidden = listOf("client_secret", "IG_APP_SECRET", "BEGIN PRIVATE KEY", "BEGIN RSA PRIVATE KEY", "private_key_id")
+    doLast {
+        val apk = apkDir.get().asFile.listFiles { file -> file.extension == "apk" }.orEmpty().single()
+        check(apk.length() <= maxBytes) { "${apk.name} is ${apk.length() / 1024 / 1024} MB, over 25 MB" }
+        check(mapping.get().asFile.isFile) { "No R8 mapping: release builds must be minified and obfuscated" }
+        val found = ZipFile(apk).use { zip ->
+            zip.entries().asSequence()
+                .filter { it.name.endsWith(".dex") || it.name == "resources.arsc" || it.name.startsWith("assets/") }
+                .flatMap { entry ->
+                    val text = zip.getInputStream(entry).use { String(it.readBytes(), Charsets.ISO_8859_1) }
+                    forbidden.filter { text.contains(it) }.map { "${entry.name}: $it" }
+                }
+                .toList()
+        }
+        check(found.isEmpty()) { "Secrets in the release APK:\n" + found.joinToString("\n") }
+    }
+}
