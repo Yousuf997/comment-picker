@@ -55,6 +55,10 @@ dependencies {
     baselineProfile(projects.benchmark)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
+    constraints {
+        // Firebase pulls in DataStore 1.0, which bundles protobuf-javalite 3.10 (CVE-2024-7254, CVE-2022-3171).
+        implementation(libs.androidx.datastore.preferences.core)
+    }
 
     testImplementation(projects.coreSecurity)
     testImplementation(libs.hilt.android.testing)
