@@ -19,6 +19,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.testing.invoke
 import androidx.room.Room
+import androidx.room.withTransaction
 import androidx.test.core.app.ApplicationProvider
 import app.giveaway.core.data.db.CommentEntity
 import app.giveaway.core.data.db.GiveawayDatabase
@@ -97,6 +98,8 @@ class ReviewEntriesTest {
     @After
     fun tearDown() {
         if (::vm.isInitialized) vm.viewModelScope.cancel()
+        // An exclusion rebuilds the entries after the await sees it saved; let that transaction end before closing.
+        runBlocking { db.withTransaction {} }
         db.close()
         Dispatchers.resetMain()
         TimeZone.setDefault(systemZone)
