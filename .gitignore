@@ -13,3 +13,6 @@ build/
 *.jks
 *.keystore
 keystore.properties
+
+# Firebase config from the F-01 setup (project-specific; added per checkout or by CI)
+google-services.json

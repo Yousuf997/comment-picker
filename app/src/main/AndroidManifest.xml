@@ -27,6 +27,17 @@
         android:localeConfig="@xml/locales_config"
         android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
         tools:targetApi="33">
+        <!-- Crash reports (plan M-16): release builds only. The app never sets custom keys, user IDs or logs, so a
+             report holds the stack trace and device model, nothing about giveaways or accounts. No analytics. -->
+        <meta-data
+            android:name="firebase_crashlytics_collection_enabled"
+            android:value="${crashReports}" />
+        <meta-data
+            android:name="firebase_analytics_collection_deactivated"
+            android:value="true" />
+        <meta-data
+            android:name="google_analytics_adid_collection_enabled"
+            android:value="false" />
 
         <!-- Instantiatable is a false positive: lint in AGP 9.4.1 cannot resolve androidx ComponentActivity
              even though it is on the lint classpath. Remove the ignore once lint resolves it. -->
