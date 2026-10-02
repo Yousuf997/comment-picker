@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -179,6 +180,9 @@ class NavigationTest {
         launch { GiveawayNavHost(navController, startDestination = HomeRoute) }
         compose.runOnUiThread { navController.navigate(DrawingRoute(giveawayId = 7)) }
         assertScreen("S12")
+        // S12 looks for the saved draw through Room first; the button appears once it knows there is none.
+        val finish = app.getString(DrawR.string.drawing_finish)
+        compose.waitUntil(WAIT_MS) { compose.onAllNodesWithText(finish).fetchSemanticsNodes().isNotEmpty() }
         tap(DrawR.string.drawing_finish)
         assertScreen("S14")
         assertFalse(
