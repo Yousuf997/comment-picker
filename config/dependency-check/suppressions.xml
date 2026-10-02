@@ -29,4 +29,13 @@
         <packageUrl regex="true">^pkg:maven/org\.jetbrains\.compose\.runtime/runtime(-saveable)?-android@.*$</packageUrl>
         <cve>CVE-2025-29903</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+        kotlinx-coroutines-play-services adapts Google Play services Tasks to coroutines. The scanner maps it to the
+        CPE of an unrelated "tasks" product; CVE-2020-22475 and CVE-2022-39349 concern that product, not this library.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.jetbrains\.kotlinx/kotlinx-coroutines-play-services@.*$</packageUrl>
+        <cve>CVE-2020-22475</cve>
+        <cve>CVE-2022-39349</cve>
+    </suppress>
 </suppressions>
