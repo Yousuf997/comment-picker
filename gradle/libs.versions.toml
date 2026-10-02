@@ -1,4 +1,5 @@
 [versions]
+datastore = "1.2.1"
 firebaseBom = "33.7.0"
 googleServices = "4.4.2"
 firebaseCrashlyticsPlugin = "3.0.2"
@@ -45,6 +46,7 @@ compileSdk = "37"
 targetSdk = "36"
 
 [libraries]
+androidx-datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastore" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
