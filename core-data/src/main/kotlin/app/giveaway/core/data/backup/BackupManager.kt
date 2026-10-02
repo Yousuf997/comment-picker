@@ -13,6 +13,7 @@ import app.giveaway.core.data.giveaway.SeedVault
 import app.giveaway.core.data.media.MediaRepository
 import app.giveaway.core.data.work.DeadlineScheduler
 import app.giveaway.core.security.backup.BackupCipher
+import app.giveaway.core.security.backup.BackupFormatException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -74,13 +75,17 @@ class BackupManager @Inject constructor(
             val current = db.settingsDao().get() ?: SettingsEntity()
             val sql = db.openHelper.writableDatabase
             CLEARED.forEach { sql.delete(it, null, null) }
-            val reader = BackupReader(sql.version) { table, row -> insert(sql, table, row) }
+            val known = TABLES.associateWith { columns(sql, it) }
+            val reader = BackupReader(sql.version) { table, row -> insert(sql, table, row, known.getValue(table)) }
             val createdAt = input.use { reader.read(cipher.decrypt(it, password)) }
             val restored = db.settingsDao().get() ?: SettingsEntity()
             db.settingsDao().upsert(
                 restored.copy(
                     appLockEnabled = current.appLockEnabled,
                     appLockMethod = current.appLockMethod,
+                    // A crafted backup must not weaken this phone's security settings.
+                    lockAfterSeconds = current.lockAfterSeconds,
+                    blockScreenshots = current.blockScreenshots,
                     onboardingComplete = current.onboardingComplete,
                     // The restored data is as safe as the backup it came from (S4 reminder).
                     lastBackupAt = createdAt,
@@ -94,13 +99,22 @@ class BackupManager @Inject constructor(
             .forEach { deadlines.schedule(it.id, it.closesAt) }
     }
 
-    private fun insert(sql: SupportSQLiteDatabase, table: String, row: ContentValues) {
+    /** The table's real columns, so names from a backup file never reach SQL unchecked. */
+    private fun columns(sql: SupportSQLiteDatabase, table: String): Set<String> =
+        sql.query("PRAGMA table_info(`$table`)").use { cursor ->
+            val name = cursor.getColumnIndexOrThrow("name")
+            buildSet { while (cursor.moveToNext()) add(cursor.getString(name)) }
+        }
+
+    private fun insert(sql: SupportSQLiteDatabase, table: String, row: ContentValues, known: Set<String>) {
         if (table == COMMITMENT) {
             val seed = checkNotNull(row.getAsByteArray(SEED)) { "A commitment without its seed" }
             row.remove(SEED)
             row.put(ENCRYPTED_SEED, vault.seal(checkNotNull(row.getAsLong("giveawayId")), seed))
             seed.fill(0)
         }
+        val unknown = row.keySet().filterNot { it in known }
+        if (unknown.isNotEmpty()) throw BackupFormatException(BackupFormatException.Reason.NOT_A_BACKUP)
         sql.insert(table, SQLiteDatabase.CONFLICT_ABORT, row)
     }
 

@@ -4,9 +4,8 @@ import app.giveaway.core.data.db.AppLockMethod
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import java.time.Clock
+import android.os.SystemClock
 import java.time.Duration
-import java.time.Instant
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -20,10 +19,14 @@ enum class LockStatus {
 /**
  * Decides when the app is locked (spec: App access; plan C-04). Locked on a cold start when app lock is on, and again
  * when the app returns after spending at least the chosen idle time in the background (default 1 minute).
- * Turning app lock on (S3, S5) doesn't lock immediately.
+ * Turning app lock on (S3, S5) doesn't lock immediately. Idle time is measured on the monotonic clock, so changing
+ * the phone's date or time can't skip the lock.
  */
 @Singleton
-class AppLockController @Inject constructor(private val clock: Clock) {
+class AppLockController(private val elapsedMillis: () -> Long) {
+
+    @Inject
+    constructor() : this({ SystemClock.elapsedRealtime() })
 
     private val mutableStatus = MutableStateFlow(LockStatus.CHECKING)
     val status: StateFlow<LockStatus> = mutableStatus.asStateFlow()
@@ -32,7 +35,7 @@ class AppLockController @Inject constructor(private val clock: Clock) {
         private set
 
     private var lockAfter: Duration = Duration.ofSeconds(DEFAULT_LOCK_AFTER_SECONDS)
-    private var backgroundedAt: Instant? = null
+    private var backgroundedAt: Long? = null
 
     /** Called with the current settings on start and whenever they change. */
     fun onSettings(lockMethod: AppLockMethod?, lockAfterSeconds: Int) {
@@ -46,14 +49,14 @@ class AppLockController @Inject constructor(private val clock: Clock) {
 
     /** The whole app went to the background (process lifecycle ON_STOP). */
     fun onBackground() {
-        backgroundedAt = clock.instant()
+        backgroundedAt = elapsedMillis()
     }
 
     /** The app came back to the foreground (process lifecycle ON_START). */
     fun onForeground() {
         val since = backgroundedAt ?: return
         backgroundedAt = null
-        if (method != null && Duration.between(since, clock.instant()) >= lockAfter) {
+        if (method != null && Duration.ofMillis(elapsedMillis() - since) >= lockAfter) {
             mutableStatus.value = LockStatus.LOCKED
         }
     }

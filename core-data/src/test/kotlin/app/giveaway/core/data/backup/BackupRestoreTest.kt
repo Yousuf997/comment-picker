@@ -133,7 +133,16 @@ class BackupRestoreTest {
 
         // The new phone already has an account, app lock on, and a giveaway of its own.
         newPhone.accountDao().upsert(AccountEntity("ig9", "new.phone", byteArrayOf(1), closesAt))
-        newPhone.settingsDao().upsert(SettingsEntity(appLockEnabled = true, appLockMethod = AppLockMethod.PIN))
+        newPhone.settingsDao().upsert(
+            SettingsEntity(
+                appLockEnabled = true,
+                appLockMethod = AppLockMethod.PIN,
+                lockAfterSeconds = 30,
+                blockScreenshots = true,
+            ),
+        )
+        // The backup asks for a very long idle time and no screenshot blocking; it must not get them.
+        oldPhone.settingsDao().upsert(SettingsEntity(lockAfterSeconds = Int.MAX_VALUE, blockScreenshots = false))
         DefaultGiveawayRepository(newPhone, DefaultSettingsRepository(newPhone.settingsDao()), clock)
             .createDraft(post.copy(id = "local"), "Local draft", "new.phone", rules)
     }
@@ -176,6 +185,8 @@ class BackupRestoreTest {
         val settings = newPhone.settingsDao().get()!!
         assertTrue(settings.appLockEnabled)
         assertEquals(AppLockMethod.PIN, settings.appLockMethod)
+        assertEquals(30, settings.lockAfterSeconds)
+        assertTrue(settings.blockScreenshots)
         assertEquals(clock.instant(), settings.lastBackupAt)
     }
 
@@ -203,6 +214,21 @@ class BackupRestoreTest {
             manager(newPhone, newVault).restore(ByteArrayInputStream(file.copyOf(file.size - 20)), password)
         }
         assertTrue(result.exceptionOrNull() is IOException)
+        assertUntouched()
+    }
+
+    @Test
+    fun columnsTheDatabaseDoesntHaveAreRefused() = runTest {
+        val out = ByteArrayOutputStream()
+        val crafted = """{"format":"giveaway-backup","schemaVersion":1,"tables":{"blocklist":""" +
+            """{"columns":["username","addedAt","note","x) VALUES (1); DROP TABLE giveaway; --"],""" +
+            """"rows":[["amy",1,null,1]]}}}"""
+        GZIPOutputStream(cipher.encrypt(out, password)).use { it.write(crafted.toByteArray()) }
+        val result = runCatching {
+            manager(newPhone, newVault).restore(ByteArrayInputStream(out.toByteArray()), password)
+        }
+        val error = result.exceptionOrNull() as BackupFormatException
+        assertEquals(BackupFormatException.Reason.NOT_A_BACKUP, error.reason)
         assertUntouched()
     }
 

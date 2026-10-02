@@ -13,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.compose.rememberNavController
 import app.giveaway.core.data.account.AccountRepository
 import app.giveaway.core.data.settings.SettingsRepository
 import app.giveaway.core.designsystem.GiveawayTheme
@@ -67,12 +68,15 @@ class MainActivity : AppCompatActivity() {
         }
         setContent {
             GiveawayTheme {
+                // Above the lock gate, so the screen the user was on is still there after unlocking.
+                val navController = rememberNavController()
                 AppLockGate {
                     val destination = start
                     if (destination == null) {
                         Box(Modifier.fillMaxSize().background(GiveawayTheme.colors.background))
                     } else {
                         GiveawayNavHost(
+                            navController = navController,
                             startDestination = destination,
                             blockScreenshots = blockScreenshots,
                             onSecureScreen = { secureWindow.screen = it },

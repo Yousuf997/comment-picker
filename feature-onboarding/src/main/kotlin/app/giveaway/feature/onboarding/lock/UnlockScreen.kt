@@ -18,13 +18,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
@@ -55,18 +55,23 @@ class LockGateViewModel @Inject constructor(controller: AppLockController) : Vie
 }
 
 /**
- * Shows [content] when unlocked and the lock screen over it otherwise. The content stays composed underneath (so
- * navigation state survives locking) but is hidden from TalkBack while locked.
+ * Shows [content] only when unlocked. While locked nothing of the app is composed, so no dialog or sheet can stay
+ * on top of the lock screen and nothing behind it can be reached by touch, keyboard or TalkBack. Saved UI state
+ * comes back on unlock; keep the NavController above this gate so navigation does too.
  */
 @Composable
-fun AppLockGate(viewModel: LockGateViewModel = hiltViewModel(), content: @Composable () -> Unit) {
+fun AppLockGate(
+    viewModel: LockGateViewModel = hiltViewModel(),
+    lockScreen: @Composable () -> Unit = { UnlockScreen() },
+    content: @Composable () -> Unit,
+) {
     val status by viewModel.status.collectAsStateWithLifecycle()
-    val unlocked = status == LockStatus.UNLOCKED
+    val saved = rememberSaveableStateHolder()
     Box(Modifier.fillMaxSize()) {
-        Box(Modifier.fillMaxSize().then(if (unlocked) Modifier else Modifier.clearAndSetSemantics {})) { content() }
+        if (status == LockStatus.UNLOCKED) saved.SaveableStateProvider(CONTENT_KEY) { content() }
         when (status) {
             LockStatus.CHECKING -> Box(Modifier.fillMaxSize().background(GiveawayTheme.colors.background))
-            LockStatus.LOCKED -> UnlockScreen()
+            LockStatus.LOCKED -> lockScreen()
             LockStatus.UNLOCKED -> Unit
         }
     }
@@ -184,3 +189,5 @@ private const val TICK_MILLIS = 1_000L
 private const val MILLIS_PER_SECOND = 1_000L
 private const val MILLIS_ROUND_UP = 999L
 private const val SECONDS_PER_MINUTE = 60
+
+private const val CONTENT_KEY = "app"

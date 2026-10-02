@@ -14,7 +14,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -78,7 +77,8 @@ private fun displayName(context: Context, uri: Uri): String? = runCatching {
 /** Restore (spec: S5): pick the file, enter the password, then confirm replacing the data on this phone. */
 @Composable
 internal fun RestoreScreen(state: RestoreState, fileName: String?, actions: RestoreActions) {
-    var password by rememberSaveable { mutableStateOf("") }
+    // Not saveable: a password must never go into saved instance state.
+    var password by remember { mutableStateOf("") }
     SettingsPage(stringResource(R.string.restore_title), actions.onBack, "screen:restore") {
         Text(stringResource(R.string.restore_body), style = GiveawayTheme.typography.body)
         SecondaryButton(
