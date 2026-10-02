@@ -3,10 +3,13 @@ package app.giveaway
 import android.content.Context
 import android.content.Intent
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import app.giveaway.feature.create.ImportCommentsRoute
 import app.giveaway.feature.create.LockInDrawRoute
@@ -53,8 +56,14 @@ import app.giveaway.feature.settings.settingsScreen
 fun GiveawayNavHost(
     navController: NavHostController = rememberNavController(),
     startDestination: Any = WelcomeRoute,
+    blockScreenshots: Boolean = false,
+    onSecureScreen: (Boolean) -> Unit = {},
 ) {
     val context = LocalContext.current
+    // FLAG_SECURE follows the screen shown, when the user asked for it (spec: "Block screenshots").
+    val entry by navController.currentBackStackEntryAsState()
+    val secure = blockScreenshots && SecureWindow.protects(entry?.destination)
+    LaunchedEffect(secure) { onSecureScreen(secure) }
     NavHost(navController = navController, startDestination = startDestination) {
         // First launch: S1 -> S2 -> S3 -> S4. Onboarding leaves the back stack once Home is reached.
         welcomeScreen(onGetStarted = { navController.navigate(ConnectInstagramRoute()) })

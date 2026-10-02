@@ -1,5 +1,6 @@
 package app.giveaway
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -42,13 +43,23 @@ class MainActivity : AppCompatActivity() {
     /** S1 until an account is connected, then Home (spec: S1 states, User flows). */
     private var start by mutableStateOf<Any?>(null)
 
+    private var blockScreenshots by mutableStateOf(false)
+
+    private lateinit var secureWindow: SecureWindow
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        secureWindow = SecureWindow(window)
+        // The recent-apps preview never shows giveaway data (spec: Storage and keys; plan A24).
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) setRecentsScreenshotEnabled(false)
         lifecycleScope.launch {
             // Opening the encrypted database unwraps its key; keep that off the main thread.
             val repository = withContext(Dispatchers.IO) { settings.get() }
-            repository.observe().collect { lockController.onSettings(it.appLockMethod, it.lockAfterSeconds) }
+            repository.observe().collect {
+                lockController.onSettings(it.appLockMethod, it.lockAfterSeconds)
+                blockScreenshots = it.blockScreenshots
+            }
         }
         lifecycleScope.launch {
             val connected = withContext(Dispatchers.IO) { accounts.get().observeUsername().first() != null }
@@ -61,10 +72,24 @@ class MainActivity : AppCompatActivity() {
                     if (destination == null) {
                         Box(Modifier.fillMaxSize().background(GiveawayTheme.colors.background))
                     } else {
-                        GiveawayNavHost(startDestination = destination)
+                        GiveawayNavHost(
+                            startDestination = destination,
+                            blockScreenshots = blockScreenshots,
+                            onSecureScreen = { secureWindow.screen = it },
+                        )
                     }
                 }
             }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        secureWindow.backgrounded = true
+    }
+
+    override fun onResume() {
+        super.onResume()
+        secureWindow.backgrounded = false
     }
 }
