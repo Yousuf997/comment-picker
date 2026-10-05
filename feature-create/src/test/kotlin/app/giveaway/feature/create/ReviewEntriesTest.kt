@@ -184,7 +184,10 @@ class ReviewEntriesTest {
         text(R.string.review_exclude).performClick()
         compose.onNodeWithTag("review:note").performTextInput("Fake account")
         text(R.string.review_exclude_confirm).performClick()
-        text(R.string.clear_winners_entries_body).assertExists()
+        // The dialog opens in its own window: wait for it, then find its body node by node.
+        await { compose.onAllNodesWithTag("clear_winners:confirm").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText(app.getString(R.string.clear_winners_entries_body), useUnmergedTree = true)
+            .assertExists()
         assertEquals(null, entry("c0").exclusionReason)
         compose.onNodeWithTag("clear_winners:confirm").performClick()
         await { entry("c0").exclusionReason == ExclusionReason.MANUAL }

@@ -55,7 +55,7 @@
     <string name="rules_picker_next">Next</string>
     <string name="rules_picker_done">Done</string>
     <string name="rules_picker_cancel">Cancel</string>
-    <string name="lock_in_explanation">Post this code in your caption before entries close. It locks in a secret that only this phone knows, so nobody can choose the winners after seeing the entries.</string>
+    <string name="lock_in_explanation">Post this code in your caption before entries close. It stands for a secret that only this phone knows. The certificate reveals the secret, so anyone who saw the code can check that the winners came from it.</string>
     <string name="lock_in_code_label">Your draw code</string>
     <string name="lock_in_sha256" translatable="false">SHA-256</string>
     <string name="lock_in_copy">Copy code</string>

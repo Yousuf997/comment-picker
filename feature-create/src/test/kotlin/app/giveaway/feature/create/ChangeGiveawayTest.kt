@@ -133,6 +133,12 @@ class ChangeGiveawayTest {
     private fun save() =
         compose.onNodeWithText(app.getString(R.string.edit_rules_save)).performScrollTo().performClick()
 
+    /** The dialog opens in its own window: wait for it, then find its body node by node. */
+    private fun awaitClearWinners(body: Int) {
+        await { compose.onAllNodesWithTag("clear_winners:confirm").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText(app.getString(body), useUnmergedTree = true).assertExists()
+    }
+
     @Test
     fun theFormStartsFromTheSavedRules() {
         val vm = editRules()
@@ -163,7 +169,7 @@ class ChangeGiveawayTest {
         showEditRules(vm, saved)
         vm.onFormChange { it.copy(winners = 2) }
         save()
-        compose.onNodeWithText(app.getString(R.string.clear_winners_rules_body)).assertExists()
+        awaitClearWinners(R.string.clear_winners_rules_body)
         assertEquals(GiveawayStatus.DRAWN, status())
         compose.onNodeWithTag("clear_winners:confirm").performClick()
         await { saved.isNotEmpty() }
@@ -180,6 +186,7 @@ class ChangeGiveawayTest {
         showEditRules(vm, saved)
         vm.onFormChange { it.copy(winners = 2) }
         save()
+        awaitClearWinners(R.string.clear_winners_rules_body)
         compose.onNodeWithText(app.getString(R.string.dialog_cancel)).performClick()
         await { compose.onAllNodesWithTag("clear_winners:confirm").fetchSemanticsNodes().isEmpty() }
         assertTrue(saved.isEmpty())

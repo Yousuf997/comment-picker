@@ -56,7 +56,7 @@
     <string name="rules_picker_next">التالي</string>
     <string name="rules_picker_done">تم</string>
     <string name="rules_picker_cancel">إلغاء</string>
-    <string name="lock_in_explanation">انشر هذا الرمز في وصف منشورك قبل إغلاق المشاركات. فهو يثبّت سرًا لا يعرفه إلا هذا الهاتف، فلا يمكن لأحد اختيار الفائزين بعد رؤية المشاركات.</string>
+    <string name="lock_in_explanation">انشر هذا الرمز في وصف منشورك قبل إغلاق المشاركات. فهو يمثّل سرًا لا يعرفه إلا هذا الهاتف، وتكشف الشهادة هذا السر ليتحقق كل من رأى الرمز من أن الفائزين جاؤوا منه.</string>
     <string name="lock_in_code_label">رمز السحب الخاص بك</string>
     <string name="lock_in_copy">نسخ الرمز</string>
     <string name="lock_in_copied">تم النسخ</string>
