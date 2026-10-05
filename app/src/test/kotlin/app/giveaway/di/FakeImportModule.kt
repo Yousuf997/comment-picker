@@ -17,5 +17,7 @@ object FakeImportModule {
         override fun start(giveawayId: Long) = Unit
 
         override fun observeActive(giveawayId: Long) = flowOf(false)
+
+        override fun cancel(giveawayId: Long) = Unit
     }
 }

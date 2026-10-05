@@ -166,6 +166,7 @@ class CommentImporterTest {
     private object NoWork : ImportWork {
         override fun start(giveawayId: Long) = Unit
         override fun observeActive(giveawayId: Long) = flowOf(false)
+        override fun cancel(giveawayId: Long) = Unit
     }
 
     /** Page i is served at cursor "p<i>" (the first at null); comment ids are "c<page>-<index>". */

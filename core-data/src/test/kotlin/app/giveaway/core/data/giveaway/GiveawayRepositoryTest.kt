@@ -81,6 +81,10 @@ class GiveawayRepositoryTest {
         val allowed = setOf(
             DRAFT to COMMITTED, COMMITTED to IMPORTING, IMPORTING to REVIEW,
             REVIEW to IMPORTING, REVIEW to DRAWN, DRAWN to ARCHIVED,
+            // Redraw, or rules or entries changed after the draw (plan A30, A31).
+            DRAWN to REVIEW, ARCHIVED to REVIEW,
+            // A new post after commit imports again (plan A32).
+            IMPORTING to COMMITTED, REVIEW to COMMITTED, DRAWN to COMMITTED, ARCHIVED to COMMITTED,
         )
         for (from in GiveawayStatus.entries) for (to in GiveawayStatus.entries) {
             assertEquals("$from -> $to", (from to to) in allowed, GiveawayStateMachine.canMove(from, to))
@@ -92,8 +96,8 @@ class GiveawayRepositoryTest {
         val id = draft()
         assertTrue(runCatching { repository.transition(id, DRAWN) }.exceptionOrNull() is IllegalStateException)
         moveTo(id, COMMITTED, IMPORTING, REVIEW, DRAWN)
-        // A finished draw can never go back to review or be redone.
-        assertTrue(runCatching { repository.transition(id, REVIEW) }.exceptionOrNull() is IllegalStateException)
+        // A drawn giveaway can't skip back to a draft or the import.
+        assertTrue(runCatching { repository.transition(id, IMPORTING) }.exceptionOrNull() is IllegalStateException)
         assertEquals(DRAWN, repository.get(id)?.status)
     }
 
@@ -117,12 +121,12 @@ class GiveawayRepositoryTest {
     }
 
     @Test
-    fun rulesAreFrozenOnceCommitted() = runTest {
+    fun rulesCanChangeAfterCommitToo() = runTest {
+        // Plan A31: rules are editable at every stage; the commitment stays.
         val id = draft()
         moveTo(id, COMMITTED)
-        val error = runCatching { repository.saveRules(id, rules.copy(minMentions = 0)) }.exceptionOrNull()
-        assertTrue(error is IllegalStateException)
-        assertEquals(rules, repository.rules(id))
+        repository.saveRules(id, rules.copy(minMentions = 0))
+        assertEquals(0, repository.rules(id)?.minMentions)
         assertNotNull(db.commitmentDao().get(id))
     }
 

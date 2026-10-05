@@ -9,6 +9,8 @@ import app.giveaway.core.data.db.EntryCounts
 import app.giveaway.core.data.db.EntryRow
 import app.giveaway.core.data.db.GiveawayDatabase
 import app.giveaway.core.data.db.GiveawayStatus
+import app.giveaway.core.data.draw.reopenForReview
+import app.giveaway.core.data.giveaway.GiveawayStateMachine
 import app.giveaway.core.data.importing.EntryBuilder
 import app.giveaway.draw.CanonicalEntryList
 import app.giveaway.draw.ExclusionReason
@@ -81,12 +83,16 @@ class EntryRepository @Inject constructor(
     suspend fun canonicalList(giveawayId: Long): CanonicalEntryList =
         CanonicalEntryList.of(dao.validUsernames(giveawayId))
 
+    /** Entries change in review; after the draw a change clears the result first (plan A31; the screen warns). */
     private suspend fun change(giveawayId: Long, block: suspend () -> Unit) {
-        db.withTransaction {
-            val status = db.giveawayDao().get(giveawayId)?.status
-            check(status == GiveawayStatus.REVIEW) { "Entries can change only before the draw" }
+        val stale = db.withTransaction {
+            val status = checkNotNull(db.giveawayDao().get(giveawayId)) { "No giveaway $giveawayId" }.status
+            val files = if (GiveawayStateMachine.hasResult(status)) db.reopenForReview(giveawayId) else emptyList()
+            check(db.giveawayDao().get(giveawayId)?.status == GiveawayStatus.REVIEW) { "Entries change only in review" }
             block()
+            files
         }
+        stale.forEach { it.delete() }
         entries.rebuild(giveawayId)
     }
 

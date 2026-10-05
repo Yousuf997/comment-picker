@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -112,10 +113,12 @@ class EntryRepositoryTest {
     }
 
     @Test
-    fun nothingChangesAfterTheDraw() = runTest {
+    fun aChangeAfterTheDrawClearsTheResult() = runTest {
+        // Plan A31: S10 warns first; then the result goes and the giveaway is back in review.
         giveaways.transition(id, GiveawayStatus.DRAWN)
-        assertTrue(runCatching { repository.exclude(id, "c1", "Too late") }.isFailure)
-        assertTrue(entry("c1").isValid)
+        repository.exclude(id, "c1", "Fake account")
+        assertEquals(GiveawayStatus.REVIEW, giveaways.get(id)?.status)
+        assertFalse(entry("c1").isValid)
     }
 
     @Test

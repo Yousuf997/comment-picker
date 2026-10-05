@@ -1,6 +1,7 @@
 package app.giveaway.core.data.cleanup
 
 import android.content.Context
+import androidx.room.withTransaction
 import androidx.work.WorkManager
 import app.giveaway.core.data.db.DatabaseFactory
 import app.giveaway.core.data.db.GiveawayDatabase
@@ -48,10 +49,7 @@ class DataWiper(
     /** Deletes giveaways whose auto-delete date has passed. Returns how many. */
     suspend fun deleteExpired(): Int {
         val expired = db.giveawayDao().expired(clock.instant())
-        expired.forEach { id ->
-            db.mediaFileDao().forGiveaway(id).map { File(it.uri) }.filter { it.isAbsolute }.forEach { it.delete() }
-            db.giveawayDao().delete(id)
-        }
+        expired.forEach { id -> db.withTransaction { db.deleteGiveaway(id) }.forEach { it.delete() } }
         return expired.size
     }
 
