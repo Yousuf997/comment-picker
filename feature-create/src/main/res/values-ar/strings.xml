@@ -145,4 +145,13 @@
     <string name="review_add_blocklist">إضافة إلى قائمة الحظر</string>
     <string name="review_cannot_include">لا يمكن تجاوز هذه القاعدة، حتى لا يُدخل أحد خلسة.</string>
     <string name="review_export_file">مشاركات %1$s.txt</string>
+    <string name="change_post_confirm_title">تغيير المنشور؟</string>
+    <string name="change_post_confirm_body">ستُحذف تعليقات المنشور الحالي ومشاركاته وأي فائزين، وتُستورد التعليقات من جديد من المنشور الجديد.</string>
+    <string name="change_post_confirm">تغيير المنشور</string>
+    <string name="edit_rules_save">حفظ الشروط</string>
+    <string name="clear_winners_title">مسح الفائزين؟</string>
+    <string name="clear_winners_rules_body">تغيير الشروط بعد السحب يمسح الفائزين الحاليين، وستُجري السحب من جديد.</string>
+    <string name="clear_winners_entries_body">تغيير المشاركات بعد السحب يمسح الفائزين الحاليين، وستُجري السحب من جديد.</string>
+    <string name="clear_winners_confirm">مسح الفائزين</string>
+    <string name="dialog_cancel">إلغاء</string>
 </resources>

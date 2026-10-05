@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.work.runtime)
     implementation(libs.androidx.hilt.work)
+    implementation(libs.hilt.navigation.compose)
     implementation(libs.androidx.lifecycle.process)
     // Installs the Baseline Profile on devices without Play's cloud profiles (H-06: cold start under 2 s).
     implementation(libs.androidx.profileinstaller)

@@ -1,6 +1,7 @@
 package app.giveaway.core.designsystem.component
 
 import androidx.compose.material3.Text
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -10,8 +11,12 @@ import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertContentDescriptionEquals
+import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
@@ -46,6 +51,26 @@ class WizardAndSheetBehaviorTest {
                     ProgressBarRangeInfo(2f, 0f..6f, steps = 5),
                 ),
             )
+    }
+
+    @Test
+    fun stepBarOpensReachableStepsOnly() {
+        val opened = mutableListOf<Int>()
+        compose.setContent {
+            GiveawayTheme {
+                CompositionLocalProvider(LocalWizardSteps provides WizardSteps(setOf(1, 2, 3, 4)) { opened += it }) {
+                    WizardHeader(title = "Win a tote bag!", step = 3, onBack = {})
+                }
+            }
+        }
+        compose.onNodeWithTag("wizard:step:2").assertContentDescriptionEquals("Step 2 of 6: Rules").performClick()
+        compose.onNodeWithTag("wizard:step:4").performClick()
+        // The current step and steps not reached yet don't open.
+        compose.onNodeWithTag("wizard:step:3").assertIsNotEnabled().assertIsSelected()
+            .assert(SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, "Current step"))
+        compose.onNodeWithTag("wizard:step:5").assertIsNotEnabled()
+            .assert(SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, "Not available yet"))
+        assertEquals(listOf(2, 4), opened)
     }
 
     @Test

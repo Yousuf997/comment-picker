@@ -28,6 +28,19 @@ data class RulesForm(
     )
 
     companion object {
+        /** The form for a giveaway's saved rules, for editing them (plan A31). */
+        fun from(rules: Rules) = RulesForm(
+            minMentions = rules.minMentions,
+            hashtag = rules.requiredHashtag.orEmpty(),
+            keyword = rules.keyword.orEmpty(),
+            onePerPerson = rules.onePerPerson,
+            excludePastWinners = rules.excludePastWinners,
+            excludeBlocklist = rules.excludeBlocklist,
+            closesAt = rules.closesAt,
+            winners = rules.winnersCount,
+            alternates = rules.alternatesCount,
+        )
+
         val MENTIONS_RANGE = 0..10
         val WINNERS_RANGE = 1..50
         val ALTERNATES_RANGE = 0..20
@@ -52,8 +65,12 @@ object RulesValidation {
     /** Letters (any script), digits and underscores, as Instagram hashtags allow. */
     private val hashtag = Regex("^#[\\p{L}\\p{N}_]+$")
 
-    fun validate(form: RulesForm, now: Instant): Set<RulesError> = buildSet {
-        if (!form.closesAt.isAfter(now)) add(RulesError.CLOSES_IN_PAST)
+    /**
+     * [requireFutureClose] is off when editing a giveaway whose entries already closed, or when the closing time is
+     * unchanged: only a new deadline for open entries has to be in the future.
+     */
+    fun validate(form: RulesForm, now: Instant, requireFutureClose: Boolean = true): Set<RulesError> = buildSet {
+        if (requireFutureClose && !form.closesAt.isAfter(now)) add(RulesError.CLOSES_IN_PAST)
         val tag = form.hashtag.trim()
         if (tag.isNotEmpty() && !hashtag.matches(tag)) add(RulesError.HASHTAG_FORMAT)
         if (form.winners + form.alternates < 1) add(RulesError.NOBODY_TO_PICK)

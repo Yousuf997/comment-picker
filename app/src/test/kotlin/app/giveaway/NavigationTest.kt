@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
@@ -131,8 +132,12 @@ class NavigationTest {
         assertFalse("Back from Home must leave the app", navController.previousBackStackEntry != null)
     }
 
-    @Test
-    fun creationWizardReturnsHomeAfterLockingInTheDraw() {
+    private fun awaitEnabled(tag: String) = compose.waitUntil(WAIT_MS) {
+        runCatching { compose.onNodeWithTag(tag).assertIsEnabled() }.isSuccess
+    }
+
+    /** Home → S6 → S7 → S8: a draft exists once S8 opens. */
+    private fun openLockInForANewDraft() {
         launch { GiveawayNavHost(navController, startDestination = HomeRoute) }
         tap(HomeR.string.home_new_giveaway)
         assertScreen("S6")
@@ -143,6 +148,11 @@ class NavigationTest {
         // S7 saves the draft through Room, which is asynchronous.
         compose.onNodeWithText(app.getString(CreateR.string.wizard_continue)).performScrollTo().performClick()
         awaitScreen("S8")
+    }
+
+    @Test
+    fun creationWizardReturnsHomeAfterLockingInTheDraw() {
+        openLockInForANewDraft()
         // Done needs the box ticked and the code loaded; granting notifications skips the Android 13 prompt.
         shadowOf(app).grantPermissions(Manifest.permission.POST_NOTIFICATIONS)
         compose.onNodeWithText(app.getString(CreateR.string.lock_in_confirm)).performScrollTo().performClick()
@@ -151,6 +161,24 @@ class NavigationTest {
         done.performScrollTo().performClick()
         awaitScreen("S4")
         assertFalse(navController.previousBackStackEntry != null)
+    }
+
+    @Test
+    fun theStepBarMovesBetweenTheSetupSteps() {
+        openLockInForANewDraft()
+        // A draft has a post, rules and a code; the import isn't reachable before the code is locked in.
+        val importStep = compose.onNodeWithTag("wizard:step:4")
+        awaitEnabled("wizard:step:2")
+        importStep.assertIsNotEnabled()
+        compose.onNodeWithTag("wizard:step:2").performClick()
+        awaitScreen("S7")
+        awaitEnabled("wizard:step:1")
+        compose.onNodeWithTag("wizard:step:1").performClick()
+        awaitScreen("S6")
+        compose.onNodeWithTag("wizard:step:3").performClick()
+        awaitScreen("S8")
+        // Each step replaces the last, so Back returns Home.
+        assertEquals(true, navController.previousBackStackEntry?.destination?.hasRoute<HomeRoute>())
     }
 
     @Test

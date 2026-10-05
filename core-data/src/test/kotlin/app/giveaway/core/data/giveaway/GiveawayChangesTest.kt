@@ -25,6 +25,7 @@ import app.giveaway.core.instagram.api.MediaKind as IgMediaKind
 import app.giveaway.core.security.DeviceSigner
 import app.giveaway.draw.Commit
 import app.giveaway.draw.Rules
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -273,5 +274,15 @@ class GiveawayChangesTest {
         assertNull(giveaways.get(id))
         assertNull(giveaways.get(other))
         assertNotEquals(0, cancelled.size)
+    }
+
+    @Test
+    fun theStepBarFollowsTheStatus() = runTest {
+        val progress = WizardProgress(db)
+        assertEquals(setOf(1, 2, 3, 4), progress.steps(id).first())
+        reviewed()
+        assertEquals((1..6).toSet(), progress.steps(id).first())
+        assertEquals(setOf(1, 2, 3), WizardProgress.reachable(GiveawayStatus.DRAFT))
+        assertEquals(emptySet<Int>(), progress.steps(-1).first())
     }
 }

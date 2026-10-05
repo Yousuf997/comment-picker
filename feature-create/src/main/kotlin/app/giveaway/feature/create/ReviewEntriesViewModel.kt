@@ -9,6 +9,7 @@ import androidx.paging.cachedIn
 import app.giveaway.core.data.db.EntryCounts
 import app.giveaway.core.data.db.EntryRow
 import app.giveaway.core.data.giveaway.GiveawayRepository
+import app.giveaway.core.data.giveaway.GiveawayStateMachine
 import app.giveaway.core.data.review.EntryListFilter
 import app.giveaway.core.data.review.EntryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,7 +34,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ReviewEntriesViewModel(
     savedStateHandle: SavedStateHandle,
-    giveaways: GiveawayRepository,
+    private val giveaways: GiveawayRepository,
     private val entries: EntryRepository,
     /** Typing pauses this long before searching; tests use 0, as their clock doesn't advance on its own. */
     private val searchDebounceMs: Long,
@@ -86,9 +88,28 @@ class ReviewEntriesViewModel(
     /** The exported file's bytes: exactly the canonical list the draw hashes (spec: S10 export). */
     suspend fun exportBytes(): ByteArray = entries.canonicalList(giveawayId).text.toByteArray(Charsets.UTF_8)
 
+    private val pendingState = MutableStateFlow<(suspend () -> Unit)?>(null)
+
+    /** An entry change after the draw waits for the user to confirm clearing the winners (plan A31). */
+    val confirmClear: StateFlow<Boolean> = pendingState.map { it != null }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    fun confirmClearWinners() {
+        val block = pendingState.value ?: return
+        pendingState.value = null
+        viewModelScope.launch { block() }
+    }
+
+    fun keepWinners() {
+        pendingState.value = null
+    }
+
     private fun change(block: suspend () -> Unit) {
         selectedState.value = null
-        viewModelScope.launch { block() }
+        viewModelScope.launch {
+            val status = giveaways.get(giveawayId)?.status
+            if (status != null && GiveawayStateMachine.hasResult(status)) pendingState.value = block else block()
+        }
     }
 
     private companion object {

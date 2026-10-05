@@ -174,6 +174,24 @@ class ReviewEntriesTest {
     }
 
     @Test
+    fun anExclusionAfterTheDrawAsksBeforeClearingTheWinners() {
+        comments("amy" to "In! @bob", "bob" to "Me too @amy")
+        // Building the entries moved the giveaway to review.
+        runBlocking { giveaways.transition(id, GiveawayStatus.DRAWN) }
+        show()
+        await { shown("Me too") }
+        compose.onNodeWithTag("review:row:c0").performClick()
+        text(R.string.review_exclude).performClick()
+        compose.onNodeWithTag("review:note").performTextInput("Fake account")
+        text(R.string.review_exclude_confirm).performClick()
+        text(R.string.clear_winners_entries_body).assertExists()
+        assertEquals(null, entry("c0").exclusionReason)
+        compose.onNodeWithTag("clear_winners:confirm").performClick()
+        await { entry("c0").exclusionReason == ExclusionReason.MANUAL }
+        assertEquals(GiveawayStatus.REVIEW, runBlocking { giveaways.get(id)!!.status })
+    }
+
+    @Test
     fun aDuplicateCannotBeIncluded() {
         comments("amy" to "In! @bob", "amy" to "Again @bob")
         show()

@@ -45,6 +45,9 @@ interface GiveawayDao {
     @Query("SELECT * FROM giveaway WHERE id = :id")
     suspend fun get(id: Long): GiveawayEntity?
 
+    @Query("SELECT status FROM giveaway WHERE id = :id")
+    fun observeStatus(id: Long): Flow<GiveawayStatus?>
+
     @Query("SELECT * FROM giveaway ORDER BY createdAt DESC")
     fun observeAll(): Flow<List<GiveawayEntity>>
 
