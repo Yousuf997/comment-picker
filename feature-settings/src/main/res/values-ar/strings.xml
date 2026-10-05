@@ -86,4 +86,15 @@
     <string name="restore_warning_body">ستُحذف المسابقات غير الموجودة في النسخة الاحتياطية. ستسجّل الدخول إلى إنستغرام مرة أخرى بعد ذلك.</string>
     <string name="restore_confirm">استبدال بياناتي</string>
     <string name="restore_working">جارٍ الاستعادة…</string>
+    <string name="settings_delete_giveaways">حذف كل المسابقات</string>
+    <string name="settings_delete_giveaways_title">حذف كل المسابقات؟</string>
+    <plurals name="settings_delete_giveaways_body">
+        <item quantity="zero">لا توجد مسابقات لحذفها.</item>
+        <item quantity="one">ستُحذف مسابقتك مع تعليقاتها ومشاركاتها وفائزيها وشهاداتها من هذا الهاتف. يبقى حسابك وإعداداتك وقائمة الحظر والفائزون السابقون.</item>
+        <item quantity="two">ستُحذف المسابقتان مع تعليقاتها ومشاركاتها وفائزيها وشهاداتها من هذا الهاتف. يبقى حسابك وإعداداتك وقائمة الحظر والفائزون السابقون.</item>
+        <item quantity="few">ستُحذف %d مسابقات مع تعليقاتها ومشاركاتها وفائزيها وشهاداتها من هذا الهاتف. يبقى حسابك وإعداداتك وقائمة الحظر والفائزون السابقون.</item>
+        <item quantity="many">ستُحذف %d مسابقة مع تعليقاتها ومشاركاتها وفائزيها وشهاداتها من هذا الهاتف. يبقى حسابك وإعداداتك وقائمة الحظر والفائزون السابقون.</item>
+        <item quantity="other">ستُحذف %d مسابقة مع تعليقاتها ومشاركاتها وفائزيها وشهاداتها من هذا الهاتف. يبقى حسابك وإعداداتك وقائمة الحظر والفائزون السابقون.</item>
+    </plurals>
+    <string name="settings_delete_giveaways_confirm">حذف الكل</string>
 </resources>

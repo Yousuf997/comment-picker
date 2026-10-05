@@ -70,7 +70,11 @@ import app.giveaway.core.designsystem.handle
 import app.giveaway.core.designsystem.R as DesignR
 
 @Composable
-internal fun WinnersScreen(onCreateCertificate: () -> Unit, viewModel: WinnersViewModel = hiltViewModel()) {
+internal fun WinnersScreen(
+    onCreateCertificate: () -> Unit,
+    onRedraw: () -> Unit,
+    viewModel: WinnersViewModel = hiltViewModel(),
+) {
     val view by viewModel.view.collectAsStateWithLifecycle()
     val replacing by viewModel.replacing.collectAsStateWithLifecycle()
     val video by viewModel.pendingVideo.collectAsStateWithLifecycle()
@@ -80,8 +84,10 @@ internal fun WinnersScreen(onCreateCertificate: () -> Unit, viewModel: WinnersVi
     SavedVideoMessages(viewModel, snackbar)
     val save = rememberSaveVideo(view?.title, viewModel::saveVideo)
     var askingCertificate by remember { mutableStateOf(false) }
+    var askingRedraw by remember { mutableStateOf(false) }
     Box {
         val actions = winnersActions(viewModel, context) { askingCertificate = true }
+            .copy(onRedraw = { askingRedraw = true })
         WinnersScreen(view = view, replacing = replacing, actions = actions)
         video?.let { SaveVideoSheet(it.file.uri, it.info, saving, save, viewModel::discardVideo) }
         if (askingCertificate) {
@@ -92,6 +98,15 @@ internal fun WinnersScreen(onCreateCertificate: () -> Unit, viewModel: WinnersVi
                     onCreateCertificate()
                 },
                 onDismiss = { askingCertificate = false },
+            )
+        }
+        if (askingRedraw) {
+            RedrawDialog(
+                onConfirm = {
+                    askingRedraw = false
+                    onRedraw()
+                },
+                onDismiss = { askingRedraw = false },
             )
         }
         SnackbarHost(snackbar, modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp))
@@ -169,6 +184,7 @@ internal data class WinnersActions(
     val onReplaceCancelled: () -> Unit,
     val onOpenProfile: (username: String) -> Unit,
     val onCreateCertificate: () -> Unit,
+    val onRedraw: () -> Unit = {},
 )
 
 /** S14 Winners (spec): a card per winner with the manual follow check, the alternates, and the certificate. */
@@ -209,6 +225,12 @@ internal fun WinnersScreen(view: WinnersView?, replacing: Int?, actions: Winners
             text = stringResource(R.string.winners_create_certificate),
             onClick = actions.onCreateCertificate,
             modifier = Modifier.fillMaxWidth(),
+        )
+        // Replaces the result with a new draw (plan A30).
+        SecondaryButton(
+            text = stringResource(R.string.redraw_button),
+            onClick = actions.onRedraw,
+            modifier = Modifier.fillMaxWidth().testTag("winners:redraw"),
         )
     }
     if (view != null && replacing != null) {

@@ -32,4 +32,11 @@
     <string name="status_review">Review entries</string>
     <string name="status_drawn">Winners picked</string>
     <string name="status_completed">Completed</string>
+    <!-- Deleting a giveaway (plan A33) -->
+    <string name="home_more">More for %1$s</string>
+    <string name="home_delete">Delete giveaway</string>
+    <string name="home_delete_title">Delete this giveaway?</string>
+    <string name="home_delete_body">"%1$s" and its comments, entries, winners and certificate will be deleted from this phone. This can\'t be undone.</string>
+    <string name="home_delete_confirm">Delete</string>
+    <string name="home_delete_cancel">Cancel</string>
 </resources>

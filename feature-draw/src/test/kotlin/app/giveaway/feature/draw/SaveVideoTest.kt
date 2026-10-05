@@ -140,7 +140,7 @@ class SaveVideoTest {
 
     private fun show() {
         vm = WinnersViewModel(SavedStateHandle(route = WinnersRoute(id)), WinnerRepository(db, clock), media, gallery)
-        compose.setContent { GiveawayTheme { WinnersScreen(onCreateCertificate = {}, viewModel = vm) } }
+        compose.setContent { GiveawayTheme { WinnersScreen(onCreateCertificate = {}, onRedraw = {}, viewModel = vm) } }
         compose.waitUntil(WAIT_MS) { sheetShown() }
     }
 

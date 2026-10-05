@@ -68,4 +68,7 @@ class DataWiper(
 abstract class WipeModule {
     @Binds
     internal abstract fun everythingWiper(impl: DataWiper): EverythingWiper
+
+    @Binds
+    internal abstract fun giveawayRemoval(impl: GiveawayDeleter): GiveawayRemoval
 }

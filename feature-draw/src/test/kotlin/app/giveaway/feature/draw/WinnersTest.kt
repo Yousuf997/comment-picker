@@ -10,6 +10,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.testing.invoke
@@ -80,6 +81,7 @@ class WinnersTest {
     private lateinit var vm: WinnersViewModel
     private var id = 0L
     private var certificates = 0
+    private var redraws = 0
 
     private val vault = object : SeedVault {
         override fun seal(giveawayId: Long, seed: ByteArray) = seed.reversedArray()
@@ -138,7 +140,9 @@ class WinnersTest {
             noGallery,
         )
         compose.setContent {
-            GiveawayTheme { WinnersScreen(onCreateCertificate = { certificates++ }, viewModel = vm) }
+            GiveawayTheme {
+                WinnersScreen(onCreateCertificate = { certificates++ }, onRedraw = { redraws++ }, viewModel = vm)
+            }
         }
         compose.waitUntil(WAIT_MS) { shown(R.string.winners_confirm) }
     }
@@ -146,6 +150,16 @@ class WinnersTest {
     private fun shown(id: Int) = compose.onAllNodesWithText(app.getString(id)).fetchSemanticsNodes().isNotEmpty()
 
     private fun view() = runBlocking { repository.observe(id).first()!! }
+
+    @Test
+    fun redrawAsksFirst() {
+        show()
+        compose.onNodeWithTag("winners:redraw").performScrollTo().performClick()
+        compose.onNodeWithText(app.getString(R.string.redraw_body)).assertExists()
+        assertEquals(0, redraws)
+        compose.onNodeWithTag("redraw:confirm").performClick()
+        assertEquals(1, redraws)
+    }
 
     @Test
     fun confirmingShowsTheConfirmedChip() {

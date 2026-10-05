@@ -89,4 +89,12 @@
     <string name="restore_warning_body">Giveaways that aren\'t in the backup will be deleted. You\'ll sign in to Instagram again afterwards.</string>
     <string name="restore_confirm">Replace my data</string>
     <string name="restore_working">Restoring…</string>
+    <!-- Deleting all giveaways (plan A33) -->
+    <string name="settings_delete_giveaways">Delete all giveaways</string>
+    <string name="settings_delete_giveaways_title">Delete all giveaways?</string>
+    <plurals name="settings_delete_giveaways_body">
+        <item quantity="one">Your giveaway and its comments, entries, winners and certificate will be deleted from this phone. Your account, settings, blocklist and past winners stay.</item>
+        <item quantity="other">All %d giveaways and their comments, entries, winners and certificates will be deleted from this phone. Your account, settings, blocklist and past winners stay.</item>
+    </plurals>
+    <string name="settings_delete_giveaways_confirm">Delete all</string>
 </resources>
