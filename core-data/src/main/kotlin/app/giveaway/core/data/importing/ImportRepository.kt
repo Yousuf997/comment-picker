@@ -18,6 +18,9 @@ interface ImportWork {
     fun start(giveawayId: Long)
 
     fun observeActive(giveawayId: Long): Flow<Boolean>
+
+    /** Stops a queued or running import, before its giveaway's comments go away (new post, deletion). */
+    fun cancel(giveawayId: Long)
 }
 
 internal class WorkManagerImportWork @Inject constructor(
@@ -26,6 +29,10 @@ internal class WorkManagerImportWork @Inject constructor(
     private val workManager get() = WorkManager.getInstance(context)
 
     override fun start(giveawayId: Long) = ImportWorker.enqueue(workManager, giveawayId)
+
+    override fun cancel(giveawayId: Long) {
+        workManager.cancelUniqueWork(ImportWorker.workName(giveawayId))
+    }
 
     override fun observeActive(giveawayId: Long): Flow<Boolean> =
         workManager.getWorkInfosForUniqueWorkFlow(ImportWorker.workName(giveawayId))

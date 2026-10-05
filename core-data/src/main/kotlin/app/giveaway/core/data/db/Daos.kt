@@ -91,7 +91,14 @@ interface CommitmentDao {
     suspend fun get(giveawayId: Long): CommitmentEntity?
 
     @Query("UPDATE commitment SET captionVerifiedAt = :at WHERE giveawayId = :giveawayId")
-    suspend fun setCaptionVerified(giveawayId: Long, at: Instant)
+    suspend fun setCaptionVerified(giveawayId: Long, at: Instant?)
+
+    /** A redraw's new seed (plan A30): the old code no longer matches, so the caption check starts over. */
+    @Query(
+        "UPDATE commitment SET encryptedSeed = :encryptedSeed, commitHash = :commitHash, createdAt = :at, " +
+            "captionVerifiedAt = NULL WHERE giveawayId = :giveawayId",
+    )
+    suspend fun replace(giveawayId: Long, encryptedSeed: ByteArray, commitHash: String, at: Instant)
 }
 
 @Dao
@@ -104,6 +111,9 @@ interface ImportStateDao {
 
     @Query("SELECT * FROM import_state WHERE giveawayId = :giveawayId")
     fun observe(giveawayId: Long): Flow<ImportStateEntity?>
+
+    @Query("DELETE FROM import_state WHERE giveawayId = :giveawayId")
+    suspend fun delete(giveawayId: Long)
 }
 
 @Dao
@@ -114,6 +124,9 @@ interface CommentDao {
 
     @Query("SELECT COUNT(*) FROM comment WHERE giveawayId = :giveawayId")
     suspend fun count(giveawayId: Long): Int
+
+    @Query("DELETE FROM comment WHERE giveawayId = :giveawayId")
+    suspend fun deleteAll(giveawayId: Long)
 
     /** Keyset paging in (timestamp, id) order for the entry rebuild; blocking, for use inside its transaction. */
     @Query("SELECT * FROM comment WHERE giveawayId = :giveawayId ORDER BY timestamp, id LIMIT :limit")
@@ -183,6 +196,14 @@ interface DrawDao {
     @Query("SELECT * FROM draw WHERE realGiveawayId = :giveawayId")
     suspend fun realDraw(giveawayId: Long): DrawEntity?
 
+    /** Removes the real draw and, through the foreign key, its results (plan A30). */
+    @Query("DELETE FROM draw WHERE realGiveawayId = :giveawayId")
+    suspend fun deleteRealDraw(giveawayId: Long)
+
+    /** Every draw of a giveaway, real and test, when its comments are replaced. */
+    @Query("DELETE FROM draw WHERE giveawayId = :giveawayId")
+    suspend fun deleteAll(giveawayId: Long)
+
     @Query("SELECT * FROM draw_result WHERE drawId = :drawId ORDER BY position")
     suspend fun results(drawId: Long): List<DrawResultEntity>
 
@@ -224,6 +245,10 @@ interface PastWinnerDao {
 
     @Query("SELECT DISTINCT username FROM past_winner WHERE giveawayId != :exceptGiveawayId")
     suspend fun usernamesExcept(exceptGiveawayId: Long): List<String>
+
+    /** Winners confirmed in a result that was cleared (plan A30) are no longer past winners of that giveaway. */
+    @Query("DELETE FROM past_winner WHERE giveawayId = :giveawayId")
+    suspend fun deleteForGiveaway(giveawayId: Long)
 }
 
 @Dao

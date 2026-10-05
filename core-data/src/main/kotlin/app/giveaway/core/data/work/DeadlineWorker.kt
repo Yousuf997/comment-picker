@@ -89,14 +89,14 @@ class DeadlineWorker @AssistedInject constructor(
 
         fun workName(giveawayId: Long) = "deadline-$giveawayId"
 
-        /** Idempotent: a giveaway's deadline is fixed once committed, so an existing schedule is kept. */
+        /** Replaces any earlier schedule, so a changed deadline (plan A31) moves the check. */
         fun schedule(workManager: WorkManager, giveawayId: Long, closesAt: Instant, now: Instant) {
             val request = OneTimeWorkRequestBuilder<DeadlineWorker>()
                 .setInitialDelay(Duration.between(now, closesAt).coerceAtLeast(Duration.ZERO))
                 .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
                 .setInputData(workDataOf(KEY_GIVEAWAY_ID to giveawayId))
                 .build()
-            workManager.enqueueUniqueWork(workName(giveawayId), ExistingWorkPolicy.KEEP, request)
+            workManager.enqueueUniqueWork(workName(giveawayId), ExistingWorkPolicy.REPLACE, request)
         }
     }
 }

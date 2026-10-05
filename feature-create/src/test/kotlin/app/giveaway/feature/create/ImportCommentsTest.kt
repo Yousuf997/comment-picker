@@ -76,6 +76,8 @@ class ImportCommentsTest {
         }
 
         override fun observeActive(giveawayId: Long): Flow<Boolean> = active
+
+        override fun cancel(giveawayId: Long) = Unit
     }
 
     @Before

@@ -25,7 +25,10 @@ interface GiveawayRepository {
     /** Creates a DRAFT for the chosen post with its rules (end of S7), in one transaction. */
     suspend fun createDraft(media: IgMedia, title: String, ownerUsername: String, rules: Rules): Long
 
-    /** Replaces the rules. Throws [IllegalStateException] once the giveaway is committed (plan A9). */
+    /**
+     * Replaces the rules at any stage (plan A31). This only stores them; [GiveawayEditor] applies what follows (a new
+     * deadline, filtering again, clearing a result).
+     */
     suspend fun saveRules(id: Long, rules: Rules)
 
     suspend fun rules(id: Long): Rules?
@@ -38,7 +41,7 @@ interface GiveawayRepository {
      */
     suspend fun saveCommitment(id: Long, commitHash: String, encryptedSeed: ByteArray)
 
-    /** S8 "Done": moves DRAFT -> COMMITTED, freezing the rules (plan A9). Needs a stored commitment. */
+    /** S8 "Done": moves DRAFT -> COMMITTED. Needs a stored commitment. */
     suspend fun commit(id: Long)
 
     /** The deadline check found the code in the caption (plan A15). */
@@ -82,7 +85,6 @@ class DefaultGiveawayRepository @Inject constructor(
 
     override suspend fun saveRules(id: Long, rules: Rules) = db.withTransaction {
         val giveaway = requireGiveaway(id)
-        check(GiveawayStateMachine.rulesEditable(giveaway.status)) { "Rules are frozen once the draw is committed" }
         giveaways.update(giveaway.copy(closesAt = rules.closesAt))
         db.rulesDao().upsert(rules.toEntity(id))
     }
