@@ -36,6 +36,7 @@ Also:
 
 - ☐ Verifier published: `tools/verifier/`, `docs/draw-spec-v1.md` and `docs/test-vectors-v1.json` on a public repository with GitHub Pages; the page loads offline.
 - ☐ G3: 20 real draws, each re-run in the published verifier from certificate data, 20 of 20 match (M-18).
+- ☐ Copy checked against plan A30–A34: nothing in the app, the store listing or the privacy policy says a result can't be changed or redrawn (see `docs/security-review.md`, finding 10).
 
 ## 4. Meta and Google Play
 

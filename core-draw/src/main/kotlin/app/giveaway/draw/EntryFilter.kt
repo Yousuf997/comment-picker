@@ -6,7 +6,7 @@ import java.util.Locale
 /** A top-level comment as imported from Instagram. Replies are never entries. */
 data class RawComment(val id: String, val username: String, val text: String, val timestamp: Instant)
 
-/** What makes a valid entry (spec: S7). Frozen once the giveaway is committed (plan A9). */
+/** What makes a valid entry (spec: S7). The organizer can change it at any stage (plan A31). */
 data class Rules(
     val minMentions: Int,
     /** With or without the leading '#'. Null or blank means no hashtag is required. */

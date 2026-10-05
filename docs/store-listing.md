@@ -17,7 +17,7 @@ Draft for Play Console, in English and Arabic (plan M-21). `[APP NAME]` stays a 
 > [APP NAME] picks winners from the comments on your post or Reel, and gives you proof that the draw was fair. Everything happens on your phone: no sign-up, no account with us, nothing uploaded.
 >
 > **Fair, and anyone can check it**
-> • Before entries close, you post a draw code in your caption. It locks in the draw, so no one can pick a result that favours someone.
+> • Before entries close, you post a draw code in your caption. Anyone who saw it can later check the draw against it.
 > • After the draw, the certificate shows the secret behind the code and a fingerprint of the entry list. Anyone can re-run the draw with the free, open verifier and get the same winners.
 > • Every certificate is signed on your device.
 >
@@ -57,7 +57,7 @@ Draft for Play Console, in English and Arabic (plan M-21). `[APP NAME]` stays a 
 > يختار [APP NAME] الفائزين من التعليقات على منشورك أو مقطع الريلز، ويمنحك إثباتًا على أن السحب كان عادلًا. كل شيء يتم على هاتفك: لا تسجيل، ولا حساب لدينا، ولا يُرفع أي شيء.
 >
 > **عادل، ويمكن لأي شخص التحقق منه**
-> • قبل إغلاق المشاركات تنشر رمز السحب في وصف المنشور، فيُثبَّت السحب ولا يستطيع أحد اختيار نتيجة تحابي شخصًا.
+> • قبل إغلاق المشاركات تنشر رمز السحب في وصف المنشور، ويمكن لكل من رآه أن يطابق السحب معه لاحقًا.
 > • بعد السحب تعرض الشهادة السر وراء الرمز وبصمة قائمة المشاركات، ويمكن لأي شخص إعادة السحب بالأداة المفتوحة المجانية والحصول على الفائزين أنفسهم.
 > • كل شهادة موقّعة على جهازك.
 >
