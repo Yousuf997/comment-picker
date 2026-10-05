@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.giveaway.core.data.account.AccountRepository
 import app.giveaway.core.data.cleanup.EverythingWiper
+import app.giveaway.core.data.cleanup.GiveawayRemoval
 import app.giveaway.core.data.db.SettingsEntity
 import app.giveaway.core.data.settings.SettingsRepository
 import app.giveaway.core.security.lock.PinStore
@@ -37,6 +38,8 @@ class AppCompatLanguage @Inject constructor() : AppLanguage {
 data class SettingsUiState(
     val settings: SettingsEntity = SettingsEntity(),
     val username: String? = null,
+    /** For "Delete all giveaways" (plan A33). */
+    val giveawayCount: Int = 0,
 )
 
 sealed interface SettingsEvent {
@@ -58,10 +61,15 @@ class SettingsViewModel @Inject constructor(
     private val pinStore: Lazy<PinStore>,
     private val language: AppLanguage,
     private val wiper: Lazy<EverythingWiper>,
+    private val giveaways: GiveawayRemoval,
 ) : ViewModel() {
 
-    val state: StateFlow<SettingsUiState> = combine(settings.observe(), accounts.observeUsername()) { prefs, user ->
-        SettingsUiState(prefs, user)
+    val state: StateFlow<SettingsUiState> = combine(
+        settings.observe(),
+        accounts.observeUsername(),
+        giveaways.observeCount(),
+    ) { prefs, user, count ->
+        SettingsUiState(prefs, user, count)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), SettingsUiState())
 
     private val eventChannel = Channel<SettingsEvent>(Channel.BUFFERED)
@@ -100,6 +108,9 @@ class SettingsViewModel @Inject constructor(
         wiper.get().deleteEverything()
         eventChannel.send(SettingsEvent.EverythingDeleted)
     }
+
+    /** Deletes every giveaway; the account, settings, keys, blocklist and past winners stay (plan A33). */
+    fun deleteAllGiveaways() = viewModelScope.launch { giveaways.deleteAll() }
 
     private fun update(transform: (SettingsEntity) -> SettingsEntity) {
         viewModelScope.launch { settings.update(transform) }

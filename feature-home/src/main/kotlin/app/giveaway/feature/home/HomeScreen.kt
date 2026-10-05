@@ -13,11 +13,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,14 +63,25 @@ data class HomeActions(
 )
 
 @Composable
-internal fun HomeScreen(actions: HomeActions, viewModel: HomeViewModel = hiltViewModel()) {
+internal fun HomeScreen(
+    actions: HomeActions,
+    viewModel: HomeViewModel = hiltViewModel(),
+    deletion: HomeDeletionViewModel = hiltViewModel(),
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    HomeScreen(state, actions)
+    HomeScreen(state, actions, onDelete = deletion::delete)
 }
 
 /** S4 Home (spec): the giveaway list and the way to start a new one. */
 @Composable
-internal fun HomeScreen(state: HomeUiState, actions: HomeActions, modifier: Modifier = Modifier) {
+internal fun HomeScreen(
+    state: HomeUiState,
+    actions: HomeActions,
+    modifier: Modifier = Modifier,
+    onDelete: (giveawayId: Long) -> Unit = {},
+) {
+    // The card whose deletion waits for confirmation.
+    var deleting by remember { mutableStateOf<GiveawayCard?>(null) }
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -104,9 +122,35 @@ internal fun HomeScreen(state: HomeUiState, actions: HomeActions, modifier: Modi
                 )
             }
         }
-        Section(stringResource(R.string.home_in_progress), state.inProgress, actions)
-        Section(stringResource(R.string.home_completed), state.completed, actions)
+        Section(stringResource(R.string.home_in_progress), state.inProgress, actions) { deleting = it }
+        Section(stringResource(R.string.home_completed), state.completed, actions) { deleting = it }
     }
+    deleting?.let { card ->
+        DeleteDialog(
+            title = card.title,
+            onConfirm = {
+                deleting = null
+                onDelete(card.id)
+            },
+            onDismiss = { deleting = null },
+        )
+    }
+}
+
+/** Deleting a giveaway removes everything that belongs to it (plan A33), so it asks first. */
+@Composable
+private fun DeleteDialog(title: String, onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.home_delete_title)) },
+        text = { Text(stringResource(R.string.home_delete_body, title)) },
+        confirmButton = {
+            TextButton(onClick = onConfirm, modifier = Modifier.testTag("home:delete_confirm")) {
+                Text(stringResource(R.string.home_delete_confirm), color = GiveawayTheme.colors.danger)
+            }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.home_delete_cancel)) } },
+    )
 }
 
 @Composable
@@ -164,7 +208,7 @@ private fun Hero(onNewGiveaway: () -> Unit) {
 }
 
 @Composable
-private fun Section(title: String, cards: List<GiveawayCard>, actions: HomeActions) {
+private fun Section(title: String, cards: List<GiveawayCard>, actions: HomeActions, onDelete: (GiveawayCard) -> Unit) {
     if (cards.isEmpty()) return
     Text(
         title.uppercase(),
@@ -172,11 +216,17 @@ private fun Section(title: String, cards: List<GiveawayCard>, actions: HomeActio
         color = GiveawayTheme.colors.onMuted,
         modifier = Modifier.semantics { heading() },
     )
-    cards.forEach { card -> GiveawayRow(card) { actions.onOpenGiveaway(card.id, card.destination) } }
+    cards.forEach { card ->
+        GiveawayRow(
+            card,
+            onClick = { actions.onOpenGiveaway(card.id, card.destination) },
+            onDelete = { onDelete(card) },
+        )
+    }
 }
 
 @Composable
-private fun GiveawayRow(card: GiveawayCard, onClick: () -> Unit) {
+private fun GiveawayRow(card: GiveawayCard, onClick: () -> Unit, onDelete: () -> Unit) {
     val colors = GiveawayTheme.colors
     CardSurface(modifier = Modifier.fillMaxWidth(), onClick = onClick) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -198,8 +248,38 @@ private fun GiveawayRow(card: GiveawayCard, onClick: () -> Unit) {
                 )
                 Text(dateLine(card), style = GiveawayTheme.typography.caption, color = colors.onMuted)
                 countLine(card)?.let { Text(it, style = GiveawayTheme.typography.caption, color = colors.onMuted) }
+                // Under the text rather than beside it, so the title keeps its width next to the menu.
+                StatusChip(
+                    stringResource(card.status.label),
+                    card.status.tone,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
             }
-            StatusChip(stringResource(card.status.label), card.status.tone)
+            CardMenu(card, onDelete)
+        }
+    }
+}
+
+/** The card's ⋮ menu: Delete giveaway (plan A33). */
+@Composable
+private fun CardMenu(card: GiveawayCard, onDelete: () -> Unit) {
+    var open by remember { mutableStateOf(false) }
+    Box {
+        IconButton(onClick = { open = true }, modifier = Modifier.testTag("home:menu:${card.id}")) {
+            Icon(
+                painterResource(DesignR.drawable.ic_more_vert),
+                contentDescription = stringResource(R.string.home_more, card.title),
+                tint = GiveawayTheme.colors.onMuted,
+            )
+        }
+        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.home_delete), color = GiveawayTheme.colors.danger) },
+                onClick = {
+                    open = false
+                    onDelete()
+                },
+            )
         }
     }
 }

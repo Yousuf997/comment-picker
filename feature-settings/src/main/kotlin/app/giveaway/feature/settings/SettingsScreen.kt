@@ -80,6 +80,7 @@ internal fun SettingsScreen(actions: SettingsActions, viewModel: SettingsViewMod
             onLanguage = viewModel::onLanguage,
             onDisconnect = { viewModel.disconnect() },
             onDeleteEverything = { viewModel.deleteEverything() },
+            onDeleteAllGiveaways = { viewModel.deleteAllGiveaways() },
             onOpenPrivacyPolicy = { uriHandler.openUri(BuildConfig.PRIVACY_POLICY_URL) },
         ),
         actions = actions,
@@ -97,9 +98,12 @@ internal data class SettingsHandlers(
     val onDisconnect: () -> Unit,
     val onDeleteEverything: () -> Unit,
     val onOpenPrivacyPolicy: () -> Unit,
+    val onDeleteAllGiveaways: () -> Unit = {},
 )
 
-internal enum class Dialog { LOCK_OFF, LOCK_AFTER, AUTO_DELETE, LANGUAGE, DISCONNECT, DELETE_FIRST, DELETE_SECOND }
+internal enum class Dialog {
+    LOCK_OFF, LOCK_AFTER, AUTO_DELETE, LANGUAGE, DISCONNECT, DELETE_FIRST, DELETE_SECOND, DELETE_GIVEAWAYS,
+}
 
 /** S5 Settings (spec). */
 @Composable
@@ -127,7 +131,7 @@ internal fun SettingsScreen(state: SettingsUiState, handlers: SettingsHandlers, 
             )
         }
         SecurityGroup(state.settings, handlers, open)
-        DataGroup(state.settings, actions, open)
+        DataGroup(state, actions, open)
         Group(stringResource(R.string.settings_draw)) {
             SettingsSwitchRow(
                 stringResource(R.string.settings_record_draws),
@@ -146,7 +150,7 @@ internal fun SettingsScreen(state: SettingsUiState, handlers: SettingsHandlers, 
         AboutGroup(state.settings, handlers, actions, open)
     }
     dialog?.let { shown ->
-        SettingsDialog(shown, state.settings, handlers, onDismiss = { dialog = null }, onNext = { dialog = it })
+        SettingsDialog(shown, state, handlers, onDismiss = { dialog = null }, onNext = { dialog = it })
     }
 }
 
@@ -174,17 +178,26 @@ private fun SecurityGroup(prefs: SettingsEntity, handlers: SettingsHandlers, ope
 }
 
 @Composable
-private fun DataGroup(prefs: SettingsEntity, actions: SettingsActions, open: (Dialog) -> Unit) {
+private fun DataGroup(state: SettingsUiState, actions: SettingsActions, open: (Dialog) -> Unit) {
     Group(stringResource(R.string.settings_data), note = stringResource(R.string.settings_data_note)) {
         SettingsRow(
             stringResource(R.string.settings_auto_delete),
-            value = stringResource(autoDeleteLabel(prefs.autoDeleteDays)),
+            value = stringResource(autoDeleteLabel(state.settings.autoDeleteDays)),
             onClick = { open(Dialog.AUTO_DELETE) },
         )
         Divider()
         SettingsRow(stringResource(R.string.settings_export_backup), onClick = actions.onExportBackup)
         Divider()
         SettingsRow(stringResource(R.string.settings_restore_backup), onClick = actions.onRestoreBackup)
+        // Only when there is something to delete (plan A33).
+        if (state.giveawayCount > 0) {
+            Divider()
+            SettingsRow(
+                stringResource(R.string.settings_delete_giveaways),
+                destructive = true,
+                onClick = { open(Dialog.DELETE_GIVEAWAYS) },
+            )
+        }
     }
 }
 

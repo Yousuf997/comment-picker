@@ -164,4 +164,9 @@
     </plurals>
     <string name="certificate_make_confirm">إصدار الشهادة</string>
     <string name="certificate_make_cancel">ليس الآن</string>
+    <string name="redraw_button">إعادة السحب</string>
+    <string name="redraw_title">إعادة سحب الفائزين؟</string>
+    <string name="redraw_body">سيُحذف الفائزون الحاليون والشهادة، ويبدأ السحب من جديد برمز سحب جديد. أضف الرمز الجديد إلى وصف المنشور إن أردت أن تُظهره الشهادة.</string>
+    <string name="redraw_confirm">إعادة السحب</string>
+    <string name="redraw_cancel">إلغاء</string>
 </resources>

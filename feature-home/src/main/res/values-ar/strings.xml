@@ -40,4 +40,10 @@
     <string name="status_review">مراجعة المشاركات</string>
     <string name="status_drawn">تم اختيار الفائزين</string>
     <string name="status_completed">مكتمل</string>
+    <string name="home_more">خيارات %1$s</string>
+    <string name="home_delete">حذف المسابقة</string>
+    <string name="home_delete_title">حذف هذه المسابقة؟</string>
+    <string name="home_delete_body">ستُحذف «%1$s» مع تعليقاتها ومشاركاتها وفائزيها وشهادتها من هذا الهاتف. لا يمكن التراجع عن ذلك.</string>
+    <string name="home_delete_confirm">حذف</string>
+    <string name="home_delete_cancel">إلغاء</string>
 </resources>

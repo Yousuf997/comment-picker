@@ -8,7 +8,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.testing.invoke
@@ -176,8 +179,12 @@ class CertificateScreenTest {
             noGallery,
             output,
         )
-        compose.setContent { GiveawayTheme { CertificateScreen(onDone = {}, viewModel = vm) } }
+        compose.setContent {
+            GiveawayTheme { CertificateScreen(onDone = {}, onRedraw = { redraws++ }, viewModel = vm) }
+        }
     }
+
+    private var redraws = 0
 
     private fun status() = runBlocking { giveaways.get(id)?.status }
 
@@ -196,6 +203,16 @@ class CertificateScreenTest {
         assertEquals(setOf(MediaKind.CERTIFICATE_PDF, MediaKind.CERTIFICATE_IMAGE), kinds)
         // The card shows the revealed seed, so anyone can re-run the draw (spec: S15).
         assertTrue(shown(seed.joinToString("") { "%02x".format(it) }))
+    }
+
+    @Test
+    fun redrawAsksFirst() {
+        show()
+        compose.waitUntil(WAIT_MS) { vm.files.value != null }
+        compose.onNodeWithTag("certificate:redraw").performScrollTo().performClick()
+        assertEquals(0, redraws)
+        compose.onNodeWithTag("redraw:confirm").performClick()
+        assertEquals(1, redraws)
     }
 
     @Test

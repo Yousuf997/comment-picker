@@ -43,13 +43,23 @@ fun NavGraphBuilder.drawingScreen(onDrawFinished: (giveawayId: Long) -> Unit) {
     }
 }
 
-fun NavGraphBuilder.winnersScreen(onCreateCertificate: (giveawayId: Long) -> Unit) {
+/** [onRedrawn] runs once the result is cleared and the giveaway can be drawn again (plan A30). */
+fun NavGraphBuilder.winnersScreen(
+    onCreateCertificate: (giveawayId: Long) -> Unit,
+    onRedrawn: (giveawayId: Long) -> Unit,
+) {
     composable<WinnersRoute> { entry ->
         val giveawayId = entry.toRoute<WinnersRoute>().giveawayId
-        WinnersScreen(onCreateCertificate = { onCreateCertificate(giveawayId) })
+        WinnersScreen(
+            onCreateCertificate = { onCreateCertificate(giveawayId) },
+            onRedraw = rememberRedraw(giveawayId, onRedrawn),
+        )
     }
 }
 
-fun NavGraphBuilder.certificateScreen(onDone: () -> Unit) {
-    composable<CertificateRoute> { CertificateScreen(onDone) }
+fun NavGraphBuilder.certificateScreen(onDone: () -> Unit, onRedrawn: (giveawayId: Long) -> Unit) {
+    composable<CertificateRoute> { entry ->
+        val giveawayId = entry.toRoute<CertificateRoute>().giveawayId
+        CertificateScreen(onDone = onDone, onRedraw = rememberRedraw(giveawayId, onRedrawn))
+    }
 }

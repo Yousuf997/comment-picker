@@ -12,22 +12,25 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import app.giveaway.core.data.db.SettingsEntity
 import app.giveaway.core.designsystem.GiveawayTheme
 
-/** The S5 dialogs: confirmations for turning off app lock and disconnecting, and the option pickers. */
+/** The S5 dialogs: confirmations (app lock off, disconnect, deleting), and the option pickers. */
 @Composable
 internal fun SettingsDialog(
     dialog: Dialog,
-    prefs: SettingsEntity,
+    state: SettingsUiState,
     handlers: SettingsHandlers,
     onDismiss: () -> Unit,
     onNext: (Dialog) -> Unit,
 ) {
     when (dialog) {
+        Dialog.LOCK_AFTER, Dialog.AUTO_DELETE, Dialog.LANGUAGE ->
+            ChoiceDialog(dialog, state.settings, handlers, onDismiss)
         Dialog.LOCK_OFF -> Confirm(
             title = R.string.settings_lock_off_title,
             body = R.string.settings_lock_off_body,
@@ -57,6 +60,24 @@ internal fun SettingsDialog(
             onConfirm = handlers.onDeleteEverything,
             onDismiss = onDismiss,
         )
+        Dialog.DELETE_GIVEAWAYS -> Confirm(
+            title = stringResource(R.string.settings_delete_giveaways_title),
+            body = pluralStringResource(
+                R.plurals.settings_delete_giveaways_body,
+                state.giveawayCount,
+                state.giveawayCount,
+            ),
+            confirm = R.string.settings_delete_giveaways_confirm,
+            onConfirm = handlers.onDeleteAllGiveaways,
+            onDismiss = onDismiss,
+        )
+    }
+}
+
+/** The option pickers: lock timing, auto-delete and language. */
+@Composable
+private fun ChoiceDialog(dialog: Dialog, prefs: SettingsEntity, handlers: SettingsHandlers, onDismiss: () -> Unit) {
+    when (dialog) {
         Dialog.LOCK_AFTER -> Choice(
             title = R.string.settings_lock_after,
             options = SettingsViewModel.LOCK_AFTER_OPTIONS,
@@ -81,22 +102,28 @@ internal fun SettingsDialog(
             onSelect = handlers.onLanguage,
             onDismiss = onDismiss,
         )
+        else -> Unit
     }
 }
 
 @Composable
-private fun Confirm(title: Int, body: Int, confirm: Int, onConfirm: () -> Unit, onDismiss: () -> Unit) = AlertDialog(
-    onDismissRequest = onDismiss,
-    title = { Text(stringResource(title)) },
-    text = { Text(stringResource(body)) },
-    confirmButton = {
-        // Dismiss first, so a confirm that opens the next dialog (delete everything) keeps it open.
-        TextButton(onClick = { onDismiss(); onConfirm() }) {
-            Text(stringResource(confirm), color = GiveawayTheme.colors.danger)
-        }
-    },
-    dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.settings_cancel)) } },
-)
+private fun Confirm(title: Int, body: Int, confirm: Int, onConfirm: () -> Unit, onDismiss: () -> Unit) =
+    Confirm(stringResource(title), stringResource(body), confirm, onConfirm, onDismiss)
+
+@Composable
+private fun Confirm(title: String, body: String, confirm: Int, onConfirm: () -> Unit, onDismiss: () -> Unit) =
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(title) },
+        text = { Text(body) },
+        confirmButton = {
+            // Dismiss first, so a confirm that opens the next dialog (delete everything) keeps it open.
+            TextButton(onClick = { onDismiss(); onConfirm() }) {
+                Text(stringResource(confirm), color = GiveawayTheme.colors.danger)
+            }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.settings_cancel)) } },
+    )
 
 @Composable
 private fun <T> Choice(

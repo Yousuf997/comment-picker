@@ -157,4 +157,10 @@
     </plurals>
     <string name="certificate_make_confirm">Make certificate</string>
     <string name="certificate_make_cancel">Not yet</string>
+    <!-- Redraw (plan A30) -->
+    <string name="redraw_button">Redraw</string>
+    <string name="redraw_title">Redraw the winners?</string>
+    <string name="redraw_body">The current winners and certificate are deleted, and the draw starts again with a new draw code. Add the new code to your caption if you want the certificate to show it.</string>
+    <string name="redraw_confirm">Redraw</string>
+    <string name="redraw_cancel">Cancel</string>
 </resources>

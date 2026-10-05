@@ -10,6 +10,7 @@ import androidx.test.core.app.ApplicationProvider
 import app.giveaway.core.data.account.AccountRepository
 import app.giveaway.core.data.account.SignInState
 import app.giveaway.core.data.cleanup.EverythingWiper
+import app.giveaway.core.data.cleanup.GiveawayRemoval
 import app.giveaway.core.data.db.AppLockMethod
 import app.giveaway.core.data.db.SettingsEntity
 import app.giveaway.core.data.settings.SettingsRepository
@@ -102,7 +103,17 @@ class SettingsTest {
     private var wiped = 0
     private val wiper = EverythingWiper { wiped++ }
 
-    private fun viewModel() = SettingsViewModel(settingsRepo, accounts, { pins }, { languages += it }, { wiper })
+    private val giveawayCount = MutableStateFlow(0)
+    private val removal = object : GiveawayRemoval {
+        override fun observeCount(): Flow<Int> = giveawayCount
+
+        override suspend fun delete(giveawayId: Long) = Unit
+
+        override suspend fun deleteAll(): Int = giveawayCount.value.also { giveawayCount.value = 0 }
+    }
+
+    private fun viewModel() =
+        SettingsViewModel(settingsRepo, accounts, { pins }, { languages += it }, { wiper }, removal)
 
     private val noActions = SettingsActions({}, {}, {}, {}, {}, {}, {})
 
@@ -166,6 +177,21 @@ class SettingsTest {
         compose.waitForIdle()
         assertEquals(1, wiped)
         assertEquals(1, restarts)
+    }
+
+    @Test
+    fun deleteAllGiveawaysStatesTheCountThenDeletes() = runTest {
+        giveawayCount.value = 3
+        show(viewModel())
+        text(R.string.settings_delete_giveaways).performScrollTo().performClick()
+        val body = app.resources.getQuantityString(R.plurals.settings_delete_giveaways_body, 3, 3)
+        compose.onNodeWithText(body).assertExists()
+        text(R.string.settings_delete_giveaways_confirm).performClick()
+        compose.waitForIdle()
+        assertEquals(0, giveawayCount.value)
+        // Nothing left to delete: the row goes.
+        text(R.string.settings_delete_giveaways).assertDoesNotExist()
+        assertEquals(0, wiped)
     }
 
     @Test

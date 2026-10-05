@@ -3,6 +3,7 @@ package app.giveaway.feature.home
 import android.app.Application
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -61,6 +62,20 @@ class HomeScreenTest {
     private fun text(id: Int) = compose.onNodeWithText(app.getString(id))
 
     private fun show(state: HomeUiState) = compose.setContent { GiveawayTheme { HomeScreen(state, actions) } }
+
+    @Test
+    fun deletingAGiveawayAsksFirst() {
+        val deleted = mutableListOf<Long>()
+        compose.setContent { GiveawayTheme { HomeScreen(populated, actions, onDelete = { deleted += it }) } }
+        compose.onNodeWithContentDescription(app.getString(R.string.home_more, "Summer drop 2")).performClick()
+        text(R.string.home_delete).performClick()
+        compose.onNodeWithText(app.getString(R.string.home_delete_body, "Summer drop 2")).assertExists()
+        assertEquals(emptyList<Long>(), deleted)
+        compose.onNodeWithTag("home:delete_confirm").performClick()
+        assertEquals(listOf(2L), deleted)
+        // Opening the menu doesn't open the giveaway.
+        assertEquals(emptyList<String>(), calls)
+    }
 
     @Test
     fun emptyStateInvitesTheFirstGiveaway() {

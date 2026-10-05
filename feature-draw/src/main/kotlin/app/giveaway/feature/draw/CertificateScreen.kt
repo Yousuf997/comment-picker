@@ -22,8 +22,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -45,7 +47,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-internal fun CertificateScreen(onDone: () -> Unit, viewModel: CertificateViewModel = hiltViewModel()) {
+internal fun CertificateScreen(
+    onDone: () -> Unit,
+    onRedraw: () -> Unit,
+    viewModel: CertificateViewModel = hiltViewModel(),
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val files by viewModel.files.collectAsStateWithLifecycle()
     val failed by viewModel.failed.collectAsStateWithLifecycle()
@@ -65,9 +71,20 @@ internal fun CertificateScreen(onDone: () -> Unit, viewModel: CertificateViewMod
     BackHandler(onBack = onDone)
     val snackbar = remember { SnackbarHostState() }
     CertificateMessages(viewModel, snackbar)
+    var askingRedraw by remember { mutableStateOf(false) }
     val actions = rememberCertificateActions(viewModel, files, data?.record?.title, snackbar, onDone, make)
+        .copy(onRedraw = { askingRedraw = true })
     Box {
         CertificateScreen(state, content, files != null, failed, video != null, actions)
+        if (askingRedraw) {
+            RedrawDialog(
+                onConfirm = {
+                    askingRedraw = false
+                    onRedraw()
+                },
+                onDismiss = { askingRedraw = false },
+            )
+        }
         SnackbarHost(snackbar, modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp))
     }
 }
@@ -79,6 +96,7 @@ internal data class CertificateActions(
     val onExportList: () -> Unit,
     val onRetry: () -> Unit,
     val onDone: () -> Unit,
+    val onRedraw: () -> Unit = {},
 )
 
 /** Share to Story, Save PDF, Save reveal video and Export entry list (spec: S15 actions). */
@@ -192,7 +210,15 @@ internal fun CertificateScreen(
                 onAction = actions.onRetry,
             )
         }
-        if (state is CertificateState.Ready) CertificateButtons(ready, hasVideo, actions)
+        if (state is CertificateState.Ready) {
+            CertificateButtons(ready, hasVideo, actions)
+            // Replaces the result with a new draw (plan A30).
+            SecondaryButton(
+                text = stringResource(R.string.redraw_button),
+                onClick = actions.onRedraw,
+                modifier = Modifier.fillMaxWidth().testTag("certificate:redraw"),
+            )
+        }
         SecondaryButton(
             text = stringResource(R.string.certificate_done),
             onClick = actions.onDone,

@@ -181,10 +181,16 @@ private fun NavGraphBuilder.draw(navController: NavHostController) {
         navController.navigate(WinnersRoute(id)) { popUpTo<DrawingRoute> { inclusive = true } }
     })
     // Making the certificate archives the giveaway, so S14 leaves the back stack (plan A28).
-    winnersScreen(onCreateCertificate = { id ->
-        navController.navigate(CertificateRoute(id)) { popUpTo<WinnersRoute> { inclusive = true } }
-    })
-    certificateScreen(onDone = { navController.backToHome() })
+    winnersScreen(
+        onCreateCertificate = { id ->
+            navController.navigate(CertificateRoute(id)) { popUpTo<WinnersRoute> { inclusive = true } }
+        },
+        onRedrawn = { id -> navController.openStep(id, WizardProgress.DRAW) },
+    )
+    certificateScreen(
+        onDone = { navController.backToHome() },
+        onRedrawn = { id -> navController.openStep(id, WizardProgress.DRAW) },
+    )
 }
 
 /**
