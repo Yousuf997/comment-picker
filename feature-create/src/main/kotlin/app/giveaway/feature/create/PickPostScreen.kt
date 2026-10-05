@@ -57,6 +57,8 @@ internal fun PickPostScreen(
     onFilter: (MediaFilter) -> Unit,
     onSelect: (IgMedia) -> Unit,
     onContinue: (IgMedia) -> Unit,
+    /** The giveaway's title when changing its post (plan A32); "New giveaway" otherwise. */
+    title: String? = null,
 ) {
     Column(
         modifier = Modifier
@@ -67,7 +69,7 @@ internal fun PickPostScreen(
             .testTag("screen:S6"),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        WizardHeader(title = stringResource(R.string.wizard_new_giveaway), step = 1, onBack = onBack)
+        WizardHeader(title = title ?: stringResource(R.string.wizard_new_giveaway), step = 1, onBack = onBack)
         Text(
             stringResource(R.string.pick_post_title),
             style = GiveawayTheme.typography.display,

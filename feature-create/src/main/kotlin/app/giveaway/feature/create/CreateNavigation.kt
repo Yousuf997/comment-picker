@@ -51,6 +51,14 @@ data class SetRulesRoute(
     )
 }
 
+/** S6 for an existing giveaway: change its post at any stage (plan A32). */
+@Serializable
+data class ChangePostRoute(val giveawayId: Long)
+
+/** S7 for an existing giveaway: edit its rules at any stage (plan A31). */
+@Serializable
+data class EditRulesRoute(val giveawayId: Long)
+
 /** S8 Lock in the draw (wizard step 3). */
 @Serializable
 data class LockInDrawRoute(val giveawayId: Long)
@@ -86,5 +94,21 @@ fun NavGraphBuilder.reviewEntriesScreen(onBack: () -> Unit, onContinueToDraw: (g
     composable<ReviewEntriesRoute> { entry ->
         val giveawayId = entry.toRoute<ReviewEntriesRoute>().giveawayId
         ReviewEntriesScreen(onBack = onBack, onContinueToDraw = { onContinueToDraw(giveawayId) })
+    }
+}
+
+/** [onChanged] runs once the new post is saved (or the same post was picked again). */
+fun NavGraphBuilder.changePostScreen(onBack: () -> Unit, onChanged: (giveawayId: Long) -> Unit) {
+    composable<ChangePostRoute> { entry ->
+        val giveawayId = entry.toRoute<ChangePostRoute>().giveawayId
+        ChangePostScreen(onBack = onBack, onChanged = { onChanged(giveawayId) })
+    }
+}
+
+/** [onSaved] gets the step to open next (see [app.giveaway.core.data.giveaway.WizardProgress]). */
+fun NavGraphBuilder.editRulesScreen(onBack: () -> Unit, onSaved: (giveawayId: Long, nextStep: Int) -> Unit) {
+    composable<EditRulesRoute> { entry ->
+        val giveawayId = entry.toRoute<EditRulesRoute>().giveawayId
+        EditRulesScreen(onBack = onBack, onSaved = { step -> onSaved(giveawayId, step) })
     }
 }

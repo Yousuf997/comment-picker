@@ -141,4 +141,14 @@
     <string name="review_cannot_include">This rule can\'t be overridden, so nobody can be slipped in.</string>
     <!-- %1$s: the giveaway title. -->
     <string name="review_export_file">%1$s entries.txt</string>
+    <!-- Changing a giveaway after setup (plan A31, A32) -->
+    <string name="change_post_confirm_title">Change the post?</string>
+    <string name="change_post_confirm_body">The comments, entries and any winners of the current post will be deleted, and the comments are imported again from the new post.</string>
+    <string name="change_post_confirm">Change post</string>
+    <string name="edit_rules_save">Save rules</string>
+    <string name="clear_winners_title">Clear the winners?</string>
+    <string name="clear_winners_rules_body">Changing the rules after the draw clears the current winners. You\'ll draw again.</string>
+    <string name="clear_winners_entries_body">Changing the entries after the draw clears the current winners. You\'ll draw again.</string>
+    <string name="clear_winners_confirm">Clear winners</string>
+    <string name="dialog_cancel">Cancel</string>
 </resources>

@@ -4,4 +4,13 @@
     <string name="stepper_increase">زيادة %1$s</string>
     <string name="navigate_back">رجوع</string>
     <string name="wizard_step">الخطوة %1$d من %2$d</string>
+    <string name="wizard_step_label">الخطوة %1$d من %2$d: %3$s</string>
+    <string name="wizard_step_current">الخطوة الحالية</string>
+    <string name="wizard_step_unavailable">غير متاحة بعد</string>
+    <string name="wizard_step_post">المنشور</string>
+    <string name="wizard_step_rules">الشروط</string>
+    <string name="wizard_step_code">رمز السحب</string>
+    <string name="wizard_step_import">الاستيراد</string>
+    <string name="wizard_step_review">المراجعة</string>
+    <string name="wizard_step_draw">السحب</string>
 </resources>

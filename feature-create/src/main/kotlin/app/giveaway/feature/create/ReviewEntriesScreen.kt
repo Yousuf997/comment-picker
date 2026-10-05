@@ -96,6 +96,13 @@ internal fun ReviewEntriesScreen(
             onContinue = onContinueToDraw,
         ),
     )
+    if (viewModel.confirmClear.collectAsStateWithLifecycle().value) {
+        ClearWinnersDialog(
+            body = stringResource(R.string.clear_winners_entries_body),
+            onConfirm = viewModel::confirmClearWinners,
+            onDismiss = viewModel::keepWinners,
+        )
+    }
 }
 
 internal data class ReviewState(

@@ -69,6 +69,9 @@ internal fun SetRulesScreen(
     onBack: () -> Unit,
     onFormChange: ((RulesForm) -> RulesForm) -> Unit,
     onContinue: () -> Unit,
+    /** The giveaway's title and a "Save" label when editing its rules (plan A31). */
+    title: String? = null,
+    continueLabel: String? = null,
 ) {
     val form = state.form
     val errors = if (state.showErrors) state.errors else emptySet()
@@ -83,7 +86,7 @@ internal fun SetRulesScreen(
             .testTag("screen:S7"),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        WizardHeader(title = stringResource(R.string.wizard_new_giveaway), step = 2, onBack = onBack)
+        WizardHeader(title = title ?: stringResource(R.string.wizard_new_giveaway), step = 2, onBack = onBack)
         Text(
             stringResource(R.string.set_rules_title),
             style = GiveawayTheme.typography.display,
@@ -101,7 +104,7 @@ internal fun SetRulesScreen(
             tone = NoticeTone.Info,
         )
         PrimaryButton(
-            text = stringResource(R.string.wizard_continue),
+            text = continueLabel ?: stringResource(R.string.wizard_continue),
             onClick = onContinue,
             enabled = !state.saving,
             modifier = Modifier.fillMaxWidth(),
