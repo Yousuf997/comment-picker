@@ -87,7 +87,7 @@ internal fun ImportCommentsScreen(
             .testTag("screen:S9"),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        WizardHeader(title = state.title ?: stringResource(R.string.wizard_new_giveaway), step = 4, onBack = onBack)
+        WizardHeader(title = state.title ?: stringResource(R.string.wizard_new_giveaway), step = 3, onBack = onBack)
         Text(
             stringResource(R.string.import_title),
             style = GiveawayTheme.typography.display,

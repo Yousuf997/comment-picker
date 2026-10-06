@@ -2,8 +2,6 @@
 <resources>
     <string name="pick_post_title">Pick the giveaway post</string>
     <string name="set_rules_title">Set the rules</string>
-    <string name="lock_in_title">Lock in the draw</string>
-    <string name="lock_in_done">Done, remind me at the deadline</string>
     <string name="import_title">Import comments</string>
     <string name="import_review">Review entries</string>
     <string name="review_title">Review entries</string>
@@ -55,19 +53,7 @@
     <string name="rules_picker_next">Next</string>
     <string name="rules_picker_done">Done</string>
     <string name="rules_picker_cancel">Cancel</string>
-    <string name="lock_in_explanation">Post this code in your caption before entries close. It stands for a secret that only this phone knows. The certificate reveals the secret, so anyone who saw the code can check that the winners came from it.</string>
-    <string name="lock_in_code_label">Your draw code</string>
-    <string name="lock_in_sha256" translatable="false">SHA-256</string>
-    <string name="lock_in_copy">Copy code</string>
-    <string name="lock_in_copied">Copied</string>
-    <string name="lock_in_step_copy">Copy the code.</string>
-    <string name="lock_in_step_paste">Paste it at the end of your post\'s caption on Instagram.</string>
     <!-- %1$s: when entries close, e.g. "Oct 8, 2026, 10:00 AM". -->
-    <string name="lock_in_step_return">Come back after entries close on %1$s to import the comments.</string>
-    <string name="lock_in_confirm">I\'ve added the code to my caption</string>
-    <string name="lock_in_secret_note">The secret behind this code stays encrypted on this phone until the draw.</string>
-    <string name="lock_in_deadline_passed_title">Entries have already closed</string>
-    <string name="lock_in_deadline_passed_body">The code has to be in the caption before entries close. Go back and pick a later closing time.</string>
     <!-- %1$s comments imported so far of %2$s the post reports, e.g. "1,850 of 2,400 comments". Quantity follows %2$s. -->
     <plurals name="import_count">
         <item quantity="one">%1$s of %2$s comment</item>
@@ -151,4 +137,6 @@
     <string name="clear_winners_entries_body">Changing the entries after the draw clears the current winners. You\'ll draw again.</string>
     <string name="clear_winners_confirm">Clear winners</string>
     <string name="dialog_cancel">Cancel</string>
+    <!-- S7's last button opens the giveaway (plan A35) -->
+    <string name="set_rules_done">Done, remind me at the deadline</string>
 </resources>

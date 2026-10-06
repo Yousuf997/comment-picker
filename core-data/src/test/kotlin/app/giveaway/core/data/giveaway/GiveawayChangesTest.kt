@@ -20,6 +20,7 @@ import app.giveaway.core.data.draw.WinnerRepository
 import app.giveaway.core.data.importing.EntryBuilder
 import app.giveaway.core.data.importing.ImportWork
 import app.giveaway.core.data.settings.DefaultSettingsRepository
+import app.giveaway.core.data.work.DeadlineScheduler
 import app.giveaway.core.instagram.api.IgMedia
 import app.giveaway.core.instagram.api.MediaKind as IgMediaKind
 import app.giveaway.core.security.DeviceSigner
@@ -100,7 +101,9 @@ class GiveawayChangesTest {
     fun setUp() = runTest {
         db = Room.inMemoryDatabaseBuilder(context, GiveawayDatabase::class.java).allowMainThreadQueries().build()
         giveaways = DefaultGiveawayRepository(db, DefaultSettingsRepository(db.settingsDao()), clock)
-        editor = GiveawayEditor(db, giveaways, EntryBuilder(db), { gid, at -> scheduled += gid to at }, work)
+        val schedule = DeadlineScheduler { gid, at -> scheduled += gid to at }
+        val opener = DefaultGiveawayOpener(db, giveaways, DrawCommitments(giveaways, vault) { seed.copyOf() }, schedule)
+        editor = GiveawayEditor(db, giveaways, EntryBuilder(db), schedule, work, opener)
         val post = IgMedia("m1", IgMediaKind.IMAGE, false, null, null, closesAt, 0, null)
         id = giveaways.createDraft(post, "Win a tote bag!", "shop", rules)
         giveaways.saveCommitment(id, Commit.commitHash(seed), vault.seal(id, seed))
@@ -279,10 +282,10 @@ class GiveawayChangesTest {
     @Test
     fun theStepBarFollowsTheStatus() = runTest {
         val progress = WizardProgress(db)
-        assertEquals(setOf(1, 2, 3, 4), progress.steps(id).first())
+        assertEquals(setOf(1, 2, 3), progress.steps(id).first())
         reviewed()
-        assertEquals((1..6).toSet(), progress.steps(id).first())
-        assertEquals(setOf(1, 2, 3), WizardProgress.reachable(GiveawayStatus.DRAFT))
+        assertEquals((1..5).toSet(), progress.steps(id).first())
+        assertEquals(setOf(1, 2), WizardProgress.reachable(GiveawayStatus.DRAFT))
         assertEquals(emptySet<Int>(), progress.steps(-1).first())
     }
 }

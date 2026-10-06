@@ -44,11 +44,11 @@ class WizardAndSheetBehaviorTest {
         }
         compose.onNodeWithContentDescription("Back").performClick()
         assertEquals(1, backs)
-        compose.onNodeWithContentDescription("Step 2 of 6", useUnmergedTree = true)
+        compose.onNodeWithContentDescription("Step 2 of 5", useUnmergedTree = true)
             .assert(
                 SemanticsMatcher.expectValue(
                     SemanticsProperties.ProgressBarRangeInfo,
-                    ProgressBarRangeInfo(2f, 0f..6f, steps = 5),
+                    ProgressBarRangeInfo(2f, 0f..5f, steps = 4),
                 ),
             )
     }
@@ -63,7 +63,7 @@ class WizardAndSheetBehaviorTest {
                 }
             }
         }
-        compose.onNodeWithTag("wizard:step:2").assertContentDescriptionEquals("Step 2 of 6: Rules").performClick()
+        compose.onNodeWithTag("wizard:step:2").assertContentDescriptionEquals("Step 2 of 5: Rules").performClick()
         compose.onNodeWithTag("wizard:step:4").performClick()
         // The current step and steps not reached yet don't open.
         compose.onNodeWithTag("wizard:step:3").assertIsNotEnabled().assertIsSelected()
@@ -76,7 +76,7 @@ class WizardAndSheetBehaviorTest {
     @Test
     fun wizardHeaderRejectsStepsOutsideTheWizard() {
         assertThrows(IllegalArgumentException::class.java) {
-            compose.setContent { GiveawayTheme { WizardHeader(title = "x", step = 7, onBack = {}) } }
+            compose.setContent { GiveawayTheme { WizardHeader(title = "x", step = 6, onBack = {}) } }
         }
     }
 

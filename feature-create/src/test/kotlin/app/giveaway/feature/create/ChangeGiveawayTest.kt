@@ -17,11 +17,13 @@ import app.giveaway.core.data.db.GiveawayDatabase
 import app.giveaway.core.data.db.GiveawayStatus
 import app.giveaway.core.data.giveaway.DefaultGiveawayRepository
 import app.giveaway.core.data.giveaway.GiveawayEditor
+import app.giveaway.core.data.giveaway.GiveawayOpener
 import app.giveaway.core.data.giveaway.WizardProgress
 import app.giveaway.core.data.importing.EntryBuilder
 import app.giveaway.core.data.importing.ImportWork
 import app.giveaway.core.data.settings.DefaultSettingsRepository
 import app.giveaway.core.designsystem.GiveawayTheme
+import app.giveaway.core.instagram.api.IgMedia
 import app.giveaway.draw.Rules
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -77,12 +79,20 @@ class ChangeGiveawayTest {
         }
     }
 
+    // Giveaways here are opened already; opening a draft is covered in core-data.
+    private val opener = object : GiveawayOpener {
+        override suspend fun create(media: IgMedia, title: String, ownerUsername: String, rules: Rules): Long =
+            error("S7 isn't under test here")
+
+        override suspend fun open(giveawayId: Long) = Unit
+    }
+
     @Before
     fun setUp() {
         Dispatchers.setMain(UnconfinedTestDispatcher())
         db = Room.inMemoryDatabaseBuilder(app, GiveawayDatabase::class.java).allowMainThreadQueries().build()
         giveaways = DefaultGiveawayRepository(db, DefaultSettingsRepository(db.settingsDao()), clock)
-        editor = GiveawayEditor(db, giveaways, EntryBuilder(db), { gid, at -> scheduled += gid to at }, work)
+        editor = GiveawayEditor(db, giveaways, EntryBuilder(db), { gid, at -> scheduled += gid to at }, work, opener)
         id = runBlocking {
             val draft = giveaways.createDraft(media("p1"), "Win a tote bag!", "shop", rules)
             giveaways.saveCommitment(draft, "a".repeat(64), ByteArray(48))
@@ -148,7 +158,7 @@ class ChangeGiveawayTest {
     }
 
     @Test
-    fun savingANewDeadlineMovesTheCheckAndReturnsToTheCode() {
+    fun savingANewDeadlineMovesTheReminderAndOpensTheImport() {
         val vm = editRules()
         val saved = mutableListOf<Int>()
         showEditRules(vm, saved)
@@ -156,7 +166,7 @@ class ChangeGiveawayTest {
         vm.onFormChange { it.copy(closesAt = later, winners = 3) }
         save()
         await { saved.isNotEmpty() }
-        assertEquals(listOf(WizardProgress.CODE), saved)
+        assertEquals(listOf(WizardProgress.IMPORT), saved)
         assertEquals(3, runBlocking { giveaways.rules(id)!!.winnersCount })
         assertEquals(listOf(id to later), scheduled)
     }

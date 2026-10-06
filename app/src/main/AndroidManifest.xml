@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- The deadline reminder (S8). Android 13+ asks the user when they lock in a draw. -->
+    <!-- The deadline reminder. Android 13+ asks the user when they finish the rules (S7, plan A35). -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- Saving the draw video to the gallery needs this only on Android 8 and 9 (MediaStore covers 10+). -->
     <uses-permission

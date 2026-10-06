@@ -22,7 +22,7 @@ import javax.inject.Inject
 enum class CardStatus { DRAFT, WAITING, READY_TO_IMPORT, IMPORTING, REVIEW, DRAWN, COMPLETED }
 
 /** Where tapping a card goes, by status (spec: S4 actions). */
-enum class GiveawayDestination { LOCK_IN, IMPORT, REVIEW, WINNERS, CERTIFICATE }
+enum class GiveawayDestination { RULES, IMPORT, REVIEW, WINNERS, CERTIFICATE }
 
 data class GiveawayCard(
     val id: Long,
@@ -81,10 +81,11 @@ class HomeViewModel @Inject constructor(
 
     private fun GiveawaySummary.toCard(now: Instant): GiveawayCard {
         val (status, destination) = when (giveaway.status) {
-            GiveawayStatus.DRAFT -> CardStatus.DRAFT to GiveawayDestination.LOCK_IN
+            // Only a draft left by an older version: saving its rules opens it (plan A35).
+            GiveawayStatus.DRAFT -> CardStatus.DRAFT to GiveawayDestination.RULES
             GiveawayStatus.COMMITTED ->
                 if (now.isBefore(giveaway.closesAt)) {
-                    CardStatus.WAITING to GiveawayDestination.LOCK_IN
+                    CardStatus.WAITING to GiveawayDestination.IMPORT
                 } else {
                     CardStatus.READY_TO_IMPORT to GiveawayDestination.IMPORT
                 }

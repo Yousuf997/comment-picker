@@ -53,7 +53,7 @@ class HomeScreenTest {
         loading = false,
         username = "shop",
         inProgress = listOf(
-            card(1, CardStatus.WAITING, GiveawayDestination.LOCK_IN),
+            card(1, CardStatus.WAITING, GiveawayDestination.IMPORT),
             card(2, CardStatus.REVIEW, GiveawayDestination.REVIEW, entries = 1840, comments = 2400),
         ),
         completed = listOf(card(3, CardStatus.COMPLETED, GiveawayDestination.CERTIFICATE, entries = 312)),

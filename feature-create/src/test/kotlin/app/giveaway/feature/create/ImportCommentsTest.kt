@@ -13,6 +13,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.testing.invoke
 import androidx.room.Room
+import androidx.room.withTransaction
 import androidx.test.core.app.ApplicationProvider
 import app.giveaway.core.data.db.GiveawayDatabase
 import app.giveaway.core.data.db.GiveawayStatus
@@ -99,6 +100,8 @@ class ImportCommentsTest {
     fun tearDown() {
         // Stop the screen's flows first, or Room re-queries a closed database.
         if (::vm.isInitialized) vm.viewModelScope.cancel()
+        // Accepting a partial import writes in a transaction the await can outrun; let it end before closing.
+        runBlocking { db.withTransaction {} }
         db.close()
         Dispatchers.resetMain()
         TimeZone.setDefault(systemZone)
