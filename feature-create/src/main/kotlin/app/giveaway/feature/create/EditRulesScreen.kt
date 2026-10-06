@@ -114,7 +114,7 @@ class EditRulesViewModel @Inject constructor(
         cleared -> WizardProgress.DRAW
         status == GiveawayStatus.REVIEW -> WizardProgress.REVIEW
         status == GiveawayStatus.IMPORTING -> WizardProgress.IMPORT
-        else -> WizardProgress.CODE
+        else -> WizardProgress.IMPORT
     }
 
     /** Only a new deadline for entries that are still open has to be in the future. */

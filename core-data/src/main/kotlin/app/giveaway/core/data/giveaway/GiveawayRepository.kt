@@ -13,7 +13,6 @@ import app.giveaway.draw.Rules
 import kotlinx.coroutines.flow.Flow
 import java.time.Clock
 import java.time.Duration
-import java.time.Instant
 import javax.inject.Inject
 
 /** Giveaways and their rules, moving only along [GiveawayStateMachine]. */
@@ -22,7 +21,7 @@ interface GiveawayRepository {
 
     suspend fun get(id: Long): GiveawayEntity?
 
-    /** Creates a DRAFT for the chosen post with its rules (end of S7), in one transaction. */
+    /** Creates a DRAFT for the chosen post with its rules, in one transaction; [GiveawayOpener] then opens it. */
     suspend fun createDraft(media: IgMedia, title: String, ownerUsername: String, rules: Rules): Long
 
     /**
@@ -36,16 +35,13 @@ interface GiveawayRepository {
     suspend fun commitment(id: Long): CommitmentEntity?
 
     /**
-     * Stores the sealed seed and its hash when S8 first shows the code, while the giveaway is still a DRAFT, so
-     * going back to S7 keeps the same code. Throws [IllegalStateException] if it isn't a draft or already has one.
+     * Stores the sealed seed and its hash while the giveaway is still a DRAFT (plan A35). Throws
+     * [IllegalStateException] if it isn't a draft or already has one.
      */
     suspend fun saveCommitment(id: Long, commitHash: String, encryptedSeed: ByteArray)
 
-    /** S8 "Done": moves DRAFT -> COMMITTED. Needs a stored commitment. */
+    /** Moves DRAFT -> COMMITTED, opening the giveaway for entries. Needs a stored commitment. */
     suspend fun commit(id: Long)
-
-    /** The deadline check found the code in the caption (plan A15). */
-    suspend fun markCaptionVerified(id: Long, at: Instant)
 
     /** Moves along the state machine; throws [IllegalStateException] for a move the spec doesn't allow. */
     suspend fun transition(id: Long, to: GiveawayStatus)
@@ -106,11 +102,9 @@ class DefaultGiveawayRepository @Inject constructor(
     override suspend fun commit(id: Long) = db.withTransaction {
         val giveaway = requireGiveaway(id)
         GiveawayStateMachine.requireMove(giveaway.status, GiveawayStatus.COMMITTED)
-        checkNotNull(db.commitmentDao().get(id)) { "Show the draw code (S8) before committing" }
+        checkNotNull(db.commitmentDao().get(id)) { "Seal the seed before committing" }
         giveaways.updateStatus(id, GiveawayStatus.COMMITTED)
     }
-
-    override suspend fun markCaptionVerified(id: Long, at: Instant) = db.commitmentDao().setCaptionVerified(id, at)
 
     override suspend fun transition(id: Long, to: GiveawayStatus) {
         val autoDeleteDays = if (to == GiveawayStatus.ARCHIVED) settings.get().autoDeleteDays else null

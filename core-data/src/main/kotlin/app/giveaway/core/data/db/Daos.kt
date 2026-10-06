@@ -93,10 +93,7 @@ interface CommitmentDao {
     @Query("SELECT * FROM commitment WHERE giveawayId = :giveawayId")
     suspend fun get(giveawayId: Long): CommitmentEntity?
 
-    @Query("UPDATE commitment SET captionVerifiedAt = :at WHERE giveawayId = :giveawayId")
-    suspend fun setCaptionVerified(giveawayId: Long, at: Instant?)
-
-    /** A redraw's new seed (plan A30): the old code no longer matches, so the caption check starts over. */
+    /** A redraw's new seed (plan A30), so the next draw picks again. */
     @Query(
         "UPDATE commitment SET encryptedSeed = :encryptedSeed, commitHash = :commitHash, createdAt = :at, " +
             "captionVerifiedAt = NULL WHERE giveawayId = :giveawayId",

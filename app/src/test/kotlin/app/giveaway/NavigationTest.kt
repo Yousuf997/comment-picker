@@ -27,7 +27,6 @@ import androidx.test.core.app.ApplicationProvider
 import app.giveaway.core.designsystem.GiveawayTheme
 import app.giveaway.di.FakeInstagramModule
 import app.giveaway.feature.create.ImportCommentsRoute
-import app.giveaway.feature.create.LockInDrawRoute
 import app.giveaway.feature.create.PickPostRoute
 import app.giveaway.feature.create.ReviewEntriesRoute
 import app.giveaway.feature.create.SetRulesRoute
@@ -99,7 +98,6 @@ class NavigationTest {
             SettingsRoute to "S5",
             PickPostRoute to "S6",
             SetRulesRoute(mediaId = "m1") to "S7",
-            LockInDrawRoute(giveawayId = 1) to "S8",
             ImportCommentsRoute(giveawayId = 1) to "S9",
             ReviewEntriesRoute(giveawayId = 1) to "S10",
             DrawRoute(giveawayId = 1) to "S11",
@@ -136,8 +134,12 @@ class NavigationTest {
         runCatching { compose.onNodeWithTag(tag).assertIsEnabled() }.isSuccess
     }
 
-    /** Home → S6 → S7 → S8: a draft exists once S8 opens. */
-    private fun openLockInForANewDraft() {
+    private fun awaitText(text: String) = compose.waitUntil(WAIT_MS) {
+        compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty()
+    }
+
+    /** Home → S6 → S7 → Done: the giveaway is open and back on Home (plan A35). */
+    private fun createAGiveaway() {
         launch { GiveawayNavHost(navController, startDestination = HomeRoute) }
         tap(HomeR.string.home_new_giveaway)
         assertScreen("S6")
@@ -145,38 +147,37 @@ class NavigationTest {
         compose.onNodeWithTag("pick_post:tile:${FakeInstagramModule.POST.id}").performClick()
         tap(CreateR.string.wizard_continue)
         assertScreen("S7")
-        // S7 saves the draft through Room, which is asynchronous.
-        compose.onNodeWithText(app.getString(CreateR.string.wizard_continue)).performScrollTo().performClick()
-        awaitScreen("S8")
+        // Granting notifications skips the Android 13 prompt. Done opens the giveaway through Room, asynchronously.
+        shadowOf(app).grantPermissions(Manifest.permission.POST_NOTIFICATIONS)
+        compose.onNodeWithText(app.getString(CreateR.string.set_rules_done)).performScrollTo().performClick()
+        awaitScreen("S4")
     }
 
     @Test
-    fun creationWizardReturnsHomeAfterLockingInTheDraw() {
-        openLockInForANewDraft()
-        // Done needs the box ticked and the code loaded; granting notifications skips the Android 13 prompt.
-        shadowOf(app).grantPermissions(Manifest.permission.POST_NOTIFICATIONS)
-        compose.onNodeWithText(app.getString(CreateR.string.lock_in_confirm)).performScrollTo().performClick()
-        val done = compose.onNodeWithText(app.getString(CreateR.string.lock_in_done))
-        compose.waitUntil(WAIT_MS) { runCatching { done.assertIsEnabled() }.isSuccess }
-        done.performScrollTo().performClick()
-        awaitScreen("S4")
+    fun creationWizardReturnsHomeWhenTheRulesAreDone() {
+        createAGiveaway()
         assertFalse(navController.previousBackStackEntry != null)
+        awaitText(app.getString(HomeR.string.status_waiting))
     }
 
     @Test
     fun theStepBarMovesBetweenTheSetupSteps() {
-        openLockInForANewDraft()
-        // A draft has a post, rules and a code; the import isn't reachable before the code is locked in.
-        val importStep = compose.onNodeWithTag("wizard:step:4")
+        createAGiveaway()
+        // A waiting giveaway opens S9; review isn't reachable before the comments are in.
+        val title = checkNotNull(FakeInstagramModule.POST.caption)
+        awaitText(title)
+        compose.onNodeWithText(title).performScrollTo().performClick()
+        awaitScreen("S9")
         awaitEnabled("wizard:step:2")
-        importStep.assertIsNotEnabled()
+        compose.onNodeWithTag("wizard:step:4").assertIsNotEnabled()
         compose.onNodeWithTag("wizard:step:2").performClick()
         awaitScreen("S7")
         awaitEnabled("wizard:step:1")
         compose.onNodeWithTag("wizard:step:1").performClick()
         awaitScreen("S6")
+        awaitEnabled("wizard:step:3")
         compose.onNodeWithTag("wizard:step:3").performClick()
-        awaitScreen("S8")
+        awaitScreen("S9")
         // Each step replaces the last, so Back returns Home.
         assertEquals(true, navController.previousBackStackEntry?.destination?.hasRoute<HomeRoute>())
     }

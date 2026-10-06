@@ -9,7 +9,6 @@
     <string name="wizard_step_unavailable">غير متاحة بعد</string>
     <string name="wizard_step_post">المنشور</string>
     <string name="wizard_step_rules">الشروط</string>
-    <string name="wizard_step_code">رمز السحب</string>
     <string name="wizard_step_import">الاستيراد</string>
     <string name="wizard_step_review">المراجعة</string>
     <string name="wizard_step_draw">السحب</string>

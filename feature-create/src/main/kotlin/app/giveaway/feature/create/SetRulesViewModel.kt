@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import app.giveaway.core.data.account.AccountRepository
-import app.giveaway.core.data.giveaway.GiveawayRepository
+import app.giveaway.core.data.giveaway.GiveawayOpener
 import app.giveaway.core.instagram.api.IgMedia
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -32,11 +32,11 @@ data class SetRulesUiState(
     val saving: Boolean = false,
 )
 
-/** S7 Set rules (wizard step 2): creates the DRAFT giveaway with its rules (plan C-12). */
+/** S7 Set rules (wizard step 2): Done opens the giveaway with its rules and sets the reminder (plans C-12, A35). */
 @HiltViewModel
 class SetRulesViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val giveaways: GiveawayRepository,
+    private val opener: GiveawayOpener,
     private val accounts: AccountRepository,
     private val clock: Clock,
 ) : ViewModel() {
@@ -48,15 +48,20 @@ class SetRulesViewModel @Inject constructor(
 
     private val savedChannel = Channel<Long>(Channel.BUFFERED)
 
-    /** The draft's ID once saved; S8 opens next. */
+    /** The new giveaway's ID once it's open; Home shows it next. */
     val saved: Flow<Long> = savedChannel.receiveAsFlow()
-
-    /** Set after the first save, so coming back from S8 and continuing again updates the same draft. */
-    private var draftId: Long? = null
 
     fun onFormChange(transform: (RulesForm) -> RulesForm) = uiState.update { current ->
         val form = transform(current.form)
         current.copy(form = form, errors = RulesValidation.validate(form, clock.instant()))
+    }
+
+    /** Checks the form and shows what's wrong; true when Done can go ahead (before asking for notifications). */
+    fun checkForm(): Boolean {
+        val current = uiState.value
+        val errors = RulesValidation.validate(current.form, clock.instant())
+        if (errors.isNotEmpty()) uiState.value = current.copy(errors = errors, showErrors = true)
+        return errors.isEmpty() && !current.saving
     }
 
     /** [fallbackTitle] names the giveaway when the post has no caption to take a title from. */
@@ -70,16 +75,13 @@ class SetRulesViewModel @Inject constructor(
         }
         uiState.value = current.copy(errors = emptySet(), saving = true)
         viewModelScope.launch {
-            val rules = current.form.toRules()
-            val id = draftId?.also { giveaways.saveRules(it, rules) }
-                ?: giveaways.createDraft(
-                    media = media,
-                    title = titleFrom(media.caption) ?: fallbackTitle,
-                    ownerUsername = accounts.observeUsername().first().orEmpty(),
-                    rules = rules,
-                )
-            draftId = id
-            uiState.update { it.copy(saving = false) }
+            val id = opener.create(
+                media = media,
+                title = titleFrom(media.caption) ?: fallbackTitle,
+                ownerUsername = accounts.observeUsername().first().orEmpty(),
+                rules = current.form.toRules(),
+            )
+            // Saving stays on: the screen is about to close, and a second tap mustn't open a second giveaway.
             savedChannel.send(id)
         }
     }

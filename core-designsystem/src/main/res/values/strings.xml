@@ -12,7 +12,6 @@
     <string name="wizard_step_unavailable">Not available yet</string>
     <string name="wizard_step_post">Post</string>
     <string name="wizard_step_rules">Rules</string>
-    <string name="wizard_step_code">Draw code</string>
     <string name="wizard_step_import">Import</string>
     <string name="wizard_step_review">Review</string>
     <string name="wizard_step_draw">Draw</string>

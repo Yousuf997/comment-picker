@@ -1,5 +1,10 @@
 package app.giveaway.feature.create
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -31,6 +37,7 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.giveaway.core.designsystem.GiveawayDimens
@@ -54,11 +61,27 @@ internal fun SetRulesScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(viewModel) { viewModel.saved.collect(onSaved) }
     val fallbackTitle = stringResource(R.string.wizard_new_giveaway)
+    // Done sets the deadline reminder, a notification: Android 13+ asks for it here, once the form is valid. Either
+    // answer continues (plan A35).
+    val context = LocalContext.current
+    val askNotifications = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
+        viewModel.onContinue(fallbackTitle)
+    }
     SetRulesScreen(
         state = state,
         onBack = onBack,
         onFormChange = viewModel::onFormChange,
-        onContinue = { viewModel.onContinue(fallbackTitle) },
+        onContinue = {
+            val mustAsk = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) !=
+                PackageManager.PERMISSION_GRANTED
+            when {
+                !viewModel.checkForm() -> Unit
+                mustAsk -> askNotifications.launch(Manifest.permission.POST_NOTIFICATIONS)
+                else -> viewModel.onContinue(fallbackTitle)
+            }
+        },
+        continueLabel = stringResource(R.string.set_rules_done),
     )
 }
 

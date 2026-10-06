@@ -10,7 +10,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import app.giveaway.core.designsystem.GiveawayTheme
 import app.giveaway.feature.create.ImportCommentsRoute
-import app.giveaway.feature.create.LockInDrawRoute
 import app.giveaway.feature.create.PickPostRoute
 import app.giveaway.feature.create.ReviewEntriesRoute
 import app.giveaway.feature.create.SetRulesRoute
@@ -63,7 +62,6 @@ class AccessibilityTest {
         RestoreRoute to "restore",
         PickPostRoute to "S6",
         SetRulesRoute(mediaId = "m1") to "S7",
-        LockInDrawRoute(giveawayId = 1) to "S8",
         ImportCommentsRoute(giveawayId = 1) to "S9",
         ReviewEntriesRoute(giveawayId = 1) to "S10",
         DrawRoute(giveawayId = 1) to "S11",

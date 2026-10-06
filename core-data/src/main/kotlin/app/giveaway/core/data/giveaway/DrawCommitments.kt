@@ -25,7 +25,10 @@ internal class KeystoreSeedVault @Inject constructor(private val keys: KeystoreK
     private fun associatedData(giveawayId: Long) = "giveaway.seed.v1:$giveawayId".toByteArray()
 }
 
-/** The commit step of the draw (spec: Verifiable draw algorithm, Commit). */
+/**
+ * The giveaway's draw seed (plan A35): made and sealed when the giveaway opens, with its SHA-256 kept as the commit
+ * hash the draw checks the seed against. Nothing is posted.
+ */
 class DrawCommitments(
     private val giveaways: GiveawayRepository,
     private val vault: SeedVault,
@@ -37,7 +40,7 @@ class DrawCommitments(
 
     /**
      * The giveaway's commit hash. The first call makes a 32-byte seed, seals it and stores it with its hash while the
-     * giveaway is a draft; later calls return the same hash, so the code the user pasted never changes.
+     * giveaway is a draft; later calls return the same hash.
      */
     suspend fun commitHashFor(giveawayId: Long): String {
         giveaways.commitment(giveawayId)?.let { return it.commitHash }

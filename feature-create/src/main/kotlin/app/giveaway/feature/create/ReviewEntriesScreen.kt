@@ -139,7 +139,7 @@ internal fun ReviewEntriesScreen(state: ReviewState, rows: LazyPagingItems<Entry
     ) {
         WizardHeader(
             title = state.title ?: stringResource(R.string.wizard_new_giveaway),
-            step = 5,
+            step = 4,
             onBack = actions.onBack,
         )
         Text(

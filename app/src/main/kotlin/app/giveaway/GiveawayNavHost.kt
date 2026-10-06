@@ -25,13 +25,11 @@ import app.giveaway.core.designsystem.component.WizardSteps
 import app.giveaway.feature.create.ChangePostRoute
 import app.giveaway.feature.create.EditRulesRoute
 import app.giveaway.feature.create.ImportCommentsRoute
-import app.giveaway.feature.create.LockInDrawRoute
 import app.giveaway.feature.create.PickPostRoute
 import app.giveaway.feature.create.ReviewEntriesRoute
 import app.giveaway.feature.create.changePostScreen
 import app.giveaway.feature.create.editRulesScreen
 import app.giveaway.feature.create.importCommentsScreen
-import app.giveaway.feature.create.lockInDrawScreen
 import app.giveaway.feature.create.pickPostScreen
 import app.giveaway.feature.create.reviewEntriesScreen
 import app.giveaway.feature.create.setRulesScreen
@@ -139,25 +137,25 @@ fun GiveawayNavHost(
 
 /** S6 to S10. */
 private fun NavGraphBuilder.creationWizard(navController: NavHostController) {
-    // Creation wizard. S8 returns to Home ("Waiting for deadline"); the giveaway resumes at S9 from its card.
+    // Creation wizard. S7's Done opens the giveaway and returns Home ("Waiting for deadline"); it resumes at S9 from
+    // its card (plan A35).
     pickPostScreen(
         onBack = { navController.popBackStack() },
         onPostPicked = { route -> navController.navigate(route) },
     )
     setRulesScreen(
         onBack = { navController.popBackStack() },
-        onRulesSaved = { id -> navController.navigate(LockInDrawRoute(id)) },
+        onRulesSaved = { navController.backToHome() },
     )
     // An existing giveaway's post and rules change from the step bar (plan A31, A32).
     changePostScreen(
         onBack = { navController.popBackStack() },
-        onChanged = { id -> navController.openStep(id, WizardProgress.CODE) },
+        onChanged = { id -> navController.openStep(id, WizardProgress.IMPORT) },
     )
     editRulesScreen(
         onBack = { navController.popBackStack() },
         onSaved = { id, step -> navController.openStep(id, step) },
     )
-    lockInDrawScreen(onBack = { navController.popBackStack() }, onDone = { navController.backToHome() })
     importCommentsScreen(
         onBack = { navController.popBackStack() },
         onReviewEntries = { id -> navController.navigate(ReviewEntriesRoute(id)) },
@@ -210,7 +208,6 @@ private fun NavHostController.openStep(giveawayId: Long, step: Int) {
     val route: Any = when (step) {
         WizardProgress.POST -> ChangePostRoute(giveawayId)
         WizardProgress.RULES -> EditRulesRoute(giveawayId)
-        WizardProgress.CODE -> LockInDrawRoute(giveawayId)
         WizardProgress.IMPORT -> ImportCommentsRoute(giveawayId)
         WizardProgress.REVIEW -> ReviewEntriesRoute(giveawayId)
         else -> DrawRoute(giveawayId)
@@ -225,7 +222,6 @@ private fun NavHostController.openStep(giveawayId: Long, step: Int) {
 private fun NavBackStackEntry.wizardGiveawayId(): Long? = when {
     destination.hasRoute<ChangePostRoute>() -> toRoute<ChangePostRoute>().giveawayId
     destination.hasRoute<EditRulesRoute>() -> toRoute<EditRulesRoute>().giveawayId
-    destination.hasRoute<LockInDrawRoute>() -> toRoute<LockInDrawRoute>().giveawayId
     destination.hasRoute<ImportCommentsRoute>() -> toRoute<ImportCommentsRoute>().giveawayId
     destination.hasRoute<ReviewEntriesRoute>() -> toRoute<ReviewEntriesRoute>().giveawayId
     destination.hasRoute<DrawRoute>() -> toRoute<DrawRoute>().giveawayId
@@ -255,7 +251,7 @@ private fun NavHostController.backToHome() = navigate(HomeRoute) {
 
 /** The screen a Home card opens, by the giveaway's status (spec: S4). */
 private fun GiveawayDestination.route(giveawayId: Long): Any = when (this) {
-    GiveawayDestination.LOCK_IN -> LockInDrawRoute(giveawayId)
+    GiveawayDestination.RULES -> EditRulesRoute(giveawayId)
     GiveawayDestination.IMPORT -> ImportCommentsRoute(giveawayId)
     GiveawayDestination.REVIEW -> ReviewEntriesRoute(giveawayId)
     GiveawayDestination.WINNERS -> WinnersRoute(giveawayId)

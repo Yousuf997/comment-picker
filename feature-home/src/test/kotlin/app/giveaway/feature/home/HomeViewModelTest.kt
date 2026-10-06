@@ -76,8 +76,8 @@ class HomeViewModelTest {
         val state = viewModel().state.first { !it.loading }
         assertEquals(
             listOf(
-                CardStatus.DRAFT to GiveawayDestination.LOCK_IN,
-                CardStatus.WAITING to GiveawayDestination.LOCK_IN,
+                CardStatus.DRAFT to GiveawayDestination.RULES,
+                CardStatus.WAITING to GiveawayDestination.IMPORT,
                 CardStatus.READY_TO_IMPORT to GiveawayDestination.IMPORT,
                 CardStatus.IMPORTING to GiveawayDestination.IMPORT,
                 CardStatus.REVIEW to GiveawayDestination.REVIEW,
@@ -136,7 +136,6 @@ class HomeViewModelTest {
         override suspend fun commitment(id: Long): CommitmentEntity? = null
         override suspend fun saveCommitment(id: Long, commitHash: String, encryptedSeed: ByteArray) = Unit
         override suspend fun commit(id: Long) = Unit
-        override suspend fun markCaptionVerified(id: Long, at: Instant) = Unit
         override suspend fun transition(id: Long, to: GiveawayStatus) = Unit
     }
 

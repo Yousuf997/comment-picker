@@ -35,8 +35,8 @@ import androidx.compose.ui.unit.dp
 import app.giveaway.core.designsystem.GiveawayTheme
 import app.giveaway.core.designsystem.R
 
-/** The creation flow is a six-step wizard (spec: Product principles). */
-const val WIZARD_STEPS = 6
+/** The creation flow is a five-step wizard (spec: Product principles; plan A35 took out the draw code step). */
+const val WIZARD_STEPS = 5
 
 private val SegmentHeight = 4.dp
 private val SegmentGap = 4.dp
@@ -53,7 +53,7 @@ class WizardSteps(val reachable: Set<Int>, val onStep: (Int) -> Unit)
 val LocalWizardSteps = staticCompositionLocalOf<WizardSteps?> { null }
 
 /**
- * Wizard header: back button, [title] ("New giveaway" or the giveaway's title), "Step n of 6" and a six-segment
+ * Wizard header: back button, [title] ("New giveaway" or the giveaway's title), "Step n of 5" and a five-segment
  * progress bar in the accent color. With [LocalWizardSteps] each segment opens its step; otherwise TalkBack reads the
  * bar as one element with the step text.
  */
@@ -160,7 +160,6 @@ private fun Segment(color: Color?, modifier: Modifier) {
 private fun stepNames(): List<String> = listOf(
     stringResource(R.string.wizard_step_post),
     stringResource(R.string.wizard_step_rules),
-    stringResource(R.string.wizard_step_code),
     stringResource(R.string.wizard_step_import),
     stringResource(R.string.wizard_step_review),
     stringResource(R.string.wizard_step_draw),

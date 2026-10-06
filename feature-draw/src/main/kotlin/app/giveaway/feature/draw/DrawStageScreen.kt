@@ -101,7 +101,7 @@ internal fun DrawStageScreen(
         ) {
             WizardHeader(
                 title = state.title ?: stringResource(R.string.draw_title),
-                step = 6,
+                step = 5,
                 onBack = onBack,
             )
             Checks(state)

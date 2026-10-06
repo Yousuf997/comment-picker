@@ -24,12 +24,15 @@ class GiveawayEditor @Inject constructor(
     private val entries: EntryBuilder,
     private val deadlines: DeadlineScheduler,
     private val imports: ImportWork,
+    private val opener: GiveawayOpener,
 ) {
     /** True when saving now clears a drawn result, so the screen can warn first. */
     suspend fun clearsResult(id: Long): Boolean =
         giveaways.get(id)?.let { GiveawayStateMachine.hasResult(it.status) } ?: false
 
     suspend fun saveRules(id: Long, rules: Rules) {
+        // A draft left by an older version opens first, so it gets its seed and reminder (plan A35).
+        opener.open(id)
         val before = checkNotNull(giveaways.get(id)) { "No giveaway $id" }
         val stale = db.withTransaction {
             val files = if (GiveawayStateMachine.hasResult(before.status)) db.reopenForReview(id) else emptyList()
@@ -46,10 +49,11 @@ class GiveawayEditor @Inject constructor(
     }
 
     /**
-     * A new post. Before the import nothing else changes, though the caption is checked again. After it, the comments,
-     * entries, draws and certificates of the old post go and the giveaway waits to import the new post's comments.
+     * A new post. Before the import nothing else changes. After it, the comments, entries, draws and certificates of
+     * the old post go and the giveaway waits to import the new post's comments.
      */
     suspend fun changePost(id: Long, media: IgMedia) {
+        opener.open(id)
         imports.cancel(id)
         var reimport = false
         val stale = db.withTransaction {
@@ -61,7 +65,6 @@ class GiveawayEditor @Inject constructor(
                     thumbnailUrl = media.thumbnailUrl,
                 ),
             )
-            db.commitmentDao().setCaptionVerified(id, null)
             if (giveaway.status == GiveawayStatus.DRAFT || giveaway.status == GiveawayStatus.COMMITTED) {
                 return@withTransaction emptyList<File>()
             }
@@ -76,7 +79,7 @@ class GiveawayEditor @Inject constructor(
             files
         }
         stale.forEach { it.delete() }
-        // The deadline check reads the new post's caption (straight away when entries have already closed).
+        // The reminder comes again for the new post (straight away when entries have already closed).
         if (reimport) deadlines.schedule(id, checkNotNull(giveaways.get(id)).closesAt)
     }
 }

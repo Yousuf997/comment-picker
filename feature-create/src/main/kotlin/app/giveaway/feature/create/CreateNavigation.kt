@@ -13,8 +13,8 @@ import java.time.Instant
 data object PickPostRoute
 
 /**
- * S7 Set rules (wizard step 2) for the post picked on S6. The post's details travel with the route, so S7 creates the
- * draft without asking Instagram again.
+ * S7 Set rules (wizard step 2) for the post picked on S6. The post's details travel with the route, so S7 opens the
+ * giveaway without asking Instagram again.
  */
 @Serializable
 data class SetRulesRoute(
@@ -59,15 +59,11 @@ data class ChangePostRoute(val giveawayId: Long)
 @Serializable
 data class EditRulesRoute(val giveawayId: Long)
 
-/** S8 Lock in the draw (wizard step 3). */
-@Serializable
-data class LockInDrawRoute(val giveawayId: Long)
-
-/** S9 Import comments (wizard step 4). */
+/** S9 Import comments (wizard step 3). */
 @Serializable
 data class ImportCommentsRoute(val giveawayId: Long)
 
-/** S10 Review entries (wizard step 5). */
+/** S10 Review entries (wizard step 4). */
 @Serializable
 data class ReviewEntriesRoute(val giveawayId: Long)
 
@@ -75,12 +71,9 @@ fun NavGraphBuilder.pickPostScreen(onBack: () -> Unit, onPostPicked: (SetRulesRo
     composable<PickPostRoute> { PickPostScreen(onBack = onBack, onContinue = { onPostPicked(SetRulesRoute(it)) }) }
 }
 
+/** [onRulesSaved] runs once Done has opened the new giveaway (plan A35). */
 fun NavGraphBuilder.setRulesScreen(onBack: () -> Unit, onRulesSaved: (giveawayId: Long) -> Unit) {
     composable<SetRulesRoute> { SetRulesScreen(onBack = onBack, onSaved = onRulesSaved) }
-}
-
-fun NavGraphBuilder.lockInDrawScreen(onBack: () -> Unit, onDone: () -> Unit) {
-    composable<LockInDrawRoute> { LockInScreen(onBack = onBack, onDone = onDone) }
 }
 
 fun NavGraphBuilder.importCommentsScreen(onBack: () -> Unit, onReviewEntries: (giveawayId: Long) -> Unit) {
