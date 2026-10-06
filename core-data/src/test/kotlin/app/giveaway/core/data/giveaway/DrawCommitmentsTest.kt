@@ -23,7 +23,7 @@ import java.time.Clock
 import java.time.Instant
 import java.time.ZoneOffset
 
-/** C-14: the seed is made once, sealed per giveaway, and its hash is the draw code. */
+/** C-14 and plan A35: the seed is made once and sealed per giveaway, and its hash is kept as the commit hash. */
 @RunWith(RobolectricTestRunner::class)
 class DrawCommitmentsTest {
 
@@ -60,7 +60,7 @@ class DrawCommitmentsTest {
     fun tearDown() = db.close()
 
     @Test
-    fun theCodeIsTheHashOfASealedThirtyTwoByteSeed() = runTest {
+    fun theHashIsOfASealedThirtyTwoByteSeed() = runTest {
         val id = repository.createDraft(media, "Drop", "shop", rules)
         val hash = DrawCommitments(repository, vault).commitHashFor(id)
         val seed = sealed.getValue(id)
@@ -74,7 +74,7 @@ class DrawCommitmentsTest {
     }
 
     @Test
-    fun theCodeNeverChangesOnceMade() = runTest {
+    fun theSeedNeverChangesOnceMade() = runTest {
         val id = repository.createDraft(media, "Drop", "shop", rules)
         val commitments = DrawCommitments(repository, vault)
         val first = commitments.commitHashFor(id)

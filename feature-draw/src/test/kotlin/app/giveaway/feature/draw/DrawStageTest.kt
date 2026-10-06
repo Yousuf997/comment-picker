@@ -1,6 +1,7 @@
 package app.giveaway.feature.draw
 
 import android.app.Application
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
@@ -26,14 +27,8 @@ import app.giveaway.core.data.importing.EntryBuilder
 import app.giveaway.core.data.review.EntryRepository
 import app.giveaway.core.data.settings.DefaultSettingsRepository
 import app.giveaway.core.designsystem.GiveawayTheme
-import app.giveaway.core.instagram.api.CommentPage
-import app.giveaway.core.instagram.api.IgError
 import app.giveaway.core.instagram.api.IgMedia
-import app.giveaway.core.instagram.api.IgResult
-import app.giveaway.core.instagram.api.InstagramRepository
 import app.giveaway.core.instagram.api.MediaKind
-import app.giveaway.core.instagram.api.MediaPage
-import app.giveaway.core.instagram.api.ReplyCountPage
 import app.giveaway.draw.Commit
 import app.giveaway.draw.Rules
 import com.github.takahirom.roborazzi.captureRoboImage
@@ -75,7 +70,6 @@ class DrawStageTest {
     private lateinit var giveaways: DefaultGiveawayRepository
     private lateinit var vm: DrawStageViewModel
     private var id = 0L
-    private var caption: IgResult<IgMedia> = IgResult.Err(IgError.Offline)
 
     private val vault = object : SeedVault {
         override fun seal(giveawayId: Long, seed: ByteArray) = seed.reversedArray()
@@ -85,17 +79,7 @@ class DrawStageTest {
     private val signer = object : RecordSigner {
         override fun sign(record: ByteArray) = RecordSigner.Signature(byteArrayOf(1), byteArrayOf(2), "fp")
     }
-    private val instagram = object : InstagramRepository {
-        override suspend fun mediaPage(cursor: String?, limit: Int): IgResult<MediaPage> = error("unused")
-        override suspend fun mediaById(mediaId: String) = caption
-        override suspend fun commentsPage(mediaId: String, cursor: String?, limit: Int): IgResult<CommentPage> =
-            error("unused")
-        override suspend fun repliesPage(commentId: String, cursor: String?): IgResult<ReplyCountPage> =
-            error("unused")
-    }
-
-    private fun media(captionText: String?) =
-        IgMedia("m1", MediaKind.IMAGE, false, null, captionText, closesAt, 5, null)
+    private val post = IgMedia("m1", MediaKind.IMAGE, false, null, null, closesAt, 5, null)
 
     @Before
     fun setUp() {
@@ -114,7 +98,7 @@ class DrawStageTest {
     /** A reviewed giveaway with [people] valid entrants, asking for [winners] and [alternates]. */
     private fun reviewed(people: Int, winners: Int = 3, alternates: Int = 2) = runBlocking {
         val rules = Rules(1, null, null, true, true, true, closesAt, winners, alternates)
-        id = giveaways.createDraft(media(null), "Win a tote bag!", "shop", rules)
+        id = giveaways.createDraft(post, "Win a tote bag!", "shop", rules)
         giveaways.saveCommitment(id, Commit.commitHash(seed), vault.seal(id, seed))
         giveaways.commit(id)
         giveaways.transition(id, GiveawayStatus.IMPORTING)
@@ -135,7 +119,6 @@ class DrawStageTest {
             SavedStateHandle(route = DrawRoute(id)),
             giveaways,
             EntryRepository(db, EntryBuilder(db), clock),
-            instagram,
             DrawService(db, vault, signer, clock),
             DefaultSettingsRepository(db.settingsDao()),
             { freeBytes },
@@ -162,29 +145,16 @@ class DrawStageTest {
         compose.onAllNodesWithText(text, substring = true).fetchSemanticsNodes().isNotEmpty()
     }
 
-    @Test
-    fun aCaptionWithTheCodeShowsTheMatchChip() {
-        reviewed(people = 8)
-        caption = IgResult.Ok(media("Win! #draw ${Commit.commitHash(seed)}"))
-        show()
-        awaitText(app.getString(R.string.draw_caption_found))
-        text(R.string.draw_winners).assertIsEnabled()
-    }
+    /** S11's only check before the draw is the phone's (plan A35): nothing is read from the caption. */
+    private fun awaitChecks() = compose.waitUntil(WAIT_MS) { !vm.state.value.checking }
 
     @Test
-    fun aMissingCodeWarnsButStillAllowsTheDraw() {
+    fun theDrawNeedsNoCode() {
         reviewed(people = 8)
-        caption = IgResult.Ok(media("Win a tote bag!"))
         show()
-        awaitText(app.getString(R.string.draw_caption_missing_title))
+        awaitChecks()
         text(R.string.draw_winners).assertIsEnabled()
-    }
-
-    @Test
-    fun offlineMeansNotChecked() {
-        reviewed(people = 8)
-        show()
-        awaitText(app.getString(R.string.draw_caption_unchecked_title))
+        compose.onAllNodesWithText(app.getString(R.string.draw_checking)).assertCountEquals(0)
     }
 
     @Test
@@ -211,7 +181,7 @@ class DrawStageTest {
     fun aTestDrawIsLabelledAndDoesNotCount() {
         reviewed(people = 8)
         show()
-        awaitText(app.getString(R.string.draw_caption_unchecked_title))
+        awaitChecks()
         text(R.string.draw_test_first).performClick()
         awaitText(app.getString(R.string.draw_test_title))
         assertEquals(GiveawayStatus.REVIEW, runBlocking { giveaways.get(id)?.status })
@@ -221,14 +191,14 @@ class DrawStageTest {
     @Test
     fun drawingSavesTheResultFirstThenMovesOn() {
         reviewed(people = 8)
-        caption = IgResult.Ok(media("#draw ${Commit.commitHash(seed)}"))
         show()
-        awaitText(app.getString(R.string.draw_caption_found))
+        awaitChecks()
         text(R.string.draw_winners).performClick()
         compose.waitUntil(WAIT_MS) { drawn.isNotEmpty() }
         assertEquals(listOf(true), drawn)
         val draw = runBlocking { db.drawDao().realDraw(id) }!!
-        assertEquals(CaptionCheck.FOUND, draw.captionCheck)
+        // There's no code to look for (plan A35); the record keeps the field.
+        assertEquals(CaptionCheck.NOT_CHECKED, draw.captionCheck)
         assertEquals("verified by Play Integrity", true, draw.integrityVerified)
         // The check was bound to this draw's entry list and commitment (plan A6).
         assertEquals(listOf(draw.entryListHash to Commit.commitHash(seed)), integrityChecks)
@@ -250,7 +220,7 @@ class DrawStageTest {
     fun reopeningAfterTheDrawGoesToTheResult() {
         reviewed(people = 8)
         runBlocking {
-            DrawService(db, vault, signer, clock).realDraw(id, DrawChecks(CaptionCheck.FOUND, false))
+            DrawService(db, vault, signer, clock).realDraw(id, DrawChecks(false))
         }
         show()
         compose.waitUntil(WAIT_MS) { alreadyDrawn == 1 }
@@ -259,9 +229,8 @@ class DrawStageTest {
     @Test
     fun screenshotStage() {
         reviewed(people = 128)
-        caption = IgResult.Ok(media("#draw ${Commit.commitHash(seed)}"))
         show()
-        awaitText(app.getString(R.string.draw_caption_found))
+        awaitChecks()
         compose.onRoot().captureRoboImage("src/test/screenshots/s11_draw_stage.png")
     }
 
@@ -269,7 +238,6 @@ class DrawStageTest {
     @Config(qualifiers = "ar-w390dp-h1000dp-xhdpi")
     fun screenshotArabicFewer() {
         reviewed(people = 2, winners = 3, alternates = 2)
-        caption = IgResult.Ok(media("no code"))
         show()
         awaitText(app.getString(R.string.draw_fewer_title))
         compose.onRoot().captureRoboImage("src/test/screenshots/s11_draw_stage_arabic.png")

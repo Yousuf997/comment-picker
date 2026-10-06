@@ -3,7 +3,7 @@ package app.giveaway.core.data.db
 /** Decides which screen opens from Home (spec: User flows). Stored by name. */
 enum class GiveawayStatus { DRAFT, COMMITTED, IMPORTING, REVIEW, DRAWN, ARCHIVED }
 
-/** Whether the draw code was found in the caption when it was re-read before the draw (plan A7). */
+/** The caption check before the draw (plan A7). Since plan A35 there's no draw code: new draws record NOT_CHECKED. */
 enum class CaptionCheck { FOUND, NOT_FOUND, NOT_CHECKED }
 
 /** A winner's state after the manual follow check on S14. */

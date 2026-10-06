@@ -33,7 +33,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.giveaway.core.data.db.CaptionCheck
 import app.giveaway.core.designsystem.GiveawayDimens
 import app.giveaway.core.designsystem.GiveawayTheme
 import app.giveaway.core.designsystem.component.ChipTone
@@ -146,39 +145,21 @@ internal fun DrawStageScreen(
     state.testPicks?.let { TestDrawSheet(it, onCloseTest) }
 }
 
-/** The checks before the draw (spec: S11): the caption re-read and Play Integrity. Neither blocks the draw. */
+/** The check before the draw (spec: S11): Play Integrity. It never blocks the draw, only what the certificate says. */
 @Composable
 private fun Checks(state: DrawStageState) {
-    CaptionStatus(state.caption)
-    if (state.integrity == false) {
-        NoticeCard(
+    when (state.integrity) {
+        null -> Text(
+            stringResource(R.string.draw_checking),
+            style = GiveawayTheme.typography.caption,
+            color = GiveawayTheme.colors.onDrawMuted,
+        )
+        false -> NoticeCard(
             title = stringResource(R.string.draw_integrity_title),
             body = stringResource(R.string.draw_integrity_body),
             tone = NoticeTone.Info,
         )
-    }
-}
-
-/** The caption re-read (spec: S11): a chip when the code is there, a warning when not. */
-@Composable
-private fun CaptionStatus(caption: CaptionCheck?) {
-    when (caption) {
-        null -> Text(
-            stringResource(R.string.draw_caption_checking),
-            style = GiveawayTheme.typography.caption,
-            color = GiveawayTheme.colors.onDrawMuted,
-        )
-        CaptionCheck.FOUND -> StatusChip(stringResource(R.string.draw_caption_found), ChipTone.Success)
-        CaptionCheck.NOT_FOUND -> NoticeCard(
-            title = stringResource(R.string.draw_caption_missing_title),
-            body = stringResource(R.string.draw_caption_missing_body),
-            tone = NoticeTone.Warning,
-        )
-        CaptionCheck.NOT_CHECKED -> NoticeCard(
-            title = stringResource(R.string.draw_caption_unchecked_title),
-            body = stringResource(R.string.draw_caption_unchecked_body),
-            tone = NoticeTone.Info,
-        )
+        true -> Unit
     }
 }
 

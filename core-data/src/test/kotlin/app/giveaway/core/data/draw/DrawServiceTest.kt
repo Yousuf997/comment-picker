@@ -3,7 +3,6 @@ package app.giveaway.core.data.draw
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import app.giveaway.core.data.db.CaptionCheck
 import app.giveaway.core.data.db.CommentEntity
 import app.giveaway.core.data.db.GiveawayDatabase
 import app.giveaway.core.data.db.GiveawayStatus
@@ -92,11 +91,11 @@ class DrawServiceTest {
     @After
     fun tearDown() = db.close()
 
-    private val found = DrawChecks(CaptionCheck.FOUND, integrityVerified = false)
+    private val checks = DrawChecks(integrityVerified = false)
 
     @Test
     fun theRealDrawUsesTheCommittedSeedAndIsSavedBeforeAnything() = runTest {
-        val drawId = service.realDraw(id, found)
+        val drawId = service.realDraw(id, checks)
         val draw = db.drawDao().realDraw(id)!!
         assertEquals(drawId, draw.id)
         assertArrayEquals("the seed is revealed", seed, draw.seed)
@@ -109,7 +108,7 @@ class DrawServiceTest {
 
     @Test
     fun theSignatureCoversTheRecordAndBreaksIfAnythingChanges() = runTest {
-        service.realDraw(id, found)
+        service.realDraw(id, checks)
         val draw = db.drawDao().realDraw(id)!!
         val picks = db.drawDao().results(draw.id).map { Pick(it.position, it.username, it.role) }
         val record = DrawRecord(
@@ -126,7 +125,7 @@ class DrawServiceTest {
             alternatesRequested = 1,
             picks = picks,
             drawnAt = draw.drawnAt,
-            captionCheck = "FOUND",
+            captionCheck = "NOT_CHECKED",
             integrityVerified = false,
             partialImport = false,
             manualExclusions = emptyList(),
@@ -139,8 +138,8 @@ class DrawServiceTest {
 
     @Test
     fun aSecondRealDrawThrowsAndChangesNothing() = runTest {
-        val first = service.realDraw(id, found)
-        assertTrue(runCatching { service.realDraw(id, found) }.isFailure)
+        val first = service.realDraw(id, checks)
+        assertTrue(runCatching { service.realDraw(id, checks) }.isFailure)
         assertEquals(first, db.drawDao().realDraw(id)?.id)
     }
 
@@ -150,7 +149,7 @@ class DrawServiceTest {
         assertEquals(GiveawayStatus.REVIEW, giveaways.get(id)?.status)
         assertEquals(null, db.drawDao().realDraw(id))
         // The real draw is still possible and uses the committed seed.
-        service.realDraw(id, found)
+        service.realDraw(id, checks)
         assertArrayEquals(seed, db.drawDao().realDraw(id)!!.seed)
     }
 
@@ -159,7 +158,7 @@ class DrawServiceTest {
         val media = IgMedia("m2", MediaKind.IMAGE, false, null, null, closesAt, 0, null)
         val rules = Rules(1, null, null, true, true, true, closesAt, 1, 0)
         val draft = giveaways.createDraft(media, "Empty", "shop", rules)
-        assertTrue(runCatching { service.realDraw(draft, found) }.isFailure)
+        assertTrue(runCatching { service.realDraw(draft, checks) }.isFailure)
         assertTrue(runCatching { service.testDraw(draft) }.isFailure)
     }
 }

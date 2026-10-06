@@ -14,17 +14,15 @@ Draft for Play Console, in English and Arabic (plan M-21). `[APP NAME]` stays a 
 
 > Run Instagram comment giveaways your followers can trust.
 >
-> [APP NAME] picks winners from the comments on your post or Reel, and gives you proof that the draw was fair. Everything happens on your phone: no sign-up, no account with us, nothing uploaded.
+> [APP NAME] picks winners from the comments on your post or Reel, and gives you a certificate anyone can re-check. Everything happens on your phone: no sign-up, no account with us, nothing uploaded.
 >
-> **Fair, and anyone can check it**
-> • Before entries close, you post a draw code in your caption. Anyone who saw it can later check the draw against it.
-> • After the draw, the certificate shows the secret behind the code and a fingerprint of the entry list. Anyone can re-run the draw with the free, open verifier and get the same winners.
+> **Random, and anyone can re-check it**
+> • After the draw, the certificate shows the random seed and a fingerprint of the entry list. Anyone can re-run the draw with the free, open verifier and get the same winners.
 > • Every certificate is signed on your device.
 >
 > **Simple, step by step**
 > • Pick a post or Reel.
 > • Set the rules: friends to mention, a hashtag or keyword, one entry per person, a closing time, how many winners and alternates.
-> • Lock in the draw and paste the code into your caption.
 > • After the deadline, import the comments and review every entry, with the reason any was left out.
 > • Run the draw. It's recorded as a video made for Stories and Reels, and you choose whether to save it.
 > • Confirm each winner, or replace them with the next alternate. Then share the certificate to your Story.
@@ -54,17 +52,15 @@ Draft for Play Console, in English and Arabic (plan M-21). `[APP NAME]` stays a 
 
 > أقم مسابقات التعليقات على إنستغرام بطريقة يثق بها متابعوك.
 >
-> يختار [APP NAME] الفائزين من التعليقات على منشورك أو مقطع الريلز، ويمنحك إثباتًا على أن السحب كان عادلًا. كل شيء يتم على هاتفك: لا تسجيل، ولا حساب لدينا، ولا يُرفع أي شيء.
+> يختار [APP NAME] الفائزين من التعليقات على منشورك أو مقطع الريلز، ويمنحك شهادة يمكن لأي شخص التحقق منها. كل شيء يتم على هاتفك: لا تسجيل، ولا حساب لدينا، ولا يُرفع أي شيء.
 >
-> **عادل، ويمكن لأي شخص التحقق منه**
-> • قبل إغلاق المشاركات تنشر رمز السحب في وصف المنشور، ويمكن لكل من رآه أن يطابق السحب معه لاحقًا.
-> • بعد السحب تعرض الشهادة السر وراء الرمز وبصمة قائمة المشاركات، ويمكن لأي شخص إعادة السحب بالأداة المفتوحة المجانية والحصول على الفائزين أنفسهم.
+> **عشوائي، ويمكن لأي شخص التحقق منه**
+> • بعد السحب تعرض الشهادة البذرة العشوائية وبصمة قائمة المشاركات، ويمكن لأي شخص إعادة السحب بالأداة المفتوحة المجانية والحصول على الفائزين أنفسهم.
 > • كل شهادة موقّعة على جهازك.
 >
 > **بسيط وخطوة بخطوة**
 > • اختر منشورًا أو مقطع ريلز.
 > • حدّد الشروط: عدد الأصدقاء المطلوب ذكرهم، ووسم أو كلمة، ومشاركة واحدة لكل شخص، ووقت الإغلاق، وعدد الفائزين والبدلاء.
-> • ثبّت السحب والصق الرمز في وصف المنشور.
 > • بعد الموعد النهائي استورد التعليقات وراجع كل مشاركة مع سبب استبعاد أي منها.
 > • أجرِ السحب. يُسجَّل كفيديو مناسب للقصص والريلز، وأنت تختار حفظه أو لا.
 > • أكّد كل فائز أو استبدله بالبديل التالي، ثم شارك الشهادة في قصتك.
@@ -90,12 +86,11 @@ Phone screenshots come from the screen designs (spec: Release checklist). The sc
 |---|---|---|---|
 | 1 | S1 Welcome | `feature-onboarding/src/test/screenshots/s1_welcome_light.png` | `s1_welcome_arabic.png` |
 | 2 | S7 Rules | `feature-create/.../s7_set_rules_light.png` | `s7_set_rules_arabic_errors.png` (recapture without errors) |
-| 3 | S8 Lock in the draw | `feature-create/.../s8_lock_in_light.png` | `s8_lock_in_arabic.png` |
-| 4 | S10 Review entries | `feature-create/.../s10_review_light.png` | `s10_review_arabic_sheet.png` |
-| 5 | S12 Drawing | `feature-draw/.../s12_drawing.png` | `s12_drawing_arabic.png` |
-| 6 | S14 Winners | `feature-draw/.../s14_winners.png` | `s14_winners_arabic.png` |
-| 7 | S15 Certificate | `feature-draw/.../s15_certificate.png` | `s15_certificate_ar.png` |
-| 8 | Certificate Story image | `feature-draw/.../certificate_story_en.png` | `certificate_story_ar.png` |
+| 3 | S10 Review entries | `feature-create/.../s10_review_light.png` | `s10_review_arabic_sheet.png` |
+| 4 | S12 Drawing | `feature-draw/.../s12_drawing.png` | `s12_drawing_arabic.png` |
+| 5 | S14 Winners | `feature-draw/.../s14_winners.png` | `s14_winners_arabic.png` |
+| 6 | S15 Certificate | `feature-draw/.../s15_certificate.png` | `s15_certificate_ar.png` |
+| 7 | Certificate Story image | `feature-draw/.../certificate_story_en.png` | `certificate_story_ar.png` |
 
 Feature graphic (1024 × 500) and the icon wait for the app name.
 

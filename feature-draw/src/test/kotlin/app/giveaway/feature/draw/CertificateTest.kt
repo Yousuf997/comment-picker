@@ -52,7 +52,7 @@ class CertificateTest {
             Pick(4, "omar99", Role.ALTERNATE),
         ),
         drawnAt = Instant.parse("2026-10-08T12:30:15.250Z"),
-        captionCheck = "FOUND",
+        captionCheck = "NOT_CHECKED",
         integrityVerified = true,
         partialImport = false,
         manualExclusions = emptyList(),
@@ -60,7 +60,6 @@ class CertificateTest {
     private val clean = CertificateData(record, "30".repeat(36), "3059".repeat(23), fingerprint, emptyList())
     private val flagged = clean.copy(
         record = record.copy(
-            captionCheck = "NOT_FOUND",
             integrityVerified = false,
             partialImport = true,
             manualExclusions = listOf(DrawRecord.ManualExclusion("spam.bot", "Fake account")),
@@ -78,18 +77,20 @@ class CertificateTest {
     fun theCertificateStatesEveryProofValue() {
         val text = writer().pdf(clean).text()
         listOf(
-            "#draw $commitHash", seedHex, listHash, "v1", fingerprint, "30".repeat(36), "3059".repeat(23),
+            seedHex, listHash, "v1", fingerprint, "30".repeat(36), "3059".repeat(23),
             "@tote.shop", "17890012345", "1,204", "2026-10-08T10:00:00Z", "2026-10-08T12:30:15Z",
             "@maya.k", "@sam_r", "@lina.art", "@omar99", "https://verify.example/v1",
         ).forEach { assertTrue("prints $it", text.contains(it)) }
         assertFalse("no notes on a clean draw", text.contains(app.getString(R.string.certificate_section_notes)))
+        // No draw code anywhere (plan A35); the seed's hash stays inside the signed record.
+        assertFalse(text.contains("#draw"))
+        assertFalse(text.contains(commitHash))
     }
 
     @Test
     fun everyWarningAndReplacementIsListed() {
         val text = writer().pdf(flagged).text()
         listOf(
-            app.getString(R.string.certificate_code_not_found),
             app.getString(R.string.certificate_partial),
             app.getString(R.string.certificate_integrity),
             "@spam.bot", "Fake account", "@lina.art", "Didn't follow",
@@ -133,7 +134,7 @@ class CertificateTest {
         assertTrue(content.rtl)
         assertEquals("شهادة سحب عشوائي", content.heading)
         val code = content.sections.flatMap { it.rows }.first { it.kind == CertificateContent.Kind.CODE }.value
-        assertEquals("⁦#draw $commitHash⁩", code)
+        assertEquals("\u2066$seedHex\u2069", code)
     }
 
     @Test

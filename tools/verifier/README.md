@@ -11,7 +11,7 @@ the exported entry list.
 ```sh
 node verify.mjs --vectors ../../docs/test-vectors-v1.json   # the published test vectors
 node verify.mjs --check-offline                             # the page makes no network calls
-node verify.mjs --commit '#draw <hash>' --seed <hex> --entries entries.txt --winners 3 --alternates 2 \
+node verify.mjs --seed <hex> --entries entries.txt --winners 3 --alternates 2 \
   --list-hash <hex> --picks amy,bob,cat
 ```
 

@@ -18,6 +18,7 @@ data class DrawRecord(
     val postId: String,
     val title: String,
     val entriesClosedAt: Instant,
+    /** SHA-256 of the seed, stored with it and signed; it isn't posted anywhere (plan A35). */
     val commitHash: String,
     val seedHex: String,
     val entryListHash: String,
@@ -26,7 +27,7 @@ data class DrawRecord(
     val alternatesRequested: Int,
     val picks: List<Pick>,
     val drawnAt: Instant,
-    /** FOUND, NOT_FOUND or NOT_CHECKED (plan A7). */
+    /** NOT_CHECKED since plan A35, as there's no draw code; FOUND and NOT_FOUND came from the earlier caption check. */
     val captionCheck: String,
     val integrityVerified: Boolean,
     val partialImport: Boolean,

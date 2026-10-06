@@ -33,18 +33,15 @@ class DrawRecorderTest {
         onAccent = Color.WHITE,
         display = Typeface.DEFAULT_BOLD,
         body = Typeface.DEFAULT,
-        code = Typeface.MONOSPACE,
     )
     private val text = object : SceneText {
         override fun picking(pick: Pick) = "Picking ${pick.position}"
         override fun announcement(pick: Pick) = "${pick.role} ${pick.position}: @${pick.username}"
         override val done = "All picked"
         override val pickedSoFar = "Picked so far"
-        override val drawCodeLabel = "Draw code"
         override fun entries(count: Int) = "$count entries"
     }
-    private val renderer =
-        DrawSceneRenderer(style, text, "Win a tote bag!", entryCount = 4, commitHash = "ab".repeat(32))
+    private val renderer = DrawSceneRenderer(style, text, "Win a tote bag!", entryCount = 4)
 
     private fun record(renderer: SceneRenderer, file: File): RecordingResult {
         var result: RecordingResult? = null

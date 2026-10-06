@@ -3,7 +3,6 @@ package app.giveaway.core.data.draw
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import app.giveaway.core.data.db.CaptionCheck
 import app.giveaway.core.data.db.CommentEntity
 import app.giveaway.core.data.db.GiveawayDatabase
 import app.giveaway.core.data.db.GiveawayStatus
@@ -93,7 +92,7 @@ class DrawVerificationTest {
     fun tearDown() = db.close()
 
     private suspend fun drawn(): SignedDrawRecord {
-        service.realDraw(id, DrawChecks(CaptionCheck.FOUND, integrityVerified = true))
+        service.realDraw(id, DrawChecks(integrityVerified = true))
         return service.signedRecord(id)!!
     }
 
@@ -111,7 +110,8 @@ class DrawVerificationTest {
         val record = signed.record
         assertEquals(listOf(DrawRecord.ManualExclusion("fay", "Fake account")), record.manualExclusions)
         assertEquals(5, record.entryCount)
-        assertEquals("FOUND", record.captionCheck)
+        // There's no draw code to look for (plan A35).
+        assertEquals("NOT_CHECKED", record.captionCheck)
         assertTrue(record.integrityVerified)
         assertEquals(4, record.picks.size)
         assertEquals(DeviceSigner.fingerprintOf(keyPair.public.encoded), signed.fingerprint)
@@ -139,7 +139,7 @@ class DrawVerificationTest {
                 "UPDATE commitment SET commitHash = lower(commitHash)",
             "UPDATE draw SET seed = zeroblob(32)" to "UPDATE draw SET seed = X'$seedHex'",
             "UPDATE draw SET entryCount = 6" to "UPDATE draw SET entryCount = 5",
-            "UPDATE draw SET captionCheck = 'NOT_FOUND'" to "UPDATE draw SET captionCheck = 'FOUND'",
+            "UPDATE draw SET captionCheck = 'FOUND'" to "UPDATE draw SET captionCheck = 'NOT_CHECKED'",
             "UPDATE draw SET integrityVerified = 0" to "UPDATE draw SET integrityVerified = 1",
             "UPDATE draw SET partialImport = 1" to "UPDATE draw SET partialImport = 0",
             "UPDATE draw_result SET username = 'zed' WHERE position = 1" to
@@ -175,7 +175,7 @@ class DrawVerificationTest {
             r.copy(picks = r.picks.dropLast(1)),
             r.copy(picks = r.picks.map { if (it.position == 1) Pick(1, it.username, Role.ALTERNATE) else it }),
             r.copy(drawnAt = later),
-            r.copy(captionCheck = "NOT_CHECKED"),
+            r.copy(captionCheck = "FOUND"),
             r.copy(integrityVerified = false),
             r.copy(partialImport = true),
             r.copy(manualExclusions = emptyList()),

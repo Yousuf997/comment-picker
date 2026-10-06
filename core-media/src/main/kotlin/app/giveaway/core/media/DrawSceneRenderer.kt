@@ -19,7 +19,6 @@ data class SceneStyle(
     val onAccent: Int,
     val display: Typeface,
     val body: Typeface,
-    val code: Typeface,
     /** Right-to-left (Arabic): lists start at the right edge (spec: full RTL mirroring). */
     val rtl: Boolean = false,
 )
@@ -34,8 +33,6 @@ interface SceneText {
 
     val pickedSoFar: String
 
-    /** The label above the draw code on the closing frame, e.g. "Draw code in the caption". */
-    val drawCodeLabel: String
 
     fun entries(count: Int): String
 }
@@ -47,7 +44,7 @@ fun interface SceneRenderer {
 
 /**
  * Draws one frame of the draw (spec: Draw recording, requirement 3): title, entry count, the reel landing on each
- * pick, the picks so far, and a closing summary with the commit hash. Sizes scale with the frame, so 1080 x 1920 and
+ * pick, the picks so far, and a closing summary of the picks. Sizes scale with the frame, so 1080 x 1920 and
  * the 720 x 1280 fallback look the same.
  */
 class DrawSceneRenderer(
@@ -55,7 +52,6 @@ class DrawSceneRenderer(
     private val text: SceneText,
     private val title: String,
     private val entryCount: Int,
-    private val commitHash: String,
 ) : SceneRenderer {
     private val paint = TextPaint(Paint.ANTI_ALIAS_FLAG)
     private val fill = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -108,21 +104,13 @@ class DrawSceneRenderer(
         }
     }
 
-    /** The closing frame: every pick and the draw code anyone can check (spec: ends on a summary frame). */
+    /** The closing frame: every pick (spec: ends on a summary frame). */
     private fun summary(canvas: Canvas, landed: List<Pick>, unit: Float, w: Float) {
         centred(canvas, text.done, style.display, unit * HEADING_SIZE, style.text, w / 2, unit * HEADING_Y)
         landed.forEachIndexed { i, pick ->
             val y = unit * (SUMMARY_TOP + LIST_STEP * i)
             centred(canvas, text.announcement(pick), style.body, unit * LIST_SIZE, style.text, w / 2, y)
         }
-        val codeY = unit * (SUMMARY_TOP + LIST_STEP * (landed.size + 1))
-        centred(canvas, text.drawCodeLabel, style.body, unit * SMALL_SIZE, style.muted, w / 2, codeY)
-        // The full 64-character hash on two lines, so nothing is cut off.
-        val half = commitHash.length / 2
-        val first = "#draw ${commitHash.take(half)}"
-        centred(canvas, first, style.code, unit * CODE_SIZE, style.accent, w / 2, codeY + unit * CODE_STEP)
-        val second = codeY + unit * CODE_STEP * 2
-        centred(canvas, commitHash.drop(half), style.code, unit * CODE_SIZE, style.accent, w / 2, second)
     }
 
     private fun centred(canvas: Canvas, s: String, face: Typeface, size: Float, color: Int, x: Float, y: Float) {
@@ -168,8 +156,6 @@ class DrawSceneRenderer(
         const val LIST_STEP = 7f
         const val LIST_SIZE = 4.4f
         const val SUMMARY_TOP = 50f
-        const val CODE_SIZE = 3.6f
-        const val CODE_STEP = 5.5f
         const val TEXT_WIDTH = 0.86f
     }
 }

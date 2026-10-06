@@ -1,14 +1,16 @@
 # Draw algorithm v1
 
-This is the open specification of how [APP NAME] picks giveaway winners. Anyone with the revealed seed and the entry list can reproduce a draw exactly and check that the organizer could not have chosen the result.
+This is the open specification of how [APP NAME] picks giveaway winners. Anyone with the revealed seed and the entry list can reproduce a draw exactly.
 
 Test vectors: [`test-vectors-v1.json`](test-vectors-v1.json). Implementations: the app (`core-draw`), an independent [Python reference](../tools/reference-impl/draw_v1.py), and the open [web verifier](../tools/verifier/index.html) with its command-line twin [`verify.mjs`](../tools/verifier/verify.mjs).
 
-## Why it's fair
+## What a draw shows
 
-1. **Commit.** Before entries close, the app generates a secret 32-byte seed and the organizer posts its SHA-256 hash in the post's caption as `#draw <hash>`. The seed itself stays encrypted on the phone.
-2. **Reveal.** After the draw, the certificate shows the seed. Anyone can hash it and compare with the code that was public before entries closed. The organizer can't swap in a different seed after seeing who entered.
+1. **Seed.** When a giveaway opens, the app generates a secret 32-byte seed with a cryptographic random generator. It stays encrypted on the phone until the draw.
+2. **Reveal.** After the draw, the certificate shows the seed and the entry list hash, and the draw record is signed on the device.
 3. **Deterministic selection.** Winners follow only from the seed and the final entry list, by the rules below. The same inputs always give the same winners, on any device and in any language.
+
+So anyone can check that a certificate's winners follow from its seed and entry list. No code is posted before entries close, so a certificate doesn't show that the seed was fixed before the organizer saw the entries, or that no earlier draw was replaced.
 
 The certificate also lists every manually excluded entry with its reason, and the exported entry list lets anyone check the entry list hash.
 
@@ -20,7 +22,7 @@ The certificate also lists every manually excluded entry with its reason, and th
 
 ## 1. Commit hash
 
-`commitHash = lowercase hex of SHA-256(seed)` (64 characters). The caption contains `#draw <commitHash>`. Matching ignores case.
+`commitHash = lowercase hex of SHA-256(seed)` (64 characters). The app stores it with the sealed seed, checks the seed against it at the draw, and includes it in the signed draw record. It isn't posted anywhere.
 
 ## 2. Canonical entry list
 
@@ -84,9 +86,9 @@ Positions start at 1. The first `min(winners, length(picked))` picks are winners
 Anyone with a certificate and the exported entry list can check a draw:
 
 1. Open `tools/verifier/index.html` in a browser (it works offline and makes no network requests), or run
-   `node tools/verifier/verify.mjs --commit <draw code> --seed <revealed seed> --entries entries.txt --winners N --alternates M`.
-2. The verifier checks that `SHA-256(seed)` equals the draw code from the caption, recomputes the entry list hash, and
-   re-runs section 5. Add `--list-hash` and `--picks` (or fill in those fields on the page) to compare with the certificate.
+   `node tools/verifier/verify.mjs --seed <revealed seed> --entries entries.txt --winners N --alternates M`.
+2. The verifier recomputes the entry list hash and re-runs section 5. Add `--list-hash` and `--picks` (or fill in
+   those fields on the page) to compare with the certificate.
 
 ## Versioning
 

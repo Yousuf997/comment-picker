@@ -39,11 +39,10 @@ data class SavedDraw(
     val entrants: List<String>,
     val drawnAt: Instant,
     val entryCount: Int,
-    val commitHash: String,
 )
 
-/** What S11 knows before the draw: the caption re-read and the integrity check (spec: S11 checks). */
-data class DrawChecks(val captionCheck: CaptionCheck, val integrityVerified: Boolean)
+/** What S11 knows before the draw: the integrity check (spec: S11 checks). There's no caption to read (plan A35). */
+data class DrawChecks(val integrityVerified: Boolean)
 
 /**
  * Runs draws (plan C-23). The real draw is computed, signed and saved in one transaction before any animation, so a
@@ -79,7 +78,8 @@ class DrawService @Inject constructor(
                 deviceSignature = signature.bytes,
                 signerPublicKey = signature.publicKeySpki,
                 signerFingerprint = signature.fingerprint,
-                captionCheck = checks.captionCheck,
+                // No draw code to look for (plan A35); the field stays so the signed record keeps its format.
+                captionCheck = CaptionCheck.NOT_CHECKED,
                 integrityVerified = checks.integrityVerified,
                 partialImport = inputs.partialImport,
                 entryCount = inputs.list.size,
@@ -105,8 +105,7 @@ class DrawService @Inject constructor(
         // The reel only needs a sample of names to scroll past (spec: S12); the result is already fixed.
         val entrants = CanonicalEntryList.of(db.entryDao().validUsernames(giveawayId)).usernames.distinct()
             .take(REEL_SAMPLE)
-        val commitHash = db.commitmentDao().get(giveawayId)?.commitHash.orEmpty()
-        return SavedDraw(giveaway.title, picks, entrants, draw.drawnAt, draw.entryCount, commitHash)
+        return SavedDraw(giveaway.title, picks, entrants, draw.drawnAt, draw.entryCount)
     }
 
     /**
@@ -223,7 +222,7 @@ class DrawService @Inject constructor(
         alternatesRequested = inputs.alternates,
         picks = outcome.picks,
         drawnAt = drawnAt,
-        captionCheck = checks.captionCheck.name,
+        captionCheck = CaptionCheck.NOT_CHECKED.name,
         integrityVerified = checks.integrityVerified,
         partialImport = inputs.partialImport,
         manualExclusions = inputs.manualExclusions,

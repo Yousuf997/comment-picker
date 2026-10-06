@@ -4,18 +4,14 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import app.giveaway.core.data.db.CaptionCheck
 import app.giveaway.core.data.db.GiveawayStatus
 import app.giveaway.core.data.draw.DrawChecks
 import app.giveaway.core.data.draw.DrawService
 import app.giveaway.core.data.giveaway.GiveawayRepository
 import app.giveaway.core.data.review.EntryRepository
 import app.giveaway.core.data.settings.SettingsRepository
-import app.giveaway.core.instagram.api.IgResult
-import app.giveaway.core.instagram.api.InstagramRepository
 import app.giveaway.core.media.FreeSpace
 import app.giveaway.core.media.RecordingSpace
-import app.giveaway.draw.Commit
 import app.giveaway.draw.Pick
 import app.giveaway.core.instagram.integrity.DrawIntegrity
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,7 +21,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -38,8 +33,6 @@ data class DrawStageState(
     val people: Int = 0,
     val winners: Int = 0,
     val alternates: Int = 0,
-    /** Null while the caption is being re-read (spec: S11 checks). */
-    val caption: CaptionCheck? = null,
     val recordDraw: Boolean = true,
     /** The last test draw's picks, shown in the TEST sheet. */
     val testPicks: List<Pick>? = null,
@@ -49,7 +42,7 @@ data class DrawStageState(
     /** The Play Integrity check; null while it runs (spec: S11 checks). */
     val integrity: Boolean? = null,
 ) {
-    val checking: Boolean get() = caption == null || integrity == null
+    val checking: Boolean get() = integrity == null
 
     /** Fewer people than winners plus alternates: everyone valid is picked (spec: Edge cases). */
     val fewerThanRequested: Boolean get() = people in 1 until winners + alternates
@@ -71,7 +64,6 @@ class DrawStageViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val giveaways: GiveawayRepository,
     private val entries: EntryRepository,
-    private val instagram: InstagramRepository,
     private val draws: DrawService,
     private val settings: SettingsRepository,
     private val freeSpace: FreeSpace,
@@ -109,24 +101,9 @@ class DrawStageViewModel @Inject constructor(
                 lowStorage = !RecordingSpace.enough(freeSpace, rules?.winnersCount ?: 0, rules?.alternatesCount ?: 0),
             )
         }
-        // Both checks run at once; neither blocks the draw, they only change what the certificate says.
-        coroutineScope {
-            launch { uiState.update { it.copy(caption = checkCaption(giveaway.igMediaId)) } }
-            launch {
-                val commitHash = giveaways.commitment(giveawayId)?.commitHash.orEmpty()
-                uiState.update { it.copy(integrity = drawIntegrity.verify(list.hashHex, commitHash)) }
-            }
-        }
-    }
-
-    /** Re-reads the caption now (spec: Commit step 4); offline or a deleted post means "not checked" (plan A7). */
-    private suspend fun checkCaption(mediaId: String): CaptionCheck {
-        val hash = giveaways.commitment(giveawayId)?.commitHash ?: return CaptionCheck.NOT_CHECKED
-        return when (val media = instagram.mediaById(mediaId)) {
-            is IgResult.Ok ->
-                if (Commit.captionContains(media.value.caption, hash)) CaptionCheck.FOUND else CaptionCheck.NOT_FOUND
-            is IgResult.Err -> CaptionCheck.NOT_CHECKED
-        }
+        // The check doesn't block the draw; it only changes what the certificate says. No caption is read (plan A35).
+        val commitHash = giveaways.commitment(giveawayId)?.commitHash.orEmpty()
+        uiState.update { it.copy(integrity = drawIntegrity.verify(list.hashHex, commitHash)) }
     }
 
     fun onRecordDraw(record: Boolean) = uiState.update { it.copy(recordDraw = record) }
@@ -147,8 +124,7 @@ class DrawStageViewModel @Inject constructor(
         if (!current.canDraw) return
         uiState.update { it.copy(drawing = true) }
         viewModelScope.launch {
-            val caption = current.caption ?: CaptionCheck.NOT_CHECKED
-            val checks = DrawChecks(caption, integrityVerified = current.integrity == true)
+            val checks = DrawChecks(integrityVerified = current.integrity == true)
             draws.realDraw(giveawayId, checks)
             eventChannel.send(DrawStageEvent.Drawn(record = current.recordDraw))
         }

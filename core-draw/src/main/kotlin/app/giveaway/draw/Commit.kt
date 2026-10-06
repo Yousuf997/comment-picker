@@ -4,9 +4,9 @@ import java.security.MessageDigest
 import java.security.SecureRandom
 
 /**
- * The commit step of commit-reveal (spec: Verifiable draw algorithm). Before entries close, the organizer posts
- * [commitHash] of a secret seed in the caption; after the draw the seed is revealed and anyone can check it hashes to
- * the posted value, so the seed can't have been chosen after seeing the entries.
+ * The draw's seed and its hash (spec: Verifiable draw algorithm; plan A35). The seed comes from SecureRandom and stays
+ * sealed on the phone until the draw; [commitHash] is stored and signed with the draw, so the revealed seed can be
+ * checked against it. Nothing is posted in the caption.
  */
 object Commit {
     const val SEED_BYTES = 32
@@ -20,12 +20,6 @@ object Commit {
         return sha256(seed).toHex()
     }
 
-    /** What the organizer pastes into the caption (plan A8). */
-    fun drawCode(commitHash: String): String = "#draw $commitHash"
-
-    /** Whether the caption contains the commit hash, ignoring case and anything around it. */
-    fun captionContains(caption: String?, commitHash: String): Boolean =
-        caption != null && caption.contains(commitHash, ignoreCase = true)
 
     /** True when [seed] is the one behind [commitHash]. */
     fun matches(seed: ByteArray, commitHash: String): Boolean =

@@ -12,7 +12,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.testing.invoke
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import app.giveaway.core.data.db.CaptionCheck
 import app.giveaway.core.data.db.CommentEntity
 import app.giveaway.core.data.db.GiveawayDatabase
 import app.giveaway.core.data.db.GiveawayStatus
@@ -123,7 +122,7 @@ class SaveVideoTest {
                 },
             )
             EntryBuilder(db).rebuild(giveawayId)
-            DrawService(db, vault, signer, clock).realDraw(giveawayId, DrawChecks(CaptionCheck.FOUND, false))
+            DrawService(db, vault, signer, clock).realDraw(giveawayId, DrawChecks(false))
             giveawayId
         }
         video = media.recordingFile(id).apply { writeBytes(ByteArray(1_024)) }
