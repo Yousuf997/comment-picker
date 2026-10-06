@@ -16,7 +16,6 @@ import app.giveaway.core.media.CertificateContent.Row
 import app.giveaway.core.media.CertificateContent.Section
 import app.giveaway.core.media.CertificateData
 import app.giveaway.core.media.CertificateStyle
-import app.giveaway.draw.Commit
 import app.giveaway.draw.Pick
 import app.giveaway.draw.Role
 import java.text.NumberFormat
@@ -99,7 +98,6 @@ internal class CertificateWriter(
     private fun proof(data: CertificateData, full: Boolean): Section {
         val record = data.record
         val rows = listOf(
-            Row(s(R.string.certificate_code), Commit.drawCode(record.commitHash).ltrIsolated(), Kind.CODE),
             Row(s(R.string.certificate_seed), record.seedHex.ltrIsolated(), Kind.CODE),
             Row(s(R.string.certificate_list_hash), record.entryListHash.ltrIsolated(), Kind.CODE),
             Row(s(R.string.certificate_algorithm), record.algorithmVersion.ltrIsolated()),
@@ -117,10 +115,6 @@ internal class CertificateWriter(
     private fun notes(data: CertificateData): Section? {
         val record = data.record
         val lines = buildList {
-            when (record.captionCheck) {
-                "NOT_FOUND" -> add(s(R.string.certificate_code_not_found))
-                "NOT_CHECKED" -> add(s(R.string.certificate_code_not_checked))
-            }
             if (record.partialImport) add(s(R.string.certificate_partial))
             if (!record.integrityVerified) add(s(R.string.certificate_integrity))
             record.manualExclusions.forEach {

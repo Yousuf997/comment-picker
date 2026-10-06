@@ -38,7 +38,7 @@ Screenshot tests (Roborazzi) compare against golden images committed in each mod
 |---|---|
 | `app` | Single activity, navigation, Hilt graph |
 | `core-designsystem` | Theme tokens, fonts, shared Compose components |
-| `core-draw` | Pure Kotlin/JVM: commit-reveal, entry rules, deterministic selection |
+| `core-draw` | Pure Kotlin/JVM: the seed and its hash, entry rules, deterministic selection |
 | `core-data` | Room + SQLCipher, repositories, encrypted backup |
 | `core-instagram` | Every Instagram API call |
 | `core-media` | Draw recorder and certificate builder |

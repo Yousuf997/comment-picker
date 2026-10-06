@@ -5,7 +5,6 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import app.giveaway.core.data.db.AccountEntity
 import app.giveaway.core.data.db.AppLockMethod
-import app.giveaway.core.data.db.CaptionCheck
 import app.giveaway.core.data.db.CommentEntity
 import app.giveaway.core.data.db.GiveawayDatabase
 import app.giveaway.core.data.db.GiveawayStatus
@@ -123,7 +122,7 @@ class BackupRestoreTest {
         val builder = EntryBuilder(oldPhone)
         builder.rebuild(drawn)
         EntryRepository(oldPhone, builder, clock).exclude(drawn, "c4", "Fake account")
-        DrawService(oldPhone, oldVault, signer, clock).realDraw(drawn, DrawChecks(CaptionCheck.FOUND, true))
+        DrawService(oldPhone, oldVault, signer, clock).realDraw(drawn, DrawChecks(true))
         WinnerRepository(oldPhone, clock).replace(drawn, position = 2, reason = "Didn't follow")
         // A second giveaway still waiting for its deadline, so the restore must schedule it again.
         val later = rules.copy(closesAt = closesAt.plusSeconds(86_400))

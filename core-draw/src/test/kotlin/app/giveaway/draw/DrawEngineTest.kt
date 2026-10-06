@@ -21,7 +21,6 @@ class DrawEngineTest {
         val hash = Commit.commitHash(seed)
         assertEquals(64, hash.length)
         assertEquals(sha256(seed).toHex(), hash)
-        assertEquals("#draw $hash", Commit.drawCode(hash))
         assertThrows(IllegalArgumentException::class.java) { Commit.commitHash(ByteArray(16)) }
     }
 
@@ -31,14 +30,6 @@ class DrawEngineTest {
         val b = Commit.newSeed(SecureRandom())
         assertEquals(32, a.size)
         assertFalse(a.contentEquals(b))
-    }
-
-    @Test
-    fun captionCheckFindsTheCodeIgnoringCase() {
-        val hash = Commit.commitHash(seed)
-        assertTrue(Commit.captionContains("Win a bag! Rules below.\n#draw ${hash.uppercase()}", hash))
-        assertFalse(Commit.captionContains("Win a bag! #draw 1234", hash))
-        assertFalse(Commit.captionContains(null, hash))
     }
 
     @Test

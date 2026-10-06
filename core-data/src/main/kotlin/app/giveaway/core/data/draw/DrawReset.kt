@@ -28,7 +28,6 @@ class DrawReset(
 
     /**
      * Redraw: clears the result and seals a fresh seed, because the same seed and entries would pick the same people.
-     * The new commit hash no longer matches the code in the caption, so S11 reports it as not found.
      */
     suspend fun redraw(giveawayId: Long) {
         val seed = newSeed()

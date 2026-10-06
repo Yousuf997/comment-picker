@@ -1,6 +1,6 @@
 # MASVS L2 self-review (H-01)
 
-Review of the app and the login helper against OWASP MASVS v2, level L2 (spec: Security and privacy). It prepares the external penetration test (H-05), which has the final word. Reviewed code: everything up to M-21 plus the fixes below, and the changes of plan X-1 to X-4 (redraw, editing, deleting).
+Review of the app and the login helper against OWASP MASVS v2, level L2 (spec: Security and privacy). It prepares the external penetration test (H-05), which has the final word. Reviewed code: everything up to M-21 plus the fixes below, and the changes of plan X-1 to X-4 (redraw, editing, deleting) and Y-1 to Y-2 (no draw code).
 
 ## Control groups
 
@@ -20,7 +20,7 @@ Review of the app and the login helper against OWASP MASVS v2, level L2 (spec: S
 | # | Severity | Finding | Status |
 |---|---|---|---|
 | 1 | High | Dialogs and sheets (own windows) could stay usable above the lock screen, and touches could reach the app underneath. | **Fixed.** `AppLockGate` composes nothing of the app while locked; saved UI state and navigation come back on unlock. Test: `AppLockGateTest`. |
-| 2 | Medium | The certificate's "device integrity verified" is the app's own claim; a repackaged app could set it. | **Accepted for 1.0.** What a certificate proves rests on the commitment and the open verifier, which a modified app can't defeat (finding 10 covers what the commitment no longer guarantees). A signed verdict from the helper (Ed25519, checked by the verifier) is the follow-up if the pentest asks for it. |
+| 2 | Medium | The certificate's "device integrity verified" is the app's own claim; a repackaged app could set it. | **Accepted for 1.0.** What a certificate proves rests on the revealed seed, the device signature and the open verifier, which a modified app can't defeat (finding 10 covers what a certificate doesn't prove). A signed verdict from the helper (Ed25519, checked by the verifier) is the follow-up if the pentest asks for it. |
 | 3 | Medium | Idle lock and PIN lockout used the wall clock. | **Idle lock fixed** (monotonic clock). **PIN lockout:** a clock moved backwards keeps it locked longer. Moving it forward needs the phone unlocked to reach its settings; accepted. |
 | 4 | Low | No re-authentication before turning off app lock or exporting a backup. | **Accepted for 1.0.** Both need the app already unlocked; the app lock is a second layer behind the phone's own lock. Revisit after the pentest. |
 | 5 | Low | Biometric unlock isn't bound to a Keystore key (`CryptoObject`). | **Accepted (plan A18).** Background work needs the keys without user presence; forcing the callback needs a rooted, hooked device. |
@@ -28,7 +28,7 @@ Review of the app and the login helper against OWASP MASVS v2, level L2 (spec: S
 | 7 | Low | Backup passwords were kept with `rememberSaveable`, so they went into saved instance state. | **Fixed.** Plain `remember`. |
 | 8 | Info | The Instagram token is sent as a query parameter. | As Meta documents; nothing logs URLs. Check `Authorization: Bearer` support against the live API. |
 | 9 | Info | Login doesn't require device integrity, only the genuine app. | Product decision; kept so more devices can sign in. |
-| 10 | Info | Since plan A30–A33 the organizer can redraw, or change the rules, the entries or the post, after seeing the result, and nothing records it. This replaces the spec's "the result can never be changed or redrawn". | **Accepted (user decision, 2026-10-05).** Each certificate still verifies on its own. A redraw seals a new seed, so its code differs from the one posted before entries closed: anyone who saw the original code can tell, and the certificate says the code wasn't in the caption unless the organizer posts the new one. The certificate reports the caption when the draw ran, not at the deadline. The store listing and S8 no longer claim that results can't be changed. |
+| 10 | Info | Since plan A30–A35 the organizer can redraw, or change the rules, the entries or the post, after seeing the result, and nothing records it; and no draw code is posted before entries close. This replaces the spec's commit step and its "the result can never be changed or redrawn". | **Accepted (user decisions, 2026-10-05 and 2026-10-06).** Each certificate still verifies on its own: its winners follow from its revealed seed and entry list, and the record is signed on the device. Nothing shows that the seed was fixed before entries closed, or that an earlier draw wasn't replaced. The app and the store listing don't claim either. |
 | 10 | Info | Below Android 13, FLAG_SECURE is set in `onPause`; some phones take the recents snapshot earlier. No `filterTouchesWhenObscured` (Android 8 to 11). | Known limit; Android 12+ blocks untrusted overlays. |
 | 11 | Info | Crash reports have no in-app opt-out. | Declared in the Data safety form; an opt-out would be a new feature. |
 | 12 | Info | The release configuration check runs for app bundles only. | Intended: CI builds release APKs before F-01 values exist. Only bundles go to Play. |

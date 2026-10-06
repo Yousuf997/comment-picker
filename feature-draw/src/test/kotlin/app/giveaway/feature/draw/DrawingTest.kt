@@ -45,7 +45,6 @@ class DrawingTest {
         entrants = listOf("amy.designs", "bob", "cat", "dan", "eve", "fay", "gus", "hal"),
         drawnAt = Instant.parse("2026-10-08T12:00:00Z"),
         entryCount = 8,
-        commitHash = "ab".repeat(32),
     )
     private var finished = 0
 

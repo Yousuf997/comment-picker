@@ -33,7 +33,6 @@ internal fun rememberSceneStyle(context: Context): SceneStyle {
             Typeface.DEFAULT_BOLD,
         ),
         body = body,
-        code = font(DesignR.font.jetbrains_mono, Typeface.MONOSPACE),
         rtl = arabic,
     )
 }
@@ -63,8 +62,6 @@ internal class AndroidSceneText(
     override val done: String get() = context.getString(R.string.drawing_done)
 
     override val pickedSoFar: String get() = context.getString(R.string.drawing_picked_so_far)
-
-    override val drawCodeLabel: String get() = context.getString(R.string.drawing_video_code)
 
     override fun entries(count: Int): String =
         context.resources.getQuantityString(R.plurals.draw_entries, count, n(count))

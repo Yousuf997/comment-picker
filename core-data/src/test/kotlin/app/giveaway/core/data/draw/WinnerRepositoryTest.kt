@@ -3,7 +3,6 @@ package app.giveaway.core.data.draw
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import app.giveaway.core.data.db.CaptionCheck
 import app.giveaway.core.data.db.CommentEntity
 import app.giveaway.core.data.db.ConfirmationStatus
 import app.giveaway.core.data.db.GiveawayDatabase
@@ -67,7 +66,7 @@ class WinnerRepositoryTest {
             },
         )
         EntryBuilder(db).rebuild(id)
-        DrawService(db, vault, signer, clock).realDraw(id, DrawChecks(CaptionCheck.FOUND, false))
+        DrawService(db, vault, signer, clock).realDraw(id, DrawChecks(false))
     }
 
     @After

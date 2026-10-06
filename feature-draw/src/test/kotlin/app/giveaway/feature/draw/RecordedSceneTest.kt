@@ -44,7 +44,7 @@ class RecordedSceneTest {
                 val style = rememberSceneStyle(context)
                 SideEffect {
                     val text = AndroidSceneText(context, winners = 2, alternates = 1)
-                    val renderer = DrawSceneRenderer(style, text, "Win a tote bag!", 1_204, "3f9a".repeat(16))
+                    val renderer = DrawSceneRenderer(style, text, "Win a tote bag!", 1_204)
                     bitmap = createBitmap(WIDTH, HEIGHT).also { renderer.draw(Canvas(it), timeline, timeMs) }
                 }
             }

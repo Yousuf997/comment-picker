@@ -50,7 +50,7 @@ class TokenSheetScreenshotTest {
     private companion object {
         const val LATIN_SAMPLE = "Fair giveaways, with proof."
         const val ARABIC_SAMPLE = "سحوبات عادلة، مع إثبات."
-        const val HASH_SAMPLE = "#draw 9f2c41e07ab3d5c8"
+        const val HASH_SAMPLE = "seed 9f2c41e07ab3d5c8"
     }
 
     @Composable

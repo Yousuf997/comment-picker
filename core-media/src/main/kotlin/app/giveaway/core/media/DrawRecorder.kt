@@ -157,7 +157,7 @@ class DrawRecorder(
         private const val DRAIN_TIMEOUT_US = 10_000L
         private const val MAX_EOS_WAITS = 300
 
-        /** The closing summary frame with the commit hash stays on screen this long (spec: ends on a summary). */
+        /** The closing summary frame stays on screen this long (spec: ends on a summary). */
         const val SUMMARY_HOLD_MS = 2_500L
 
         /** Rough file size for the S11 storage check (plan M-03): bit rate times length, plus muxing overhead. */

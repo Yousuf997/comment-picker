@@ -143,7 +143,7 @@ private fun Playback(
     var elapsed by remember { mutableLongStateOf(0L) }
     LaunchedEffect(timeline) {
         val text = AndroidSceneText(context, winners, draw.picks.size - winners)
-        onStart(DrawSceneRenderer(style, text, draw.title, draw.entryCount, draw.commitHash), timeline)
+        onStart(DrawSceneRenderer(style, text, draw.title, draw.entryCount), timeline)
         var last = withFrameMillis { it }
         while (elapsed < timeline.durationMs + FINISH_HOLD_MS) {
             val now = withFrameMillis { it }

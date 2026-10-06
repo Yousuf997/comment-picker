@@ -17,7 +17,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.testing.invoke
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import app.giveaway.core.data.db.CaptionCheck
 import app.giveaway.core.data.db.CommentEntity
 import app.giveaway.core.data.db.GiveawayDatabase
 import app.giveaway.core.data.db.GiveawayStatus
@@ -155,7 +154,7 @@ class CertificateScreenTest {
                 },
             )
             EntryBuilder(db).rebuild(giveawayId)
-            DrawService(db, vault, signer, clock).realDraw(giveawayId, DrawChecks(CaptionCheck.FOUND, true))
+            DrawService(db, vault, signer, clock).realDraw(giveawayId, DrawChecks(true))
             giveawayId
         }
     }
@@ -262,7 +261,7 @@ class CertificateScreenTest {
             alternatesRequested = 1,
             picks = listOf(Pick(1, "bob", Role.WINNER), Pick(2, "cat", Role.WINNER), Pick(3, "amy", Role.ALTERNATE)),
             drawnAt = closesAt.plusSeconds(7_200),
-            captionCheck = "FOUND",
+            captionCheck = "NOT_CHECKED",
             integrityVerified = true,
             partialImport = false,
             manualExclusions = emptyList(),

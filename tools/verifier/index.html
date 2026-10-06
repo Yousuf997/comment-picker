@@ -80,8 +80,6 @@
 
   <form class="card" id="form" autocomplete="off">
     <h2 data-i18n="fromCertificate">From the certificate</h2>
-    <label for="commit"><span data-i18n="commit">Draw code in the caption</span> <span class="hint" data-i18n="commitHint">(with or without "#draw")</span></label>
-    <input id="commit" spellcheck="false" placeholder="#draw 3f9a…">
     <label for="seed" data-i18n="seed">Revealed seed</label>
     <input id="seed" spellcheck="false" placeholder="64 hex characters">
     <label for="listHash"><span data-i18n="listHash">Entry list hash</span> <span class="hint" data-i18n="optional">(optional)</span></label>
@@ -115,7 +113,7 @@
   </section>
 
   <footer>
-    <p data-i18n="footer">Algorithm v1: the seed's SHA-256 must equal the draw code; the entry list is lowercased, sorted by Unicode code point and joined with new lines; winners are picked by a partial Fisher-Yates shuffle driven by HMAC-SHA256(seed, entry list hash ‖ counter). See draw-spec-v1.md.</p>
+    <p data-i18n="footer">Algorithm v1: the entry list is lowercased, sorted by Unicode code point and joined with new lines; winners are picked by a partial Fisher-Yates shuffle driven by HMAC-SHA256(seed, entry list hash ‖ counter). See draw-spec-v1.md.</p>
   </footer>
 </main>
 
@@ -212,14 +210,11 @@ export async function select(seed, usernames, winners, alternates) {
 export const parseEntries = (text) =>
   text.split(/\r?\n/).map((line) => line.trim().replace(/^@/, "")).filter((line) => line.length > 0);
 
-/** Every check the page shows, in order: commitment, entry list, and (when given) the claimed picks. */
-export async function verifyDraw({ commit, seedHex, entries, winners, alternates, entryListHash, claimed }) {
+/** Every check the page shows, in order: the entry list and (when given) the claimed picks. */
+export async function verifyDraw({ seedHex, entries, winners, alternates, entryListHash, claimed }) {
   const checks = [];
-  const commitHash = commit.trim().replace(/^#draw\s*/i, "").toLowerCase();
   const seed = hexToBytes(seedHex);
   if (seed.length !== 32) throw new Error("seed length");
-  const seedHash = bytesToHex(await sha256(seed));
-  checks.push({ id: "commit", ok: seedHash === commitHash, detail: seedHash });
   const result = await select(seed, entries, winners, alternates);
   if (entryListHash && entryListHash.trim()) {
     checks.push({ id: "listHash", ok: result.entryListHash === entryListHash.trim().toLowerCase(), detail: result.entryListHash });
@@ -240,15 +235,13 @@ if (typeof document !== "undefined") {
     en: {
       title: "Check a giveaway draw",
       lead: "Re-run a draw from its certificate and the exported entry list. Everything happens in this browser; nothing is uploaded, and the page works offline.",
-      fromCertificate: "From the certificate", commit: "Draw code in the caption", commitHint: '(with or without "#draw")',
+      fromCertificate: "From the certificate",
       seed: "Revealed seed", listHash: "Entry list hash", optional: "(optional)", winners: "Winners requested",
       alternates: "Alternates requested", claimed: "Winners and alternates on the certificate, in order",
       claimedHint: "(optional, one handle per line)", entryList: "Entry list", entries: "The exported entry list",
       entriesHint: "(one username per line)", run: "Re-run the draw", recomputed: "Re-run result",
-      footer: "Algorithm v1: the seed's SHA-256 must equal the draw code; the entry list is lowercased, sorted by Unicode code point and joined with new lines; winners are picked by a partial Fisher-Yates shuffle driven by HMAC-SHA256(seed, entry list hash ‖ counter). See draw-spec-v1.md.",
+      footer: "Algorithm v1: the entry list is lowercased, sorted by Unicode code point and joined with new lines; winners are picked by a partial Fisher-Yates shuffle driven by HMAC-SHA256(seed, entry list hash ‖ counter). See draw-spec-v1.md.",
       allOk: "The draw checks out.", someBad: "The draw does not match.",
-      commitOk: "The seed matches the draw code posted in the caption.",
-      commitBad: "The seed does not match the draw code. SHA-256 of the seed is:",
       listHashOk: "The entry list matches the certificate's entry list hash.",
       listHashBad: "The entry list differs from the one the draw used. Its hash is:",
       listHashComputed: "Entry list hash (compare it with the certificate):",
@@ -260,15 +253,13 @@ if (typeof document !== "undefined") {
     ar: {
       title: "تحقّق من سحب مسابقة",
       lead: "أعد إجراء السحب من شهادته وقائمة المشاركات المصدّرة. يتم كل شيء في هذا المتصفح، فلا يُرفع أي شيء، وتعمل الصفحة دون اتصال.",
-      fromCertificate: "من الشهادة", commit: "رمز السحب في الوصف", commitHint: "(مع ‎#draw‎ أو بدونها)",
+      fromCertificate: "من الشهادة",
       seed: "البذرة المكشوفة", listHash: "بصمة قائمة المشاركات", optional: "(اختياري)", winners: "عدد الفائزين",
       alternates: "عدد البدلاء", claimed: "الفائزون والبدلاء في الشهادة، بالترتيب",
       claimedHint: "(اختياري، اسم مستخدم في كل سطر)", entryList: "قائمة المشاركات", entries: "قائمة المشاركات المصدّرة",
       entriesHint: "(اسم مستخدم في كل سطر)", run: "أعد إجراء السحب", recomputed: "نتيجة إعادة السحب",
-      footer: "الخوارزمية v1: يجب أن تساوي بصمة SHA-256 للبذرة رمز السحب؛ تُحوَّل قائمة المشاركات إلى أحرف صغيرة وتُرتَّب حسب نقاط يونيكود وتُضمّ بأسطر جديدة؛ ويُختار الفائزون بخلط Fisher-Yates جزئي يعتمد على HMAC-SHA256(البذرة، بصمة القائمة ‖ العدّاد). راجع draw-spec-v1.md.",
+      footer: "الخوارزمية v1: تُحوَّل قائمة المشاركات إلى أحرف صغيرة وتُرتَّب حسب نقاط يونيكود وتُضمّ بأسطر جديدة؛ ويُختار الفائزون بخلط Fisher-Yates جزئي يعتمد على HMAC-SHA256(البذرة، بصمة القائمة ‖ العدّاد). راجع draw-spec-v1.md.",
       allOk: "السحب سليم.", someBad: "السحب لا يطابق.",
-      commitOk: "البذرة تطابق رمز السحب المنشور في الوصف.",
-      commitBad: "البذرة لا تطابق رمز السحب. بصمة SHA-256 للبذرة هي:",
       listHashOk: "قائمة المشاركات تطابق بصمة القائمة في الشهادة.",
       listHashBad: "قائمة المشاركات تختلف عن القائمة التي استُخدمت في السحب. بصمتها:",
       listHashComputed: "بصمة قائمة المشاركات (قارنها بالشهادة):",
@@ -343,7 +334,6 @@ if (typeof document !== "undefined") {
     let report;
     try {
       report = await verifyDraw({
-        commit: $("commit").value,
         seedHex: $("seed").value,
         entries: parseEntries($("entries").value),
         winners,

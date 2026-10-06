@@ -13,12 +13,6 @@
     <string name="certificate_done">Back to giveaways</string>
     <string name="draw_integrity_title">This phone couldn\'t be verified</string>
     <string name="draw_integrity_body">Google Play couldn\'t confirm this is the genuine app on a genuine device. You can still draw; the certificate will say device integrity wasn\'t verified.</string>
-    <string name="draw_caption_checking">Checking your caption for the draw code…</string>
-    <string name="draw_caption_found">Draw code matches your caption</string>
-    <string name="draw_caption_missing_title">Draw code not found in your caption</string>
-    <string name="draw_caption_missing_body">You can still draw, but the certificate will say the code wasn\'t in the caption.</string>
-    <string name="draw_caption_unchecked_title">Couldn\'t check your caption</string>
-    <string name="draw_caption_unchecked_body">Instagram couldn\'t be reached. You can still draw; the certificate will say the caption wasn\'t checked.</string>
     <plurals name="draw_entries">
         <item quantity="one">%s valid entry</item>
         <item quantity="other">%s valid entries</item>
@@ -48,7 +42,7 @@
     <string name="draw_role_alternate">Alternate</string>
     <!-- %1$s: position, %2$s: @handle, %3$s: Winner or Alternate. -->
     <string name="draw_test_pick">%1$s. %2$s · %3$s</string>
-    <string name="draw_test_sheet_note">This was only a test. It doesn\'t count, and the real draw uses the code you posted.</string>
+    <string name="draw_test_sheet_note">This was only a test. It doesn\'t count.</string>
     <string name="draw_test_close">Close</string>
     <string name="drawing_done">All picked</string>
     <!-- %1$s of %2$s: which winner, out of how many. -->
@@ -79,7 +73,6 @@
     <string name="drawing_stop_recording">Stop recording</string>
     <string name="drawing_only_screen">Only this draw is recorded, not your screen or notifications.</string>
     <string name="drawing_recording_failed">Recording failed. Your result is safe.</string>
-    <string name="drawing_video_code">Draw code from the caption</string>
     <string name="draw_low_storage_title">Not enough space to record</string>
     <string name="draw_low_storage_body">Free up some space, or turn off recording. You can still draw; only the video needs the space.</string>
     <!-- %1$s: length, %2$s x %3$s: width and height in pixels. -->
@@ -112,7 +105,6 @@
         <item quantity="other">and %s more picks</item>
     </plurals>
     <string name="certificate_section_proof">Proof</string>
-    <string name="certificate_code">Draw code in the caption</string>
     <string name="certificate_seed">Revealed seed</string>
     <string name="certificate_list_hash">Entry list hash</string>
     <string name="certificate_algorithm">Algorithm</string>
@@ -121,8 +113,6 @@
     <string name="certificate_signature">Signature</string>
     <string name="certificate_public_key">Public key</string>
     <string name="certificate_section_notes">Notes</string>
-    <string name="certificate_code_not_found">The draw code was not found in the caption when the draw ran.</string>
-    <string name="certificate_code_not_checked">The caption couldn\'t be checked when the draw ran.</string>
     <string name="certificate_partial">Not every comment could be imported from Instagram. The draw used the comments that were imported.</string>
     <string name="certificate_integrity">Device integrity not verified.</string>
     <!-- %1$s: the excluded person's handle. %2$s: the organizer's reason. -->
@@ -160,7 +150,9 @@
     <!-- Redraw (plan A30) -->
     <string name="redraw_button">Redraw</string>
     <string name="redraw_title">Redraw the winners?</string>
-    <string name="redraw_body">The current winners and certificate are deleted, and the draw starts again with a new draw code. Add the new code to your caption if you want the certificate to show it.</string>
+    <string name="redraw_body">The current winners and certificate are deleted, and the winners are drawn again.</string>
     <string name="redraw_confirm">Redraw</string>
     <string name="redraw_cancel">Cancel</string>
+    <!-- S11 while the integrity check runs (plan A35: no caption to check) -->
+    <string name="draw_checking">Checking this phone before the draw…</string>
 </resources>

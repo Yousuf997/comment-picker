@@ -6,7 +6,7 @@
 //   Check the published test vectors:
 //     node tools/verifier/verify.mjs --vectors docs/test-vectors-v1.json
 //   Check a draw from its certificate and the exported entry list:
-//     node tools/verifier/verify.mjs --commit <hash> --seed <hex> --entries entries.txt --winners 3 --alternates 2 \
+//     node tools/verifier/verify.mjs --seed <hex> --entries entries.txt --winners 3 --alternates 2 \
 //       [--list-hash <hex>] [--picks amy,bob,cat]
 //   Check that the page makes no network calls:
 //     node tools/verifier/verify.mjs --check-offline
@@ -50,7 +50,6 @@ async function checkVectors(path, draw) {
   let failures = 0;
   for (const vector of data.vectors) {
     const report = await draw.verifyDraw({
-      commit: vector.commitHash,
       seedHex: vector.seed,
       entries: entriesOf(vector),
       winners: vector.winners,
@@ -68,11 +67,10 @@ async function checkVectors(path, draw) {
 }
 
 async function checkDraw(opts, draw) {
-  for (const name of ["commit", "seed", "entries", "winners", "alternates"]) {
+  for (const name of ["seed", "entries", "winners", "alternates"]) {
     if (opts[name] === undefined || opts[name] === true) throw new Error(`Missing --${name}`);
   }
   const report = await draw.verifyDraw({
-    commit: opts.commit,
     seedHex: opts.seed,
     entries: draw.parseEntries(await readFile(opts.entries, "utf8")),
     winners: Number(opts.winners),
@@ -81,7 +79,6 @@ async function checkDraw(opts, draw) {
     claimed: typeof opts.picks === "string" ? opts.picks.split(",").map((s) => s.trim().replace(/^@/, "")) : [],
   });
   const labels = {
-    commit: "Seed matches the draw code",
     listHash: "Entry list matches the certificate's hash",
     listHashComputed: "Entry list hash",
     picks: "Re-run gives the same winners and alternates",

@@ -13,12 +13,6 @@
     <string name="certificate_done">العودة إلى السحوبات</string>
     <string name="draw_integrity_title">تعذّر التحقق من هذا الهاتف</string>
     <string name="draw_integrity_body">لم يتمكن Google Play من تأكيد أن هذا هو التطبيق الأصلي على جهاز سليم. لا يزال بإمكانك إجراء السحب، وستذكر الشهادة أنه لم يتم التحقق من سلامة الجهاز.</string>
-    <string name="draw_caption_checking">جارٍ التحقق من رمز السحب في الوصف…</string>
-    <string name="draw_caption_found">رمز السحب مطابق لوصف المنشور</string>
-    <string name="draw_caption_missing_title">لم يُعثر على رمز السحب في الوصف</string>
-    <string name="draw_caption_missing_body">لا يزال بإمكانك إجراء السحب، لكن الشهادة ستذكر أن الرمز لم يكن في الوصف.</string>
-    <string name="draw_caption_unchecked_title">تعذّر التحقق من الوصف</string>
-    <string name="draw_caption_unchecked_body">تعذّر الوصول إلى إنستغرام. لا يزال بإمكانك إجراء السحب، وستذكر الشهادة أن الوصف لم يُتحقق منه.</string>
     <plurals name="draw_entries">
         <item quantity="zero">%s مشاركة صالحة</item>
         <item quantity="one">%s مشاركة صالحة</item>
@@ -62,7 +56,7 @@
     <string name="draw_role_winner">فائز</string>
     <string name="draw_role_alternate">احتياطي</string>
     <string name="draw_test_pick">%1$s. %2$s · %3$s</string>
-    <string name="draw_test_sheet_note">كان هذا مجرد اختبار. لا يُحتسب، والسحب الحقيقي يستخدم الرمز الذي نشرته.</string>
+    <string name="draw_test_sheet_note">كان هذا مجرد اختبار ولا يُحتسب.</string>
     <string name="draw_test_close">إغلاق</string>
     <string name="drawing_done">اكتمل الاختيار</string>
     <string name="drawing_picking_winner">اختيار الفائز %1$s من %2$s</string>
@@ -89,7 +83,6 @@
     <string name="drawing_stop_recording">إيقاف التسجيل</string>
     <string name="drawing_only_screen">يُسجَّل هذا السحب فقط، لا شاشتك ولا إشعاراتك.</string>
     <string name="drawing_recording_failed">فشل التسجيل. نتيجتك محفوظة.</string>
-    <string name="drawing_video_code">رمز السحب من وصف المنشور</string>
     <string name="draw_low_storage_title">لا توجد مساحة كافية للتسجيل</string>
     <string name="draw_low_storage_body">أفرغ بعض المساحة أو أوقف التسجيل. لا يزال بإمكانك إجراء السحب، فالفيديو وحده يحتاج إلى المساحة.</string>
     <string name="save_video_format">%1$s · MP4 · %2$s × %3$s</string>
@@ -120,7 +113,6 @@
         <item quantity="other">و%s اختيار آخر</item>
     </plurals>
     <string name="certificate_section_proof">الإثبات</string>
-    <string name="certificate_code">رمز السحب في الوصف</string>
     <string name="certificate_seed">البذرة المكشوفة</string>
     <string name="certificate_list_hash">بصمة قائمة المشاركات</string>
     <string name="certificate_algorithm">الخوارزمية</string>
@@ -129,8 +121,6 @@
     <string name="certificate_signature">التوقيع</string>
     <string name="certificate_public_key">المفتاح العام</string>
     <string name="certificate_section_notes">ملاحظات</string>
-    <string name="certificate_code_not_found">لم يُعثر على رمز السحب في وصف المنشور عند إجراء السحب.</string>
-    <string name="certificate_code_not_checked">تعذّر التحقق من وصف المنشور عند إجراء السحب.</string>
     <string name="certificate_partial">تعذّر استيراد كل التعليقات من إنستغرام. أُجري السحب على التعليقات التي تم استيرادها.</string>
     <string name="certificate_integrity">لم يتم التحقق من سلامة الجهاز.</string>
     <string name="certificate_manual">استبعده المنظّم: %1$s. السبب: %2$s</string>
@@ -166,7 +156,8 @@
     <string name="certificate_make_cancel">ليس الآن</string>
     <string name="redraw_button">إعادة السحب</string>
     <string name="redraw_title">إعادة سحب الفائزين؟</string>
-    <string name="redraw_body">سيُحذف الفائزون الحاليون والشهادة، ويبدأ السحب من جديد برمز سحب جديد. أضف الرمز الجديد إلى وصف المنشور إن أردت أن تُظهره الشهادة.</string>
+    <string name="redraw_body">سيُحذف الفائزون الحاليون والشهادة، ويُسحب الفائزون من جديد.</string>
     <string name="redraw_confirm">إعادة السحب</string>
     <string name="redraw_cancel">إلغاء</string>
+    <string name="draw_checking">جارٍ فحص هذا الهاتف قبل السحب…</string>
 </resources>

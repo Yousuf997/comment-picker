@@ -6,7 +6,6 @@ import androidx.test.core.app.ApplicationProvider
 import app.giveaway.core.data.cleanup.GiveawayDeleter
 import app.giveaway.core.data.db.AccountEntity
 import app.giveaway.core.data.db.BlocklistEntity
-import app.giveaway.core.data.db.CaptionCheck
 import app.giveaway.core.data.db.CommentEntity
 import app.giveaway.core.data.db.GiveawayDatabase
 import app.giveaway.core.data.db.GiveawayStatus
@@ -127,7 +126,7 @@ class GiveawayChangesTest {
 
     private suspend fun drawn() {
         reviewed()
-        draws.realDraw(id, DrawChecks(CaptionCheck.FOUND, true))
+        draws.realDraw(id, DrawChecks(true))
     }
 
     private suspend fun valid() = db.entryDao().validCount(id)
@@ -161,7 +160,7 @@ class GiveawayChangesTest {
         assertArrayEquals(nextSeed, vault.open(id, commitment.encryptedSeed))
         assertNull(commitment.captionVerifiedAt)
 
-        draws.realDraw(id, DrawChecks(CaptionCheck.NOT_FOUND, true))
+        draws.realDraw(id, DrawChecks(true))
         val again = draws.signedRecord(id)!!
         assertTrue(again.verifies())
         assertEquals(Commit.commitHash(nextSeed), again.record.commitHash)
@@ -205,16 +204,16 @@ class GiveawayChangesTest {
     }
 
     @Test
-    fun afterTheDrawNewRulesClearTheResultButKeepTheCode() = runTest {
+    fun afterTheDrawNewRulesClearTheResultButKeepTheSeed() = runTest {
         drawn()
         assertTrue(editor.clearsResult(id))
         editor.saveRules(id, rules.copy(minMentions = 0))
         assertEquals(GiveawayStatus.REVIEW, status())
         assertNull(db.drawDao().realDraw(id))
         assertEquals(4, valid())
-        // The draw code in the caption still matches, so the next draw verifies against it.
+        // The seed stays, so the next draw verifies against the same commit hash.
         assertEquals(Commit.commitHash(seed), db.commitmentDao().get(id)?.commitHash)
-        draws.realDraw(id, DrawChecks(CaptionCheck.FOUND, true))
+        draws.realDraw(id, DrawChecks(true))
         assertTrue(draws.signedRecord(id)!!.verifies())
     }
 
