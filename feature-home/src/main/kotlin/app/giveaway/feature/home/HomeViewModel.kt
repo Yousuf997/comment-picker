@@ -7,11 +7,15 @@ import app.giveaway.core.data.account.SignInState
 import app.giveaway.core.data.db.GiveawayStatus
 import app.giveaway.core.data.db.GiveawaySummary
 import app.giveaway.core.data.giveaway.GiveawayRepository
+import app.giveaway.core.data.giveaway.GiveawayStateMachine
 import app.giveaway.core.data.settings.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import java.time.Clock
 import java.time.Duration
@@ -24,6 +28,18 @@ enum class CardStatus { DRAFT, WAITING, READY_TO_IMPORT, IMPORTING, REVIEW, DRAW
 /** Where tapping a card goes, by status (spec: S4 actions). */
 enum class GiveawayDestination { RULES, IMPORT, REVIEW, WINNERS, CERTIFICATE }
 
+/** A card's deadline mark: the time left, "It's time" once entries closed with nobody drawn yet, or "Done". */
+sealed interface CardTiming {
+    /** Entries close in [left], rounded up to the minute. */
+    data class Left(val left: Duration) : CardTiming
+
+    /** Entries have closed and the winners aren't drawn yet. */
+    data object ItsTime : CardTiming
+
+    /** The winners are drawn. */
+    data object Done : CardTiming
+}
+
 data class GiveawayCard(
     val id: Long,
     val title: String,
@@ -34,6 +50,7 @@ data class GiveawayCard(
     val createdAt: Instant,
     val commentCount: Int,
     val validEntryCount: Int,
+    val timing: CardTiming,
 )
 
 data class HomeUiState(
@@ -59,8 +76,8 @@ class HomeViewModel @Inject constructor(
         accounts.observeSignInState(),
         giveaways.observeSummaries(),
         settings.observe(),
-    ) { signIn, summaries, prefs ->
-        val now = clock.instant()
+        minutes(),
+    ) { signIn, summaries, prefs, now ->
         val cards = summaries.map { it.toCard(now) }
         val lastBackup = prefs.lastBackupAt
         HomeUiState(
@@ -104,11 +121,33 @@ class HomeViewModel @Inject constructor(
             createdAt = giveaway.createdAt,
             commentCount = commentCount,
             validEntryCount = validEntryCount,
+            timing = when {
+                GiveawayStateMachine.hasResult(giveaway.status) -> CardTiming.Done
+                now.isBefore(giveaway.closesAt) -> CardTiming.Left(minutesUntil(now, giveaway.closesAt))
+                else -> CardTiming.ItsTime
+            },
         )
+    }
+
+    /**
+     * The time now, then again as each minute starts, so countdowns and chips move on while Home is open. Deadlines
+     * fall on whole minutes, so a countdown ends right on time.
+     */
+    private fun minutes(): Flow<Instant> = flow {
+        while (true) {
+            val now = clock.instant()
+            emit(now)
+            delay(MINUTE_MILLIS - now.toEpochMilli() % MINUTE_MILLIS)
+        }
     }
 
     private companion object {
         val BACKUP_REMINDER_AFTER: Duration = Duration.ofDays(30)
         const val STOP_TIMEOUT_MILLIS = 5_000L
+        const val MINUTE_MILLIS = 60_000L
+
+        /** Rounded up, so the last minute shows as one minute left rather than none. */
+        fun minutesUntil(now: Instant, then: Instant): Duration =
+            Duration.ofMinutes((Duration.between(now, then).toMillis() + MINUTE_MILLIS - 1) / MINUTE_MILLIS)
     }
 }

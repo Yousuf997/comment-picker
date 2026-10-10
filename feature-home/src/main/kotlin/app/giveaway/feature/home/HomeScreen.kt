@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -42,6 +43,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.giveaway.core.designsystem.GiveawayDimens
 import app.giveaway.core.designsystem.GiveawayTheme
 import app.giveaway.core.designsystem.formatDate
+import app.giveaway.core.designsystem.formatDuration
 import app.giveaway.core.designsystem.handle
 import app.giveaway.core.designsystem.component.ChipTone
 import app.giveaway.core.designsystem.component.DrawStage
@@ -249,15 +251,29 @@ private fun GiveawayRow(card: GiveawayCard, onClick: () -> Unit, onDelete: () ->
                 Text(dateLine(card), style = GiveawayTheme.typography.caption, color = colors.onMuted)
                 countLine(card)?.let { Text(it, style = GiveawayTheme.typography.caption, color = colors.onMuted) }
                 // Under the text rather than beside it, so the title keeps its width next to the menu.
-                StatusChip(
-                    stringResource(card.status.label),
-                    card.status.tone,
+                FlowRow(
                     modifier = Modifier.padding(top = 4.dp),
-                )
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    StatusChip(stringResource(card.status.label), card.status.tone)
+                    TimingChip(card.timing, modifier = Modifier.testTag("home:timing:${card.id}"))
+                }
             }
             CardMenu(card, onDelete)
         }
     }
+}
+
+/** The deadline mark: the time left, "It's time" once entries closed with nobody drawn yet, or "Done". */
+@Composable
+private fun TimingChip(timing: CardTiming, modifier: Modifier = Modifier) {
+    val (text, tone) = when (timing) {
+        is CardTiming.Left -> stringResource(R.string.home_time_left, formatDuration(timing.left)) to ChipTone.Neutral
+        CardTiming.ItsTime -> stringResource(R.string.home_its_time) to ChipTone.Strong
+        CardTiming.Done -> stringResource(R.string.home_done) to ChipTone.Success
+    }
+    StatusChip(text, tone, modifier)
 }
 
 /** The card's ⋮ menu: Delete giveaway (plan A33). */

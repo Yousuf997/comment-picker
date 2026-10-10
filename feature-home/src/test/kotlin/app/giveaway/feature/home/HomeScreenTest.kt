@@ -1,6 +1,7 @@
 package app.giveaway.feature.home
 
 import android.app.Application
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -18,6 +19,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import java.time.Duration
 import java.time.Instant
 
 /** C-09 acceptance: S4 empty state, list sections, chips and banners. */
@@ -44,19 +46,23 @@ class HomeScreenTest {
         id: Long,
         status: CardStatus,
         destination: GiveawayDestination,
+        timing: CardTiming,
         entries: Int = 0,
         comments: Int = 0,
-    ) =
-        GiveawayCard(id, "Summer drop $id", null, status, destination, now.plusSeconds(86_400), now, comments, entries)
+    ) = GiveawayCard(
+        id, "Summer drop $id", null, status, destination, now.plusSeconds(86_400), now, comments, entries, timing,
+    )
 
     private val populated = HomeUiState(
         loading = false,
         username = "shop",
         inProgress = listOf(
-            card(1, CardStatus.WAITING, GiveawayDestination.IMPORT),
-            card(2, CardStatus.REVIEW, GiveawayDestination.REVIEW, entries = 1840, comments = 2400),
+            card(1, CardStatus.WAITING, GiveawayDestination.IMPORT, CardTiming.Left(Duration.ofHours(53))),
+            card(2, CardStatus.REVIEW, GiveawayDestination.REVIEW, CardTiming.ItsTime, entries = 1840, comments = 2400),
         ),
-        completed = listOf(card(3, CardStatus.COMPLETED, GiveawayDestination.CERTIFICATE, entries = 312)),
+        completed = listOf(
+            card(3, CardStatus.COMPLETED, GiveawayDestination.CERTIFICATE, CardTiming.Done, entries = 312),
+        ),
     )
 
     private fun text(id: Int) = compose.onNodeWithText(app.getString(id))
@@ -97,6 +103,16 @@ class HomeScreenTest {
         compose.onNodeWithText("Summer drop 2").performScrollTo().performClick()
         compose.onNodeWithText("Summer drop 3").performScrollTo().performClick()
         assertEquals(listOf("open:2:REVIEW", "open:3:CERTIFICATE"), calls)
+    }
+
+    @Test
+    fun eachCardShowsTheTimeLeftItsTimeOrDone() {
+        show(populated)
+        // Each card reads as one button, so its chips are found in the unmerged tree.
+        fun timing(id: Long) = compose.onNodeWithTag("home:timing:$id", useUnmergedTree = true)
+        timing(1).assertTextEquals(app.getString(R.string.home_time_left, "2 days, 5 hr"))
+        timing(2).assertTextEquals(app.getString(R.string.home_its_time))
+        timing(3).assertTextEquals(app.getString(R.string.home_done))
     }
 
     @Test

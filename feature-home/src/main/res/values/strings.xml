@@ -32,6 +32,12 @@
     <string name="status_review">Review entries</string>
     <string name="status_drawn">Winners picked</string>
     <string name="status_completed">Completed</string>
+    <!-- A card's deadline mark. %1$s: the time until entries close, e.g. "2 days, 5 hr". -->
+    <string name="home_time_left">%1$s left</string>
+    <!-- Entries have closed and the winners aren't drawn yet -->
+    <string name="home_its_time">It\'s time</string>
+    <!-- The winners are drawn -->
+    <string name="home_done">Done</string>
     <!-- Deleting a giveaway (plan A33) -->
     <string name="home_more">More for %1$s</string>
     <string name="home_delete">Delete giveaway</string>

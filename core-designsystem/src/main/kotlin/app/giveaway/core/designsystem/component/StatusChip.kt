@@ -23,6 +23,7 @@ fun StatusChip(
         ChipTone.Info -> colors.infoContainer to colors.info
         ChipTone.Neutral -> colors.surfaceMuted to colors.onMuted
         ChipTone.Accent -> colors.accentSoft to colors.accentOnSoft
+        ChipTone.Strong -> colors.accent to colors.onAccent
     }
     Text(
         text = text,
@@ -35,4 +36,12 @@ fun StatusChip(
     )
 }
 
-enum class ChipTone { Success, Info, Neutral, Accent }
+enum class ChipTone {
+    Success,
+    Info,
+    Neutral,
+    Accent,
+
+    /** Filled with the accent: the one thing that's due now, e.g. a giveaway whose draw is due. */
+    Strong,
+}

@@ -40,6 +40,9 @@
     <string name="status_review">مراجعة المشاركات</string>
     <string name="status_drawn">تم اختيار الفائزين</string>
     <string name="status_completed">مكتمل</string>
+    <string name="home_time_left">يتبقى %1$s</string>
+    <string name="home_its_time">حان الوقت</string>
+    <string name="home_done">تم</string>
     <string name="home_more">خيارات %1$s</string>
     <string name="home_delete">حذف المسابقة</string>
     <string name="home_delete_title">حذف هذه المسابقة؟</string>

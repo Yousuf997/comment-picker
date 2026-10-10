@@ -20,8 +20,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
@@ -33,6 +36,7 @@ import org.junit.Test
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
+import java.time.ZoneId
 import java.time.ZoneOffset
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -90,6 +94,55 @@ class HomeViewModelTest {
     }
 
     @Test
+    fun eachCardShowsTheTimeLeftItsTimeOrDone() = runTest {
+        val closed = Duration.ofHours(-1)
+        summaries.value = listOf(
+            summary(1, GiveawayStatus.COMMITTED, closesIn = Duration.ofHours(53)),
+            summary(2, GiveawayStatus.COMMITTED, closesIn = Duration.ofSeconds(90)),
+            summary(3, GiveawayStatus.COMMITTED, closesIn = closed),
+            summary(4, GiveawayStatus.REVIEW, closesIn = closed),
+            summary(5, GiveawayStatus.DRAWN, closesIn = closed),
+            summary(6, GiveawayStatus.ARCHIVED, closesIn = closed),
+        )
+        val state = viewModel().state.first { !it.loading }
+        assertEquals(
+            listOf(
+                CardTiming.Left(Duration.ofHours(53)),
+                // Rounded up: the last part of a minute still counts as a minute left.
+                CardTiming.Left(Duration.ofMinutes(2)),
+                CardTiming.ItsTime,
+                CardTiming.ItsTime,
+                CardTiming.Done,
+            ),
+            state.inProgress.map { it.timing },
+        )
+        assertEquals(CardTiming.Done, state.completed.single().timing)
+    }
+
+    @Test
+    fun theCountdownMovesOnEachMinuteUntilItsTime() = runTest {
+        val clock = MovableClock(now)
+        summaries.value = listOf(summary(1, GiveawayStatus.COMMITTED, closesIn = Duration.ofMinutes(2)))
+        val vm = HomeViewModel(FakeAccounts(signIn), FakeGiveaways(summaries), FakeSettings(settings), clock)
+        backgroundScope.launch { vm.state.collect {} }
+        runCurrent()
+        fun card() = vm.state.value.inProgress.single()
+        assertEquals(CardTiming.Left(Duration.ofMinutes(2)), card().timing)
+
+        clock.now = now.plusSeconds(60)
+        advanceTimeBy(60_000)
+        runCurrent()
+        assertEquals(CardTiming.Left(Duration.ofMinutes(1)), card().timing)
+        assertEquals(CardStatus.WAITING, card().status)
+
+        clock.now = now.plusSeconds(120)
+        advanceTimeBy(60_000)
+        runCurrent()
+        assertEquals(CardTiming.ItsTime, card().timing)
+        assertEquals(CardStatus.READY_TO_IMPORT, card().status)
+    }
+
+    @Test
     fun anEmptyListIsTheFirstRunStateWithoutABackupReminder() = runTest {
         val state = viewModel().state.first { !it.loading }
         assertTrue(state.isEmpty)
@@ -114,6 +167,14 @@ class HomeViewModelTest {
         val state = viewModel().state.first { !it.loading }
         assertTrue(state.signInExpired)
         assertEquals("shop", state.username)
+    }
+
+    private class MovableClock(var now: Instant) : Clock() {
+        override fun instant(): Instant = now
+
+        override fun getZone(): ZoneId = ZoneOffset.UTC
+
+        override fun withZone(zone: ZoneId): Clock = this
     }
 
     private class FakeAccounts(private val state: Flow<SignInState>) : AccountRepository {
