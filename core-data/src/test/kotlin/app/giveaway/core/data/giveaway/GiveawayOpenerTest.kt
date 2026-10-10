@@ -15,6 +15,7 @@ import org.junit.After
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -54,7 +55,7 @@ class GiveawayOpenerTest {
 
     // The seed source hands out a copy: the commitment zeroes the bytes it was given once they're sealed.
     private fun opener() =
-        DefaultGiveawayOpener(db, giveaways, DrawCommitments(giveaways, vault) { seed.copyOf() }) { id, at ->
+        DefaultGiveawayOpener(db, giveaways, DrawCommitments(giveaways, vault) { seed.copyOf() }, clock) { id, at ->
             scheduled += id to at
         }
 
@@ -68,6 +69,13 @@ class GiveawayOpenerTest {
         assertArrayEquals(seed, vault.open(id, commitment.encryptedSeed))
         assertNull(commitment.captionVerifiedAt)
         assertEquals(listOf(id to closesAt), scheduled)
+    }
+
+    @Test
+    fun entriesClosingNowGetNoReminder() = runTest {
+        val id = opener().create(post, "Win a tote bag!", "shop", rules.copy(closesAt = clock.instant()))
+        assertEquals(GiveawayStatus.COMMITTED, giveaways.get(id)?.status)
+        assertTrue(scheduled.isEmpty())
     }
 
     @Test

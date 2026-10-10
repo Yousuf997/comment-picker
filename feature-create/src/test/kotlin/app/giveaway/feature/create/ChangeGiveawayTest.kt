@@ -92,7 +92,9 @@ class ChangeGiveawayTest {
         Dispatchers.setMain(UnconfinedTestDispatcher())
         db = Room.inMemoryDatabaseBuilder(app, GiveawayDatabase::class.java).allowMainThreadQueries().build()
         giveaways = DefaultGiveawayRepository(db, DefaultSettingsRepository(db.settingsDao()), clock)
-        editor = GiveawayEditor(db, giveaways, EntryBuilder(db), { gid, at -> scheduled += gid to at }, work, opener)
+        editor = GiveawayEditor(
+            db, giveaways, EntryBuilder(db), { gid, at -> scheduled += gid to at }, work, opener, clock,
+        )
         id = runBlocking {
             val draft = giveaways.createDraft(media("p1"), "Win a tote bag!", "shop", rules)
             giveaways.saveCommitment(draft, "a".repeat(64), ByteArray(48))
@@ -169,6 +171,20 @@ class ChangeGiveawayTest {
         assertEquals(listOf(WizardProgress.IMPORT), saved)
         assertEquals(3, runBlocking { giveaways.rules(id)!!.winnersCount })
         assertEquals(listOf(id to later), scheduled)
+    }
+
+    @Test
+    fun closingEntriesNowOpensTheImportWithoutAReminder() {
+        val vm = editRules()
+        val saved = mutableListOf<Int>()
+        showEditRules(vm, saved)
+        vm.onFormChange { it.copy(closesNow = true) }
+        assertTrue(vm.state.value.rules!!.errors.isEmpty())
+        save()
+        await { saved.isNotEmpty() }
+        assertEquals(listOf(WizardProgress.IMPORT), saved)
+        assertEquals(clock.instant(), runBlocking { giveaways.rules(id)!!.closesAt })
+        assertTrue(scheduled.isEmpty())
     }
 
     @Test

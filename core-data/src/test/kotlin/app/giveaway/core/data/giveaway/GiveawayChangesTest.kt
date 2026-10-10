@@ -101,8 +101,9 @@ class GiveawayChangesTest {
         db = Room.inMemoryDatabaseBuilder(context, GiveawayDatabase::class.java).allowMainThreadQueries().build()
         giveaways = DefaultGiveawayRepository(db, DefaultSettingsRepository(db.settingsDao()), clock)
         val schedule = DeadlineScheduler { gid, at -> scheduled += gid to at }
-        val opener = DefaultGiveawayOpener(db, giveaways, DrawCommitments(giveaways, vault) { seed.copyOf() }, schedule)
-        editor = GiveawayEditor(db, giveaways, EntryBuilder(db), schedule, work, opener)
+        val commitments = DrawCommitments(giveaways, vault) { seed.copyOf() }
+        val opener = DefaultGiveawayOpener(db, giveaways, commitments, clock, schedule)
+        editor = GiveawayEditor(db, giveaways, EntryBuilder(db), schedule, work, opener, clock)
         val post = IgMedia("m1", IgMediaKind.IMAGE, false, null, null, closesAt, 0, null)
         id = giveaways.createDraft(post, "Win a tote bag!", "shop", rules)
         giveaways.saveCommitment(id, Commit.commitHash(seed), vault.seal(id, seed))
@@ -192,6 +193,13 @@ class GiveawayChangesTest {
         assertEquals(listOf(id to later), scheduled)
         editor.saveRules(id, rules.copy(closesAt = later, winnersCount = 3))
         assertEquals("same deadline, no new schedule", 1, scheduled.size)
+    }
+
+    @Test
+    fun entriesClosedNowGetNoReminder() = runTest {
+        editor.saveRules(id, rules.copy(closesAt = clock.instant()))
+        assertEquals(clock.instant(), giveaways.rules(id)?.closesAt)
+        assertTrue(scheduled.isEmpty())
     }
 
     @Test

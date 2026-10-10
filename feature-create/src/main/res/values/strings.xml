@@ -53,6 +53,10 @@
     <string name="rules_picker_next">Next</string>
     <string name="rules_picker_done">Done</string>
     <string name="rules_picker_cancel">Cancel</string>
+    <!-- Closes entries as the rules are saved, for an instant draw -->
+    <string name="rules_picker_now">Now</string>
+    <!-- The "Entries close" value after "Now" was picked -->
+    <string name="rules_closes_now">Now</string>
     <!-- %1$s: when entries close, e.g. "Oct 8, 2026, 10:00 AM". -->
     <!-- %1$s comments imported so far of %2$s the post reports, e.g. "1,850 of 2,400 comments". Quantity follows %2$s. -->
     <plurals name="import_count">
@@ -139,4 +143,6 @@
     <string name="dialog_cancel">Cancel</string>
     <!-- S7's last button opens the giveaway (plan A35) -->
     <string name="set_rules_done">Done, remind me at the deadline</string>
+    <!-- S7's last button when entries close "Now": the import starts straight away -->
+    <string name="set_rules_done_now">Done, import the comments</string>
 </resources>

@@ -6,6 +6,7 @@ import app.giveaway.core.data.db.GiveawayStatus
 import app.giveaway.core.data.work.DeadlineScheduler
 import app.giveaway.core.instagram.api.IgMedia
 import app.giveaway.draw.Rules
+import java.time.Clock
 import javax.inject.Inject
 
 /**
@@ -24,12 +25,14 @@ internal class DefaultGiveawayOpener @Inject constructor(
     private val db: GiveawayDatabase,
     private val giveaways: GiveawayRepository,
     private val commitments: DrawCommitments,
+    private val clock: Clock,
     private val deadlines: DeadlineScheduler,
 ) : GiveawayOpener {
 
     override suspend fun create(media: IgMedia, title: String, ownerUsername: String, rules: Rules): Long {
         val id = db.withTransaction { giveaways.createDraft(media, title, ownerUsername, rules).also { commit(it) } }
-        deadlines.schedule(id, rules.closesAt)
+        // Entries that closed "Now" need no reminder: the user goes straight on to import the comments.
+        if (rules.closesAt.isAfter(clock.instant())) deadlines.schedule(id, rules.closesAt)
         return id
     }
 

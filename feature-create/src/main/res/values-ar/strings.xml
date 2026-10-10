@@ -54,6 +54,8 @@
     <string name="rules_picker_next">التالي</string>
     <string name="rules_picker_done">تم</string>
     <string name="rules_picker_cancel">إلغاء</string>
+    <string name="rules_picker_now">الآن</string>
+    <string name="rules_closes_now">الآن</string>
     <plurals name="import_count">
         <item quantity="zero">%1$s من %2$s تعليق</item>
         <item quantity="one">%1$s من %2$s تعليق</item>
@@ -142,4 +144,5 @@
     <string name="clear_winners_confirm">مسح الفائزين</string>
     <string name="dialog_cancel">إلغاء</string>
     <string name="set_rules_done">تم، ذكّرني عند الموعد النهائي</string>
+    <string name="set_rules_done_now">تم، استورد التعليقات</string>
 </resources>

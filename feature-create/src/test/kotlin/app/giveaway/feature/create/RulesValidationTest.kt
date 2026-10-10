@@ -25,6 +25,15 @@ class RulesValidationTest {
     }
 
     @Test
+    fun entriesCanCloseNow() {
+        val closingNow = valid.copy(closesAt = now.minusSeconds(60), closesNow = true)
+        assertEquals(emptySet<RulesError>(), errors(closingNow))
+        val saved = now.plusSeconds(5)
+        assertEquals("entries close as the rules are saved", saved, closingNow.toRules(saved).closesAt)
+        assertEquals(valid.closesAt, valid.toRules(saved).closesAt)
+    }
+
+    @Test
     fun hashtagMustStartWithHashAndBeOneWord() {
         listOf("giveaway", "#", "#two words", "##", "#give-away").forEach { tag ->
             assertEquals(tag, setOf(RulesError.HASHTAG_FORMAT), errors(valid.copy(hashtag = tag)))
@@ -49,10 +58,10 @@ class RulesValidationTest {
 
     @Test
     fun blankTextFieldsBecomeNoRule() {
-        val rules = valid.copy(hashtag = "  ", keyword = " ").toRules()
+        val rules = valid.copy(hashtag = "  ", keyword = " ").toRules(now)
         assertNull(rules.requiredHashtag)
         assertNull(rules.keyword)
-        assertEquals("#win", valid.copy(hashtag = " #win ").toRules().requiredHashtag)
+        assertEquals("#win", valid.copy(hashtag = " #win ").toRules(now).requiredHashtag)
     }
 
     @Test

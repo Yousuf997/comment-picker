@@ -32,6 +32,9 @@ data class SetRulesUiState(
     val saving: Boolean = false,
 )
 
+/** A giveaway S7 just opened; [closedNow] when its entries closed "Now", so the import can start at once. */
+data class OpenedGiveaway(val giveawayId: Long, val closedNow: Boolean)
+
 /** S7 Set rules (wizard step 2): Done opens the giveaway with its rules and sets the reminder (plans C-12, A35). */
 @HiltViewModel
 class SetRulesViewModel @Inject constructor(
@@ -46,10 +49,10 @@ class SetRulesViewModel @Inject constructor(
     private val uiState = MutableStateFlow(SetRulesUiState(RulesForm(closesAt = defaultClosesAt())))
     val state: StateFlow<SetRulesUiState> = uiState.asStateFlow()
 
-    private val savedChannel = Channel<Long>(Channel.BUFFERED)
+    private val savedChannel = Channel<OpenedGiveaway>(Channel.BUFFERED)
 
-    /** The new giveaway's ID once it's open; Home shows it next. */
-    val saved: Flow<Long> = savedChannel.receiveAsFlow()
+    /** The new giveaway once it's open; Home shows it next, or its import when entries closed "Now". */
+    val saved: Flow<OpenedGiveaway> = savedChannel.receiveAsFlow()
 
     fun onFormChange(transform: (RulesForm) -> RulesForm) = uiState.update { current ->
         val form = transform(current.form)
@@ -68,7 +71,8 @@ class SetRulesViewModel @Inject constructor(
     fun onContinue(fallbackTitle: String) {
         val current = uiState.value
         if (current.saving) return
-        val errors = RulesValidation.validate(current.form, clock.instant())
+        val now = clock.instant()
+        val errors = RulesValidation.validate(current.form, now)
         if (errors.isNotEmpty()) {
             uiState.value = current.copy(errors = errors, showErrors = true)
             return
@@ -79,10 +83,10 @@ class SetRulesViewModel @Inject constructor(
                 media = media,
                 title = titleFrom(media.caption) ?: fallbackTitle,
                 ownerUsername = accounts.observeUsername().first().orEmpty(),
-                rules = current.form.toRules(),
+                rules = current.form.toRules(now),
             )
             // Saving stays on: the screen is about to close, and a second tap mustn't open a second giveaway.
-            savedChannel.send(id)
+            savedChannel.send(OpenedGiveaway(id, closedNow = current.form.closesNow))
         }
     }
 

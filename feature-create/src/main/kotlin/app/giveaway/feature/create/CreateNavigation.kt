@@ -71,8 +71,11 @@ fun NavGraphBuilder.pickPostScreen(onBack: () -> Unit, onPostPicked: (SetRulesRo
     composable<PickPostRoute> { PickPostScreen(onBack = onBack, onContinue = { onPostPicked(SetRulesRoute(it)) }) }
 }
 
-/** [onRulesSaved] runs once Done has opened the new giveaway (plan A35). */
-fun NavGraphBuilder.setRulesScreen(onBack: () -> Unit, onRulesSaved: (giveawayId: Long) -> Unit) {
+/** [onRulesSaved] runs once Done has opened the new giveaway (plan A35), saying whether entries closed "Now". */
+fun NavGraphBuilder.setRulesScreen(
+    onBack: () -> Unit,
+    onRulesSaved: (giveawayId: Long, closedNow: Boolean) -> Unit,
+) {
     composable<SetRulesRoute> { SetRulesScreen(onBack = onBack, onSaved = onRulesSaved) }
 }
 

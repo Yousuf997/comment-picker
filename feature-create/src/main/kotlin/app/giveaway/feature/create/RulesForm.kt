@@ -12,17 +12,20 @@ data class RulesForm(
     val excludePastWinners: Boolean = true,
     val excludeBlocklist: Boolean = true,
     val closesAt: Instant,
+    /** Entries close the moment the rules are saved, for an instant draw; [closesAt] is then unused. */
+    val closesNow: Boolean = false,
     val winners: Int = 1,
     val alternates: Int = 2,
 ) {
-    fun toRules() = Rules(
+    /** [now] is when the rules are saved: the closing time when entries close "Now". */
+    fun toRules(now: Instant) = Rules(
         minMentions = minMentions,
         requiredHashtag = hashtag.trim().takeIf { it.isNotEmpty() },
         keyword = keyword.trim().takeIf { it.isNotEmpty() },
         onePerPerson = onePerPerson,
         excludePastWinners = excludePastWinners,
         excludeBlocklist = excludeBlocklist,
-        closesAt = closesAt,
+        closesAt = if (closesNow) now else closesAt,
         winnersCount = winners,
         alternatesCount = alternates,
     )
@@ -48,7 +51,7 @@ data class RulesForm(
 }
 
 enum class RulesError {
-    /** Entries must close in the future (spec: S7 validation). */
+    /** Entries must close in the future, unless they close "Now" (spec: S7 validation). */
     CLOSES_IN_PAST,
 
     /** A hashtag starts with # and is one word (spec: S7 validation). */
@@ -70,7 +73,7 @@ object RulesValidation {
      * unchanged: only a new deadline for open entries has to be in the future.
      */
     fun validate(form: RulesForm, now: Instant, requireFutureClose: Boolean = true): Set<RulesError> = buildSet {
-        if (requireFutureClose && !form.closesAt.isAfter(now)) add(RulesError.CLOSES_IN_PAST)
+        if (requireFutureClose && !form.closesNow && !form.closesAt.isAfter(now)) add(RulesError.CLOSES_IN_PAST)
         val tag = form.hashtag.trim()
         if (tag.isNotEmpty() && !hashtag.matches(tag)) add(RulesError.HASHTAG_FORMAT)
         if (form.winners + form.alternates < 1) add(RulesError.NOBODY_TO_PICK)

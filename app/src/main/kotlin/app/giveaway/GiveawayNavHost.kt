@@ -138,14 +138,16 @@ fun GiveawayNavHost(
 /** S6 to S10. */
 private fun NavGraphBuilder.creationWizard(navController: NavHostController) {
     // Creation wizard. S7's Done opens the giveaway and returns Home ("Waiting for deadline"); it resumes at S9 from
-    // its card (plan A35).
+    // its card (plan A35). When entries closed "Now", S9 opens straight away, with Home below it.
     pickPostScreen(
         onBack = { navController.popBackStack() },
         onPostPicked = { route -> navController.navigate(route) },
     )
     setRulesScreen(
         onBack = { navController.popBackStack() },
-        onRulesSaved = { navController.backToHome() },
+        onRulesSaved = { id, closedNow ->
+            if (closedNow) navController.openStep(id, WizardProgress.IMPORT) else navController.backToHome()
+        },
     )
     // An existing giveaway's post and rules change from the step bar (plan A31, A32).
     changePostScreen(

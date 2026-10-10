@@ -138,8 +138,8 @@ class NavigationTest {
         compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty()
     }
 
-    /** Home → S6 → S7 → Done: the giveaway is open and back on Home (plan A35). */
-    private fun createAGiveaway() {
+    /** Home → S6 → S7. */
+    private fun openTheRules() {
         launch { GiveawayNavHost(navController, startDestination = HomeRoute) }
         tap(HomeR.string.home_new_giveaway)
         assertScreen("S6")
@@ -147,6 +147,11 @@ class NavigationTest {
         compose.onNodeWithTag("pick_post:tile:${FakeInstagramModule.POST.id}").performClick()
         tap(CreateR.string.wizard_continue)
         assertScreen("S7")
+    }
+
+    /** Home → S6 → S7 → Done: the giveaway is open and back on Home (plan A35). */
+    private fun createAGiveaway() {
+        openTheRules()
         // Granting notifications skips the Android 13 prompt. Done opens the giveaway through Room, asynchronously.
         shadowOf(app).grantPermissions(Manifest.permission.POST_NOTIFICATIONS)
         compose.onNodeWithText(app.getString(CreateR.string.set_rules_done)).performScrollTo().performClick()
@@ -158,6 +163,18 @@ class NavigationTest {
         createAGiveaway()
         assertFalse(navController.previousBackStackEntry != null)
         awaitText(app.getString(HomeR.string.status_waiting))
+    }
+
+    @Test
+    fun entriesClosingNowOpenTheImportStraightAway() {
+        openTheRules()
+        compose.onNodeWithText(app.getString(CreateR.string.rules_closes)).performScrollTo().performClick()
+        // The date picker opens in its own window.
+        awaitText(app.getString(CreateR.string.rules_picker_now))
+        tap(CreateR.string.rules_picker_now)
+        compose.onNodeWithText(app.getString(CreateR.string.set_rules_done_now)).performScrollTo().performClick()
+        awaitScreen("S9")
+        assertEquals(true, navController.previousBackStackEntry?.destination?.hasRoute<HomeRoute>())
     }
 
     @Test

@@ -3,6 +3,7 @@ package app.giveaway.feature.create
 import android.Manifest
 import android.app.Application
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
@@ -106,17 +107,24 @@ class SetRulesTest {
 
     private fun text(id: Int) = compose.onNodeWithText(app.getString(id))
 
-    private fun show(vm: SetRulesViewModel, onSaved: (Long) -> Unit = {}) =
-        compose.setContent { GiveawayTheme { SetRulesScreen(onBack = {}, onSaved = onSaved, viewModel = vm) } }
+    private fun show(vm: SetRulesViewModel, onSaved: (OpenedGiveaway) -> Unit = {}) = compose.setContent {
+        GiveawayTheme {
+            SetRulesScreen(
+                onBack = {},
+                onSaved = { id, closedNow -> onSaved(OpenedGiveaway(id, closedNow)) },
+                viewModel = vm,
+            )
+        }
+    }
 
     @Test
     fun doneOpensTheGiveawayWithTheRules() {
-        val saved = mutableListOf<Long>()
+        val saved = mutableListOf<OpenedGiveaway>()
         show(viewModel()) { saved += it }
         compose.onNodeWithTag("rules:hashtag").performTextInput("#totebag")
         text(R.string.set_rules_done).performScrollTo().performClick()
         compose.waitForIdle()
-        assertEquals(listOf(GIVEAWAY_ID), saved)
+        assertEquals(listOf(OpenedGiveaway(GIVEAWAY_ID, closedNow = false)), saved)
         val (media, rules) = drafts.single()
         assertEquals(post.id, media.id)
         assertEquals(240, media.commentsCount)
@@ -126,6 +134,23 @@ class SetRulesTest {
         assertEquals(2, rules.alternatesCount)
         assertTrue(rules.closesAt.isAfter(now.plus(Duration.ofDays(6))))
         assertEquals(listOf("Win a tote bag! @shop"), titles)
+    }
+
+    @Test
+    fun nowClosesEntriesWhenDoneIsTapped() {
+        val saved = mutableListOf<OpenedGiveaway>()
+        show(viewModel()) { saved += it }
+        text(R.string.rules_closes).performScrollTo().performClick()
+        // The date picker opens in its own window.
+        compose.waitUntil(WAIT_MS) {
+            compose.onAllNodesWithText(app.getString(R.string.rules_picker_now)).fetchSemanticsNodes().isNotEmpty()
+        }
+        text(R.string.rules_picker_now).performClick()
+        text(R.string.rules_closes_now).assertExists()
+        text(R.string.set_rules_done_now).performScrollTo().performClick()
+        compose.waitForIdle()
+        assertEquals(listOf(OpenedGiveaway(GIVEAWAY_ID, closedNow = true)), saved)
+        assertEquals(now, drafts.single().second.closesAt)
     }
 
     @Test
@@ -185,5 +210,6 @@ class SetRulesTest {
 
     private companion object {
         const val GIVEAWAY_ID = 42L
+        const val WAIT_MS = 5_000L
     }
 }

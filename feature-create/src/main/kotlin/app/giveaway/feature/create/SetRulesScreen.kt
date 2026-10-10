@@ -52,17 +52,18 @@ import app.giveaway.core.designsystem.component.Stepper
 import app.giveaway.core.designsystem.component.WizardHeader
 import app.giveaway.core.designsystem.formatDateTime
 
+/** [onSaved] gets the new giveaway and whether its entries closed "Now", to import its comments at once. */
 @Composable
 internal fun SetRulesScreen(
     onBack: () -> Unit,
-    onSaved: (giveawayId: Long) -> Unit,
+    onSaved: (giveawayId: Long, closedNow: Boolean) -> Unit,
     viewModel: SetRulesViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    LaunchedEffect(viewModel) { viewModel.saved.collect(onSaved) }
+    LaunchedEffect(viewModel) { viewModel.saved.collect { onSaved(it.giveawayId, it.closedNow) } }
     val fallbackTitle = stringResource(R.string.wizard_new_giveaway)
     // Done sets the deadline reminder, a notification: Android 13+ asks for it here, once the form is valid. Either
-    // answer continues (plan A35).
+    // answer continues (plan A35). Entries closing "Now" need no reminder, so nothing is asked.
     val context = LocalContext.current
     val askNotifications = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
         viewModel.onContinue(fallbackTitle)
@@ -72,7 +73,7 @@ internal fun SetRulesScreen(
         onBack = onBack,
         onFormChange = viewModel::onFormChange,
         onContinue = {
-            val mustAsk = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            val mustAsk = !state.form.closesNow && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
                 ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) !=
                 PackageManager.PERMISSION_GRANTED
             when {
@@ -81,7 +82,11 @@ internal fun SetRulesScreen(
                 else -> viewModel.onContinue(fallbackTitle)
             }
         },
-        continueLabel = stringResource(R.string.set_rules_done),
+        continueLabel = if (state.form.closesNow) {
+            stringResource(R.string.set_rules_done_now)
+        } else {
+            stringResource(R.string.set_rules_done)
+        },
     )
 }
 
@@ -136,7 +141,8 @@ internal fun SetRulesScreen(
     if (pickingDeadline) {
         DeadlinePicker(
             initial = form.closesAt,
-            onPicked = { at -> onFormChange { it.copy(closesAt = at) } },
+            onPicked = { at -> onFormChange { it.copy(closesAt = at, closesNow = false) } },
+            onNow = { onFormChange { it.copy(closesNow = true) } },
             onDismiss = { pickingDeadline = false },
         )
     }
@@ -169,7 +175,7 @@ private fun FairnessSection(
         Divider()
         SettingsRow(
             stringResource(R.string.rules_closes),
-            value = formatDateTime(form.closesAt),
+            value = if (form.closesNow) stringResource(R.string.rules_closes_now) else formatDateTime(form.closesAt),
             onClick = onPickDeadline,
         )
     }

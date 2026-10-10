@@ -1,6 +1,7 @@
 package app.giveaway.feature.create
 
 import android.text.format.DateFormat
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -26,11 +27,11 @@ import java.time.ZoneOffset
 
 /**
  * Picks when entries close: a date (today or later), then a time, in the phone's time zone. The S7 validation still
- * rejects a time that has already passed today.
+ * rejects a time that has already passed today. "Now" closes entries as the rules are saved, for an instant draw.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun DeadlinePicker(initial: Instant, onPicked: (Instant) -> Unit, onDismiss: () -> Unit) {
+internal fun DeadlinePicker(initial: Instant, onPicked: (Instant) -> Unit, onNow: () -> Unit, onDismiss: () -> Unit) {
     val zone = ZoneId.systemDefault()
     val initialLocal = initial.atZone(zone)
     var date by remember { mutableStateOf<LocalDate?>(null) }
@@ -49,10 +50,16 @@ internal fun DeadlinePicker(initial: Instant, onPicked: (Instant) -> Unit, onDis
         DatePickerDialog(
             onDismissRequest = onDismiss,
             confirmButton = {
-                TextButton(
-                    onClick = { date = dateState.selectedDateMillis?.let(::utcMillisToDate) },
-                    enabled = dateState.selectedDateMillis != null,
-                ) { Text(stringResource(R.string.rules_picker_next)) }
+                Row {
+                    TextButton(onClick = {
+                        onNow()
+                        onDismiss()
+                    }) { Text(stringResource(R.string.rules_picker_now)) }
+                    TextButton(
+                        onClick = { date = dateState.selectedDateMillis?.let(::utcMillisToDate) },
+                        enabled = dateState.selectedDateMillis != null,
+                    ) { Text(stringResource(R.string.rules_picker_next)) }
+                }
             },
             dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.rules_picker_cancel)) } },
         ) { DatePicker(state = dateState) }

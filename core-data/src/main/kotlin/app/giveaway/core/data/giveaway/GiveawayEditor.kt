@@ -11,6 +11,7 @@ import app.giveaway.core.data.work.DeadlineScheduler
 import app.giveaway.core.instagram.api.IgMedia
 import app.giveaway.draw.Rules
 import java.io.File
+import java.time.Clock
 import javax.inject.Inject
 
 /**
@@ -25,6 +26,7 @@ class GiveawayEditor @Inject constructor(
     private val deadlines: DeadlineScheduler,
     private val imports: ImportWork,
     private val opener: GiveawayOpener,
+    private val clock: Clock,
 ) {
     /** True when saving now clears a drawn result, so the screen can warn first. */
     suspend fun clearsResult(id: Long): Boolean =
@@ -40,8 +42,11 @@ class GiveawayEditor @Inject constructor(
             files
         }
         stale.forEach { it.delete() }
+        // A moved deadline moves the reminder. Entries closed "Now" get none: the user goes straight on to the import,
+        // and one still set for the old deadline only comes if the giveaway is waiting for its comments by then.
+        val remind = rules.closesAt != before.closesAt && rules.closesAt.isAfter(clock.instant())
         when (checkNotNull(giveaways.get(id)).status) {
-            GiveawayStatus.COMMITTED -> if (rules.closesAt != before.closesAt) deadlines.schedule(id, rules.closesAt)
+            GiveawayStatus.COMMITTED -> if (remind) deadlines.schedule(id, rules.closesAt)
             // While importing, the worker filters with the new rules when it finishes.
             GiveawayStatus.REVIEW -> entries.rebuild(id)
             else -> Unit

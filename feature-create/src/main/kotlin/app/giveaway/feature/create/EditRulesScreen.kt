@@ -105,7 +105,7 @@ class EditRulesViewModel @Inject constructor(
         val rules = stateFlow.value.rules ?: return
         stateFlow.update { it.copy(rules = rules.copy(errors = emptySet(), saving = true)) }
         val cleared = editor.clearsResult(giveawayId)
-        editor.saveRules(giveawayId, rules.form.toRules())
+        editor.saveRules(giveawayId, rules.form.toRules(clock.instant()))
         stateFlow.update { current -> current.copy(rules = current.rules?.copy(saving = false)) }
         savedChannel.send(nextStep(giveaways.get(giveawayId)?.status, cleared))
     }
