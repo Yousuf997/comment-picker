@@ -182,6 +182,16 @@ class ImportCommentsTest {
     }
 
     @Test
+    fun noCommentsReturnedIsExplainedWithRetry() {
+        state(imported = 0, expected = 240, error = CommentImporter.NONE_RETURNED, finished = true)
+        show()
+        awaitText(R.string.import_none_title)
+        text(R.string.import_retry).assertExists()
+        text(R.string.import_accept_partial).assertDoesNotExist()
+        text(R.string.import_unavailable_title).assertDoesNotExist()
+    }
+
+    @Test
     fun aSettledImportExplainsTheCommentsInstagramDoesntShare() {
         state(imported = 2_180, expected = 2_400, error = CommentImporter.SETTLED, finished = true)
         show()

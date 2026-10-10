@@ -24,6 +24,9 @@ enum class ImportPhase {
 
     /** Paging finished short of the post's count, and each read found comments the last one missed, every retry. */
     MISMATCH,
+
+    /** The post has comments, but Instagram returned none of them to the app. */
+    NONE_RETURNED,
     COMPLETE,
 }
 
@@ -59,6 +62,7 @@ data class ImportProgress(
                 state.lastError == CommentImporter.CODE_RATE_LIMITED -> ImportPhase.RATE_LIMITED
                 state.lastError == CommentImporter.MISMATCH && state.failedRetries >= MAX_FAILED_RETRIES ->
                     ImportPhase.MISMATCH
+                state.lastError == CommentImporter.NONE_RETURNED -> ImportPhase.NONE_RETURNED
                 state.lastError != null -> ImportPhase.RETRYING
                 else -> ImportPhase.RUNNING
             }

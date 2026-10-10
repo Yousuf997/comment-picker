@@ -131,6 +131,22 @@ class CommentImporterTest {
     }
 
     @Test
+    fun noCommentsAtAllIsNotACompleteImport() = runTest {
+        // Instagram counts 240 comments but returns none, as when the app's access to comments isn't approved yet.
+        instagram.pages = pages(0)
+        instagram.expected = 240
+        assertEquals(ImportRun.NoneReturned, importer.run(giveawayId))
+        assertEquals("read twice before saying so", 2, instagram.requested.count { it == null })
+        assertEquals(ImportPhase.NONE_RETURNED, progress().phase)
+        assertFalse(progress().done)
+        assertFalse("there's nothing to continue with", progress().canAcceptPartial)
+        // A later run (Retry now) reads again rather than staying stuck.
+        instagram.pages = pages(30)
+        assertEquals(ImportRun.Complete, importer.run(giveawayId))
+        assertEquals(30, stored())
+    }
+
+    @Test
     fun aSecondReadPicksUpCommentsTheFirstMissed() = runTest {
         // The first read ends early; reading again straight away finds the rest.
         instagram.pages = pages(50, 50)

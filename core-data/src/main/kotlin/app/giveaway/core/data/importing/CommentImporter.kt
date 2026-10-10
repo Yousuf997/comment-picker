@@ -29,6 +29,12 @@ sealed interface ImportRun {
 
     /** Stopped on an Instagram error; the next run resumes from the saved cursor. */
     data class Stopped(val error: IgError) : ImportRun
+
+    /**
+     * The post has comments, but two reads of every page returned none: Instagram isn't sharing them with the app (for
+     * example before Meta approves its access to comments), so nothing is retried until the user asks.
+     */
+    data object NoneReturned : ImportRun
 }
 
 /** Consecutive failed attempts before S9 offers to accept a partial import (spec: S9). */
@@ -194,8 +200,14 @@ class CommentImporter @Inject constructor(
      * Two reads of every page ended with the same comments, short of the post's count. The rest are comments Instagram
      * counts but never returns to apps (hidden, filtered or deleted), so the import is complete; S9 says how many.
      * Only top-level comments are entries, so new replies alone don't count as something the first read missed.
+     *
+     * No comments at all is different: that's Instagram not sharing the post's comments, not a few hidden ones.
      */
     private suspend fun settle(state: ImportStateEntity): ImportRun {
+        if (state.commentsFetched == 0) {
+            states.upsert(state.copy(lastError = NONE_RETURNED, updatedAt = clock.instant()))
+            return ImportRun.NoneReturned
+        }
         states.upsert(state.copy(failedRetries = 0, lastError = SETTLED, updatedAt = clock.instant()))
         return ImportRun.Complete
     }
@@ -228,6 +240,9 @@ class CommentImporter @Inject constructor(
 
         /** Not an error: the import settled short of the post's count; see [settle]. */
         const val SETTLED = "SETTLED"
+
+        /** The post has comments but Instagram returned none; see [ImportRun.NoneReturned]. */
+        const val NONE_RETURNED = "NONE_RETURNED"
         const val CODE_TOKEN_EXPIRED = "TOKEN_EXPIRED"
         const val CODE_MEDIA_NOT_FOUND = "MEDIA_NOT_FOUND"
         const val CODE_OFFLINE = "OFFLINE"

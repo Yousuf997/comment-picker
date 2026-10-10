@@ -97,6 +97,9 @@
     <string name="import_partial_confirm">Continue</string>
     <string name="import_partial_cancel">Keep trying</string>
     <string name="import_step_stopped">Stopped</string>
+    <!-- The post has comments, but Instagram returned none of them to the app -->
+    <string name="import_none_title">Instagram didn\'t share any comments</string>
+    <string name="import_none_body">Instagram counts comments on this post but returned none to the app. This can happen before Meta approves the app\'s access to comments: Instagram then only shares comments from accounts that have a role on the app.</string>
     <!-- A complete import short of the post's count: Instagram counts comments it never returns to apps -->
     <string name="import_unavailable_title">Every comment Instagram shares is imported</string>
     <!-- %s: how many more comments Instagram counts than it returns -->

@@ -199,6 +199,7 @@ private fun Problem(state: ImportUiState, onRetry: () -> Unit) {
         ImportPhase.RATE_LIMITED -> Triple(R.string.import_paused_title, R.string.import_paused_body, true)
         ImportPhase.RETRYING -> Triple(R.string.import_retrying_title, R.string.import_retrying_body, true)
         ImportPhase.MISMATCH -> Triple(R.string.import_mismatch_title, R.string.import_mismatch_body, true)
+        ImportPhase.NONE_RETURNED -> Triple(R.string.import_none_title, R.string.import_none_body, true)
         ImportPhase.POST_DELETED -> Triple(R.string.import_deleted_title, R.string.import_deleted_body, false)
         ImportPhase.SIGNED_OUT -> Triple(R.string.import_signed_out_title, R.string.import_signed_out_body, false)
         ImportPhase.NOT_STARTED, ImportPhase.RUNNING, ImportPhase.COMPLETE -> return

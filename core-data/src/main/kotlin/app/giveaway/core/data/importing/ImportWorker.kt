@@ -55,6 +55,8 @@ class ImportWorker @AssistedInject constructor(
                 Result.success()
             }
             ImportRun.Mismatch -> if (importer.canRetry(id)) Result.retry() else Result.success()
+            // Retrying won't change what Instagram shares; S9 explains and offers "Retry now".
+            ImportRun.NoneReturned -> Result.success()
             is ImportRun.Stopped -> when (run.error) {
                 IgError.Offline, is IgError.RateLimited, is IgError.Server -> Result.retry()
                 IgError.MediaNotFound, IgError.TokenExpired -> Result.success()

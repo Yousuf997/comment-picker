@@ -110,6 +110,7 @@ class ImportCommentsViewModel @Inject constructor(
 
     private companion object {
         const val STOP_TIMEOUT_MS = 5_000L
-        val STOPPED_PHASES = setOf(ImportPhase.MISMATCH, ImportPhase.POST_DELETED, ImportPhase.SIGNED_OUT)
+        val STOPPED_PHASES =
+            setOf(ImportPhase.MISMATCH, ImportPhase.NONE_RETURNED, ImportPhase.POST_DELETED, ImportPhase.SIGNED_OUT)
     }
 }

@@ -102,6 +102,8 @@
     <string name="import_partial_confirm">متابعة</string>
     <string name="import_partial_cancel">واصل المحاولة</string>
     <string name="import_step_stopped">متوقف</string>
+    <string name="import_none_title">لم يشارك إنستغرام أي تعليقات</string>
+    <string name="import_none_body">يحسب إنستغرام تعليقات على هذا المنشور لكنه لم يُرسل أيًا منها إلى التطبيق. قد يحدث هذا قبل أن توافق Meta على وصول التطبيق إلى التعليقات، إذ لا يشارك إنستغرام حينها إلا تعليقات الحسابات التي لها دور في التطبيق.</string>
     <string name="import_unavailable_title">استُورد كل تعليق يشاركه إنستغرام</string>
     <plurals name="import_unavailable_body">
         <item quantity="zero">يحسب إنستغرام %s تعليق إضافي لا يشاركه مع التطبيقات، مثل التعليقات المخفية أو المحذوفة. لا يمكن أن تكون مشاركات.</item>
