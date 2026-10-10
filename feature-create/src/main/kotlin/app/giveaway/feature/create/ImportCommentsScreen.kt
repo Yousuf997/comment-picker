@@ -54,6 +54,7 @@ private const val PERCENT = 100
 @Composable
 internal fun ImportCommentsScreen(
     onBack: () -> Unit,
+    onViewComments: () -> Unit,
     onReviewEntries: () -> Unit,
     viewModel: ImportCommentsViewModel = hiltViewModel(),
 ) {
@@ -63,6 +64,7 @@ internal fun ImportCommentsScreen(
         onBack = onBack,
         onRetry = viewModel::retry,
         onAcceptPartial = viewModel::acceptPartial,
+        onViewComments = onViewComments,
         onReviewEntries = onReviewEntries,
     )
 }
@@ -74,6 +76,7 @@ internal fun ImportCommentsScreen(
     onBack: () -> Unit,
     onRetry: () -> Unit,
     onAcceptPartial: () -> Unit,
+    onViewComments: () -> Unit,
     onReviewEntries: () -> Unit,
 ) {
     var confirmingPartial by remember { mutableStateOf(false) }
@@ -95,6 +98,14 @@ internal fun ImportCommentsScreen(
             modifier = Modifier.semantics { heading() },
         )
         ImportBody(state, onRetry)
+        // The comments themselves, as soon as any are in: also while importing, before the rules are applied.
+        if (state.progress.imported > 0) {
+            SecondaryButton(
+                text = stringResource(R.string.import_view_comments),
+                onClick = onViewComments,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
         if (state.progress.canAcceptPartial) {
             SecondaryButton(
                 text = stringResource(R.string.import_accept_partial),

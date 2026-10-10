@@ -1,8 +1,12 @@
 package app.giveaway.core.data.importing
 
 import android.content.Context
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import app.giveaway.core.data.db.CommentEntity
 import app.giveaway.core.data.db.GiveawayDatabase
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
@@ -52,6 +56,12 @@ class ImportRepository @Inject constructor(
 
     fun start(giveawayId: Long) = work.start(giveawayId)
 
+    /** The comments imported so far, oldest first, as Instagram returned them; the list grows while importing. */
+    fun comments(giveawayId: Long): Flow<PagingData<CommentEntity>> =
+        Pager(PagingConfig(pageSize = PAGE_SIZE)) { db.commentDao().paged(giveawayId) }.flow
+
+    fun commentCount(giveawayId: Long): Flow<Int> = db.commentDao().observeCount(giveawayId)
+
     /**
      * "Retry now" on S9: a fresh run straight away, instead of waiting out a retry's back-off (a queued run would be
      * kept), with the automatic retries counted from zero again so a stopped import runs once more.
@@ -74,5 +84,9 @@ class ImportRepository @Inject constructor(
         db.importStateDao().upsert(state.copy(acceptedPartial = true, updatedAt = clock.instant()))
         // The worker finishes the job: it sees the accepted import as complete and moves on to filtering.
         work.start(giveawayId)
+    }
+
+    private companion object {
+        const val PAGE_SIZE = 50
     }
 }

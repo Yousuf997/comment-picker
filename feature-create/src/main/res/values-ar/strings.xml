@@ -102,6 +102,18 @@
     <string name="import_partial_confirm">متابعة</string>
     <string name="import_partial_cancel">واصل المحاولة</string>
     <string name="import_step_stopped">متوقف</string>
+    <string name="import_view_comments">عرض التعليقات</string>
+    <string name="comments_title">التعليقات المستوردة</string>
+    <plurals name="comments_count">
+        <item quantity="zero">لا توجد تعليقات</item>
+        <item quantity="one">تعليق واحد</item>
+        <item quantity="two">تعليقان</item>
+        <item quantity="few">%s تعليقات</item>
+        <item quantity="many">%s تعليقًا</item>
+        <item quantity="other">%s تعليق</item>
+    </plurals>
+    <string name="comments_empty_title">لم تُستورد أي تعليقات بعد</string>
+    <string name="comments_empty_body">تظهر التعليقات هنا أثناء استيرادها من إنستغرام.</string>
     <string name="import_none_title">لم يشارك إنستغرام أي تعليقات</string>
     <string name="import_none_body">يحسب إنستغرام تعليقات على هذا المنشور لكنه لم يُرسل أيًا منها إلى التطبيق. قد يحدث هذا قبل أن توافق Meta على وصول التطبيق إلى التعليقات، إذ لا يشارك إنستغرام حينها إلا تعليقات الحسابات التي لها دور في التطبيق.</string>
     <string name="import_unavailable_title">استُورد كل تعليق يشاركه إنستغرام</string>

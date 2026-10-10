@@ -25,11 +25,13 @@ import app.giveaway.core.designsystem.component.WizardSteps
 import app.giveaway.feature.create.ChangePostRoute
 import app.giveaway.feature.create.EditRulesRoute
 import app.giveaway.feature.create.ImportCommentsRoute
+import app.giveaway.feature.create.ImportedCommentsRoute
 import app.giveaway.feature.create.PickPostRoute
 import app.giveaway.feature.create.ReviewEntriesRoute
 import app.giveaway.feature.create.changePostScreen
 import app.giveaway.feature.create.editRulesScreen
 import app.giveaway.feature.create.importCommentsScreen
+import app.giveaway.feature.create.importedCommentsScreen
 import app.giveaway.feature.create.pickPostScreen
 import app.giveaway.feature.create.reviewEntriesScreen
 import app.giveaway.feature.create.setRulesScreen
@@ -160,8 +162,10 @@ private fun NavGraphBuilder.creationWizard(navController: NavHostController) {
     )
     importCommentsScreen(
         onBack = { navController.popBackStack() },
+        onViewComments = { id -> navController.navigate(ImportedCommentsRoute(id)) },
         onReviewEntries = { id -> navController.navigate(ReviewEntriesRoute(id)) },
     )
+    importedCommentsScreen(onBack = { navController.popBackStack() })
     reviewEntriesScreen(
         onBack = { navController.popBackStack() },
         onContinueToDraw = { id -> navController.navigate(DrawRoute(id)) },

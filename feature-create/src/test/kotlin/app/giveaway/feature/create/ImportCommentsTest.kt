@@ -141,11 +141,19 @@ class ImportCommentsTest {
             clock,
         )
         compose.setContent {
-            GiveawayTheme { ImportCommentsScreen(onBack = {}, onReviewEntries = { reviewed++ }, viewModel = vm) }
+            GiveawayTheme {
+                ImportCommentsScreen(
+                    onBack = {},
+                    onViewComments = { viewed++ },
+                    onReviewEntries = { reviewed++ },
+                    viewModel = vm,
+                )
+            }
         }
     }
 
     private var reviewed = 0
+    private var viewed = 0
 
     private fun text(id: Int) = compose.onNodeWithText(app.getString(id))
 
@@ -168,6 +176,18 @@ class ImportCommentsTest {
         show()
         awaitText(R.string.import_not_yet_title)
         assertTrue(started.isEmpty())
+        text(R.string.import_view_comments).assertDoesNotExist()
+    }
+
+    @Test
+    fun theCommentsCanBeViewedWhileImporting() {
+        active.value = true
+        state(imported = 850, expected = 2_400)
+        show()
+        awaitText(R.string.import_view_comments)
+        text(R.string.import_view_comments).performScrollTo().performClick()
+        assertEquals(1, viewed)
+        assertEquals("the review waits for the import", 0, reviewed)
     }
 
     @Test

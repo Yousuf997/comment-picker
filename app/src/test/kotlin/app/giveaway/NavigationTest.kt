@@ -27,6 +27,7 @@ import androidx.test.core.app.ApplicationProvider
 import app.giveaway.core.designsystem.GiveawayTheme
 import app.giveaway.di.FakeInstagramModule
 import app.giveaway.feature.create.ImportCommentsRoute
+import app.giveaway.feature.create.ImportedCommentsRoute
 import app.giveaway.feature.create.PickPostRoute
 import app.giveaway.feature.create.ReviewEntriesRoute
 import app.giveaway.feature.create.SetRulesRoute
@@ -99,6 +100,7 @@ class NavigationTest {
             PickPostRoute to "S6",
             SetRulesRoute(mediaId = "m1") to "S7",
             ImportCommentsRoute(giveawayId = 1) to "S9",
+            ImportedCommentsRoute(giveawayId = 1) to "comments",
             ReviewEntriesRoute(giveawayId = 1) to "S10",
             DrawRoute(giveawayId = 1) to "S11",
             DrawingRoute(giveawayId = 1) to "S12",

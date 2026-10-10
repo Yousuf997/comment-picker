@@ -63,6 +63,10 @@ data class EditRulesRoute(val giveawayId: Long)
 @Serializable
 data class ImportCommentsRoute(val giveawayId: Long)
 
+/** The comments imported so far, read-only, opened from S9. */
+@Serializable
+data class ImportedCommentsRoute(val giveawayId: Long)
+
 /** S10 Review entries (wizard step 4). */
 @Serializable
 data class ReviewEntriesRoute(val giveawayId: Long)
@@ -79,11 +83,23 @@ fun NavGraphBuilder.setRulesScreen(
     composable<SetRulesRoute> { SetRulesScreen(onBack = onBack, onSaved = onRulesSaved) }
 }
 
-fun NavGraphBuilder.importCommentsScreen(onBack: () -> Unit, onReviewEntries: (giveawayId: Long) -> Unit) {
+fun NavGraphBuilder.importCommentsScreen(
+    onBack: () -> Unit,
+    onViewComments: (giveawayId: Long) -> Unit,
+    onReviewEntries: (giveawayId: Long) -> Unit,
+) {
     composable<ImportCommentsRoute> { entry ->
         val giveawayId = entry.toRoute<ImportCommentsRoute>().giveawayId
-        ImportCommentsScreen(onBack = onBack, onReviewEntries = { onReviewEntries(giveawayId) })
+        ImportCommentsScreen(
+            onBack = onBack,
+            onViewComments = { onViewComments(giveawayId) },
+            onReviewEntries = { onReviewEntries(giveawayId) },
+        )
     }
+}
+
+fun NavGraphBuilder.importedCommentsScreen(onBack: () -> Unit) {
+    composable<ImportedCommentsRoute> { ImportedCommentsScreen(onBack = onBack) }
 }
 
 fun NavGraphBuilder.reviewEntriesScreen(onBack: () -> Unit, onContinueToDraw: (giveawayId: Long) -> Unit) {

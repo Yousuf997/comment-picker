@@ -97,6 +97,16 @@
     <string name="import_partial_confirm">Continue</string>
     <string name="import_partial_cancel">Keep trying</string>
     <string name="import_step_stopped">Stopped</string>
+    <!-- S9 button: the comments imported so far, read-only -->
+    <string name="import_view_comments">View comments</string>
+    <string name="comments_title">Imported comments</string>
+    <!-- %s: how many comments are imported, e.g. "1,850 comments" -->
+    <plurals name="comments_count">
+        <item quantity="one">%s comment</item>
+        <item quantity="other">%s comments</item>
+    </plurals>
+    <string name="comments_empty_title">No comments imported yet</string>
+    <string name="comments_empty_body">Comments appear here as they\'re imported from Instagram.</string>
     <!-- The post has comments, but Instagram returned none of them to the app -->
     <string name="import_none_title">Instagram didn\'t share any comments</string>
     <string name="import_none_body">Instagram counts comments on this post but returned none to the app. This can happen before Meta approves the app\'s access to comments: Instagram then only shares comments from accounts that have a role on the app.</string>

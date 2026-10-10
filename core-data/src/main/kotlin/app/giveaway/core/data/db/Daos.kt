@@ -125,6 +125,13 @@ interface CommentDao {
     @Query("SELECT COUNT(*) FROM comment WHERE giveawayId = :giveawayId")
     suspend fun count(giveawayId: Long): Int
 
+    @Query("SELECT COUNT(*) FROM comment WHERE giveawayId = :giveawayId")
+    fun observeCount(giveawayId: Long): Flow<Int>
+
+    /** The imported comments in (timestamp, id) order, for the list S9 opens; Room refreshes it as pages arrive. */
+    @Query("SELECT * FROM comment WHERE giveawayId = :giveawayId ORDER BY timestamp, id")
+    fun paged(giveawayId: Long): PagingSource<Int, CommentEntity>
+
     @Query("DELETE FROM comment WHERE giveawayId = :giveawayId")
     suspend fun deleteAll(giveawayId: Long)
 
