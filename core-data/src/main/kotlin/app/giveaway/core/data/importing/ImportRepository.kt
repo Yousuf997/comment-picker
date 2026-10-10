@@ -53,6 +53,18 @@ class ImportRepository @Inject constructor(
     fun start(giveawayId: Long) = work.start(giveawayId)
 
     /**
+     * "Retry now" on S9: a fresh run straight away, instead of waiting out a retry's back-off (a queued run would be
+     * kept), with the automatic retries counted from zero again so a stopped import runs once more.
+     */
+    suspend fun retry(giveawayId: Long) {
+        db.importStateDao().get(giveawayId)?.let { state ->
+            db.importStateDao().upsert(state.copy(failedRetries = 0, updatedAt = clock.instant()))
+        }
+        work.cancel(giveawayId)
+        work.start(giveawayId)
+    }
+
+    /**
      * The user continues with the comments imported so far, after three failed retries or a deleted post (spec: S9).
      * The certificate states it (plan A16).
      */

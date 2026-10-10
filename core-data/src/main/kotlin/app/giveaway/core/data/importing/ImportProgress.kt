@@ -22,7 +22,7 @@ enum class ImportPhase {
     /** The Instagram sign-in expired; import resumes after signing in again. */
     SIGNED_OUT,
 
-    /** Paging finished short of the post's count after every automatic retry. */
+    /** Paging finished short of the post's count, and each read found comments the last one missed, every retry. */
     MISMATCH,
     COMPLETE,
 }
@@ -43,6 +43,10 @@ data class ImportProgress(
 
     /** Import is done: complete, or partial and accepted. */
     val done: Boolean get() = phase == ImportPhase.COMPLETE
+
+    /** Comments in the post's count that Instagram never returned, once a complete import settled short of it. */
+    val unavailable: Int
+        get() = if (done && !acceptedPartial) (expected - imported).coerceAtLeast(0) else 0
 
     companion object {
         fun of(state: ImportStateEntity?, workerActive: Boolean): ImportProgress {

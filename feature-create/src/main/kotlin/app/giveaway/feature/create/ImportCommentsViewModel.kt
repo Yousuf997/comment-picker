@@ -72,8 +72,10 @@ class ImportCommentsViewModel @Inject constructor(
         }
     }
 
-    /** "Retry now" on the warning card: resumes from the saved cursor. */
-    fun retry() = imports.start(giveawayId)
+    /** "Retry now" on the warning card: runs again straight away, resuming from the saved cursor. */
+    fun retry() {
+        viewModelScope.launch { imports.retry(giveawayId) }
+    }
 
     /** After three failed retries or a deleted post: continue with what was imported (printed on the certificate). */
     fun acceptPartial() {

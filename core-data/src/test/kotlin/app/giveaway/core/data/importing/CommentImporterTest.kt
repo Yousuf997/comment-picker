@@ -114,33 +114,70 @@ class CommentImporterTest {
     }
 
     @Test
-    fun anEarlyStopIsRetriedThreeTimesThenThePartialImportCanBeAccepted() = runTest {
-        // Instagram reports 150 comments but paging ends after 100.
+    fun commentsInstagramNeverReturnsDontHoldTheImportBack() = runTest {
+        // Instagram counts 150 comments, but 50 of them (hidden, filtered or deleted) never come back.
         instagram.pages = pages(50, 50)
+        instagram.expected = 150
+        assertEquals(ImportRun.Complete, importer.run(giveawayId))
+        assertEquals("read twice, straight away", listOf<String?>(null, "p1", null, "p1"), instagram.requested)
+        assertEquals(100, stored())
+        assertEquals(ImportPhase.COMPLETE, progress().phase)
+        assertEquals(50, progress().unavailable)
+        assertEquals(0, progress().failedRetries)
+        // Done for good: a later run asks Instagram for nothing.
+        instagram.requested.clear()
+        assertEquals(ImportRun.Complete, importer.run(giveawayId))
+        assertTrue(instagram.requested.isEmpty())
+    }
+
+    @Test
+    fun aSecondReadPicksUpCommentsTheFirstMissed() = runTest {
+        // The first read ends early; reading again straight away finds the rest.
+        instagram.pages = pages(50, 50)
+        instagram.morePerRead = 50
+        instagram.expected = 150
+        assertEquals(ImportRun.Complete, importer.run(giveawayId))
+        assertEquals(150, stored())
+        assertEquals(0, progress().unavailable)
+    }
+
+    @Test
+    fun readsThatKeepFindingMissedCommentsAreRetriedThreeTimesThenThePartialImportCanBeAccepted() = runTest {
+        // Instagram reports 150 comments, and every read ends early somewhere else, finding 5 more.
+        instagram.pages = pages(50, 50)
+        instagram.morePerRead = 5
         instagram.expected = 150
         repeat(MAX_FAILED_RETRIES) { attempt ->
             assertEquals(ImportRun.Mismatch, importer.run(giveawayId))
             assertEquals(attempt + 1, progress().failedRetries)
         }
-        assertEquals("paging restarted from the first page each time", 3, instagram.requested.count { it == null })
+        assertEquals("two reads at first, then one per retry", 4, instagram.requested.count { it == null })
         assertEquals(ImportRun.Mismatch, importer.run(giveawayId))
         assertEquals(ImportPhase.MISMATCH, progress().phase)
         assertTrue(progress().canAcceptPartial)
         val repository = ImportRepository(db, NoWork, clock)
         repository.acceptPartial(giveawayId)
         assertEquals(ImportPhase.COMPLETE, progress().phase)
+        assertEquals("an accepted partial import isn't explained away", 0, progress().unavailable)
         assertEquals(ImportRun.Complete, importer.run(giveawayId))
-        assertEquals(100, stored())
+        assertEquals(115, stored())
     }
 
     @Test
-    fun aRetryPicksUpMissingComments() = runTest {
+    fun retryNowRunsAStoppedImportAgainStraightAway() = runTest {
         instagram.pages = pages(50, 50)
+        instagram.morePerRead = 5
         instagram.expected = 150
-        assertEquals(ImportRun.Mismatch, importer.run(giveawayId))
-        instagram.pages = pages(50, 50, 50)
+        repeat(MAX_FAILED_RETRIES) { importer.run(giveawayId) }
+        assertEquals(ImportPhase.MISMATCH, progress().phase)
+        val work = RecordingWork()
+        ImportRepository(db, work, clock).retry(giveawayId)
+        assertEquals("a queued run waiting out its back-off is replaced", listOf("cancel", "start"), work.calls)
+        assertEquals(0, progress().failedRetries)
+        // This time Instagram returns what it returned before, so the import settles.
+        instagram.morePerRead = 0
         assertEquals(ImportRun.Complete, importer.run(giveawayId))
-        assertEquals(150, stored())
+        assertEquals(ImportPhase.COMPLETE, progress().phase)
     }
 
     @Test
@@ -169,12 +206,30 @@ class CommentImporterTest {
         override fun cancel(giveawayId: Long) = Unit
     }
 
+    private class RecordingWork : ImportWork {
+        val calls = mutableListOf<String>()
+
+        override fun start(giveawayId: Long) {
+            calls += "start"
+        }
+
+        override fun observeActive(giveawayId: Long) = flowOf(false)
+
+        override fun cancel(giveawayId: Long) {
+            calls += "cancel"
+        }
+    }
+
     /** Page i is served at cursor "p<i>" (the first at null); comment ids are "c<page>-<index>". */
     private fun pages(vararg sizes: Int): List<Int> = sizes.toList()
 
     private inner class FakeComments : InstagramRepository {
         var pages: List<Int> = emptyList()
         var expected = 0
+
+        /** Each read of the pages after the first finds this many more comments on the last page. */
+        var morePerRead = 0
+        private var reads = 0
         var replies: Map<String, Int> = emptyMap()
         var moreReplies: Map<String, List<Int>> = emptyMap()
         var failAt: Map<String?, IgError> = emptyMap()
@@ -188,8 +243,10 @@ class CommentImporterTest {
             requested += cursor
             failAt[cursor]?.let { return IgResult.Err(it) }
             check(crashAt == null || cursor != crashAt) { "process killed" }
+            if (cursor == null) reads++
             val index = cursor?.removePrefix("p")?.toInt() ?: 0
-            val comments = List(pages[index]) { i ->
+            val size = pages[index] + if (index == pages.lastIndex) (reads - 1) * morePerRead else 0
+            val comments = List(size) { i ->
                 val id = "c$index-$i"
                 IgComment(
                     id = id,

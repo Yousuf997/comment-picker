@@ -134,6 +134,7 @@ private fun ImportBody(state: ImportUiState, onRetry: () -> Unit) {
     } else {
         Progress(state)
         Problem(state, onRetry)
+        Unavailable(state.progress.unavailable)
         Checklist(state)
         Text(
             stringResource(R.string.import_leave_note),
@@ -209,6 +210,18 @@ private fun Problem(state: ImportUiState, onRetry: () -> Unit) {
         actionLabel = if (retry) stringResource(R.string.import_retry) else null,
         onAction = if (retry) onRetry else null,
         modifier = Modifier.testTag("import:problem"),
+    )
+}
+
+/** A complete import short of the post's count: what the rest is, so it doesn't look unfinished. */
+@Composable
+private fun Unavailable(count: Int) {
+    if (count == 0) return
+    NoticeCard(
+        title = stringResource(R.string.import_unavailable_title),
+        body = pluralStringResource(R.plurals.import_unavailable_body, count, formatCount(count)),
+        tone = NoticeTone.Info,
+        modifier = Modifier.testTag("import:unavailable"),
     )
 }
 

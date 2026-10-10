@@ -15,10 +15,16 @@ import javax.inject.Inject
 
 /** How a run of the importer ended. */
 sealed interface ImportRun {
-    /** Every page was fetched and the totals add up (or the user accepted less). */
+    /**
+     * Every page was fetched and the totals add up, or reading every page again brought nothing new (the rest of the
+     * post's count is comments Instagram doesn't return), or the user accepted less.
+     */
     data object Complete : ImportRun
 
-    /** Paging finished but fewer comments came back than the post reports; retried up to [MAX_FAILED_RETRIES]. */
+    /**
+     * Paging finished short of the post's count, and reading it again found comments the last read missed: Instagram
+     * stopped early, so it's retried up to [MAX_FAILED_RETRIES].
+     */
     data object Mismatch : ImportRun
 
     /** Stopped on an Instagram error; the next run resumes from the saved cursor. */
@@ -53,18 +59,29 @@ class CommentImporter @Inject constructor(
             is ResumePoint.From -> point.state
             is ResumePoint.Finished -> return point.run
         }
+        // Comments stored before this read of every page began, when it began in this run at the first page with
+        // comments already stored: a read again, whose result can be compared.
+        var storedBeforeRead = state.commentsFetched.takeIf { state.pagesFetched == 0 && it > 0 }
         while (true) {
-            val page = when (val result = instagram.commentsPage(giveaway.igMediaId, state.nextCursor)) {
+            val page = when (val result = fetchPage(giveaway.igMediaId, state.nextCursor)) {
                 is IgResult.Ok -> result.value
                 is IgResult.Err -> return stopped(giveawayId, result.error)
             }
-            val replies = when (val counted = countReplies(page.comments)) {
-                is IgResult.Ok -> counted.value
-                is IgResult.Err -> return stopped(giveawayId, counted.error)
-            }
-            state = savePage(state, page.comments, page.nextCursor, replies)
+            state = savePage(state, page.comments, page.nextCursor, page.replies)
             onProgress(state.commentsFetched + state.repliesCounted, state.expectedCount)
-            if (page.nextCursor == null) return finish(state)
+            if (page.nextCursor != null) continue
+            val before = storedBeforeRead
+            when {
+                state.isComplete() -> return finish(state)
+                // A short read: read every page once more straight away, rather than after a retry's wait.
+                before == null -> {
+                    storedBeforeRead = state.commentsFetched
+                    state = restart(state)
+                }
+                // Nothing new the second time: Instagram has given every comment it will.
+                state.commentsFetched == before -> return settle(state)
+                else -> return finish(state)
+            }
         }
     }
 
@@ -109,6 +126,20 @@ class CommentImporter @Inject constructor(
         )
         states.upsert(state)
         return state
+    }
+
+    /** A page of top-level comments, with their replies counted. */
+    private class FetchedPage(val comments: List<IgComment>, val nextCursor: String?, val replies: Int)
+
+    private suspend fun fetchPage(mediaId: String, cursor: String?): IgResult<FetchedPage> {
+        val page = when (val result = instagram.commentsPage(mediaId, cursor)) {
+            is IgResult.Ok -> result.value
+            is IgResult.Err -> return result
+        }
+        return when (val counted = countReplies(page.comments)) {
+            is IgResult.Ok -> IgResult.Ok(FetchedPage(page.comments, page.nextCursor, counted.value))
+            is IgResult.Err -> counted
+        }
     }
 
     private suspend fun countReplies(comments: List<IgComment>): IgResult<Int> {
@@ -160,6 +191,16 @@ class CommentImporter @Inject constructor(
     }
 
     /**
+     * Two reads of every page ended with the same comments, short of the post's count. The rest are comments Instagram
+     * counts but never returns to apps (hidden, filtered or deleted), so the import is complete; S9 says how many.
+     * Only top-level comments are entries, so new replies alone don't count as something the first read missed.
+     */
+    private suspend fun settle(state: ImportStateEntity): ImportRun {
+        states.upsert(state.copy(failedRetries = 0, lastError = SETTLED, updatedAt = clock.instant()))
+        return ImportRun.Complete
+    }
+
+    /**
      * Paging reached the end with too few comments: page again from the first page. Stored comments are kept and
      * duplicates ignored, so only the missing ones are added.
      */
@@ -184,6 +225,9 @@ class CommentImporter @Inject constructor(
 
     companion object {
         const val MISMATCH = "MISMATCH"
+
+        /** Not an error: the import settled short of the post's count; see [settle]. */
+        const val SETTLED = "SETTLED"
         const val CODE_TOKEN_EXPIRED = "TOKEN_EXPIRED"
         const val CODE_MEDIA_NOT_FOUND = "MEDIA_NOT_FOUND"
         const val CODE_OFFLINE = "OFFLINE"
@@ -204,5 +248,9 @@ class CommentImporter @Inject constructor(
 /** Paging reached the last page at least once. */
 fun ImportStateEntity.isFinished(): Boolean = pagesFetched > 0 && nextCursor == null
 
-/** Everything the post reports is accounted for: top-level comments stored plus replies counted (plan A14). */
-fun ImportStateEntity.isComplete(): Boolean = isFinished() && commentsFetched + repliesCounted >= expectedCount
+/**
+ * Everything the post reports is accounted for: top-level comments stored plus replies counted (plan A14). Or a second
+ * read of every page brought nothing new, so the rest is comments Instagram doesn't return.
+ */
+fun ImportStateEntity.isComplete(): Boolean =
+    isFinished() && (commentsFetched + repliesCounted >= expectedCount || lastError == CommentImporter.SETTLED)

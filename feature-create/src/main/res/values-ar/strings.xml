@@ -102,6 +102,15 @@
     <string name="import_partial_confirm">متابعة</string>
     <string name="import_partial_cancel">واصل المحاولة</string>
     <string name="import_step_stopped">متوقف</string>
+    <string name="import_unavailable_title">استُورد كل تعليق يشاركه إنستغرام</string>
+    <plurals name="import_unavailable_body">
+        <item quantity="zero">يحسب إنستغرام %s تعليق إضافي لا يشاركه مع التطبيقات، مثل التعليقات المخفية أو المحذوفة. لا يمكن أن تكون مشاركات.</item>
+        <item quantity="one">يحسب إنستغرام تعليقًا إضافيًا واحدًا لا يشاركه مع التطبيقات، مثل تعليق مخفي أو محذوف. لا يمكن أن يكون مشاركة.</item>
+        <item quantity="two">يحسب إنستغرام تعليقين إضافيين لا يشاركهما مع التطبيقات، مثل التعليقات المخفية أو المحذوفة. لا يمكن أن يكونا مشاركتين.</item>
+        <item quantity="few">يحسب إنستغرام %s تعليقات إضافية لا يشاركها مع التطبيقات، مثل التعليقات المخفية أو المحذوفة. لا يمكن أن تكون مشاركات.</item>
+        <item quantity="many">يحسب إنستغرام %s تعليقًا إضافيًا لا يشاركها مع التطبيقات، مثل التعليقات المخفية أو المحذوفة. لا يمكن أن تكون مشاركات.</item>
+        <item quantity="other">يحسب إنستغرام %s تعليق إضافي لا يشاركها مع التطبيقات، مثل التعليقات المخفية أو المحذوفة. لا يمكن أن تكون مشاركات.</item>
+    </plurals>
     <string name="review_tile_comments">التعليقات</string>
     <string name="review_tile_valid">صالحة</string>
     <string name="review_tile_excluded">مستبعدة</string>

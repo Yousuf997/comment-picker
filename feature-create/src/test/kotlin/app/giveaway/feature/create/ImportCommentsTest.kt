@@ -177,7 +177,18 @@ class ImportCommentsTest {
         awaitText(R.string.import_offline_title)
         compose.onNodeWithText("850 of 2,400 comments").assertExists()
         text(R.string.import_retry).performClick()
+        compose.waitUntil(WAIT_MS) { started.size == 2 }
         assertEquals(listOf(id, id), started)
+    }
+
+    @Test
+    fun aSettledImportExplainsTheCommentsInstagramDoesntShare() {
+        state(imported = 2_180, expected = 2_400, error = CommentImporter.SETTLED, finished = true)
+        show()
+        awaitText(R.string.import_unavailable_title)
+        val body = app.resources.getQuantityString(R.plurals.import_unavailable_body, 220, "220")
+        compose.onNodeWithText(body, useUnmergedTree = true).assertExists()
+        text(R.string.import_accept_partial).assertDoesNotExist()
     }
 
     @Test

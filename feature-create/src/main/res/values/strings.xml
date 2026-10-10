@@ -97,6 +97,13 @@
     <string name="import_partial_confirm">Continue</string>
     <string name="import_partial_cancel">Keep trying</string>
     <string name="import_step_stopped">Stopped</string>
+    <!-- A complete import short of the post's count: Instagram counts comments it never returns to apps -->
+    <string name="import_unavailable_title">Every comment Instagram shares is imported</string>
+    <!-- %s: how many more comments Instagram counts than it returns -->
+    <plurals name="import_unavailable_body">
+        <item quantity="one">Instagram counts %s more comment that it doesn\'t share with apps, such as a hidden or deleted one. It can\'t be an entry.</item>
+        <item quantity="other">Instagram counts %s more comments that it doesn\'t share with apps, such as hidden or deleted ones. They can\'t be entries.</item>
+    </plurals>
     <string name="review_tile_comments">Comments</string>
     <string name="review_tile_valid">Valid</string>
     <string name="review_tile_excluded">Excluded</string>

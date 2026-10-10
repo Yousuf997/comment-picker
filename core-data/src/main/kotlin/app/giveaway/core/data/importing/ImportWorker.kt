@@ -45,9 +45,9 @@ class ImportWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         val id = inputData.getLong(KEY_GIVEAWAY_ID, NO_ID)
         if (runAttemptCount > 0) delay(Random.nextLong(MAX_JITTER_MS))
-        setForeground(notifications.foregroundInfo(id, imported = 0, expected = 0))
+        showProgress(id, imported = 0, expected = 0)
         return when (val run = importer.run(id, onProgress = { imported, expected ->
-            setForeground(notifications.foregroundInfo(id, imported, expected))
+            showProgress(id, imported, expected)
         })) {
             ImportRun.Complete -> {
                 // Checking hashtags and mentions, removing duplicates, applying exclusions (S9 checklist).
@@ -64,6 +64,19 @@ class ImportWorker @AssistedInject constructor(
 
     override suspend fun getForegroundInfo(): ForegroundInfo =
         notifications.foregroundInfo(inputData.getLong(KEY_GIVEAWAY_ID, NO_ID), imported = 0, expected = 0)
+
+    /**
+     * Shows the progress notification. Android 12+ refuses to start it while the app is in the background, as when a
+     * retry runs after the user left; the import then runs without it rather than failing for good, and a run the
+     * system stops resumes from the saved cursor.
+     */
+    private suspend fun showProgress(giveawayId: Long, imported: Int, expected: Int) {
+        try {
+            setForeground(notifications.foregroundInfo(giveawayId, imported, expected))
+        } catch (ignored: IllegalStateException) {
+            // ForegroundServiceStartNotAllowedException: carry on without the notification.
+        }
+    }
 
     companion object {
         const val KEY_GIVEAWAY_ID = "giveawayId"
